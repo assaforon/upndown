@@ -1,13 +1,15 @@
+
+
+##################################################################
+### Functions that return a matrix
+
 #' Transition Probability Matrix Utilities
 #'
 #' @param cdf monotone increasing vector with positive-response probabilities. The number of dose levels $M$ is deduced from vector's length.
 #' @param target the design's target response rate.
 #' @param repeatNegatives logical, relevant only for k-in-a-row designs: are repeated negative responses needed to level up, or vice versa (repeated positives to level down)? See "Details" for more information.
-#' @value for `bcdmat` and `kmatMarg`, an $M\times M$ transition probability matrix. For `pivec`,  an $M$-length vector with stationary/asymptotic visit frequencies.
+#' @return for `bcdmat` and `kmatMarg`, an $M\times M$ transition probability matrix. For `pivec`,  an $M$-length vector with stationary/asymptotic visit frequencies.
 
-
-##################################################################
-### Functions that return a matrix
 
 ### BCD matrix ##############################
 
@@ -27,20 +29,24 @@ if(target<=0.5)
 {
 	coin=target/(1-target)
 # Down moves
-	omat[cbind(1:m,c(1,1:(m-1)))]=cdf
+downmove=cdf
+omat[cbind(1:m,c(1,1:(m-1)))]=downmove
 # Up moves
-	omat[cbind(1:m,c(2:m,m))]=(1-cdf)*coin
+upmove=(1-cdf)*coin
+omat[cbind(1:m,c(2:m,m))]=upmove
 # The remainder from 1 goes in the diagonal
-	diag(omat)=diag(omat)+(1-cdf)*(1-coin)
+diag(omat)=diag(omat)+1-downmove-upmove
 	
 } else {
 	coin=(1-target)/target
 # Up moves
-	omat[cbind(1:m,c(2:m,m))]=1-cdf
+upmove=1-cdf
+omat[cbind(1:m,c(2:m,m))]=upmove
 # Down moves
-	omat[cbind(1:m,c(1,1:(m-1)))]=cdf*coin
+downmove=cdf*coin
+omat[cbind(1:m,c(1,1:(m-1)))]=downmove
 # The remainder from 1 goes in the diagonal
-	diag(omat)=diag(omat)+cdf*(1-coin)
+diag(omat)=diag(omat)+1-downmove-upmove
 }
 
 return(omat)
@@ -66,22 +72,28 @@ fpower=(1-cdf)^k
 # Filling in the tridiagonal matrix
 # Note: filling off-diagonals already designed to include boundary conditions
 # (boundary coded as "diagonal off-diagonal")
+
 if(target<=0.5)
 {
 # Down moves
-	omat[cbind(1:m,c(1,1:(m-1)))]=cdf
+downmove=cdf
+omat[cbind(1:m,c(1,1:(m-1)))]=downmove
 # Up moves
-	omat[cbind(1:m,c(2:m,m))]=cdf*fpower/(1-fpower)
+upmove=cdf*fpower/(1-fpower)
+omat[cbind(1:m,c(2:m,m))]=upmove
 # The remainder from 1 goes in the diagonal
-	diag(omat)=diag(omat)+1-cdf/(1-fpower)
+diag(omat)=diag(omat)+1-downmove-upmove
 
 } else {
+
 # Up moves
-	omat[cbind(1:m,c(2:m,m))]=1-cdf
+upmove=1-cdf
+omat[cbind(1:m,c(2:m,m))]=upmove
 # Down moves
-	omat[cbind(1:m,c(1,1:(m-1)))]=(1-cdf)*cdf^k/(1-cdf^k)
+downmove=(1-cdf)*cdf^k/(1-cdf^k)
+omat[cbind(1:m,c(1,1:(m-1)))]=downmove
 # The remainder from 1 goes in the diagonal
-	diag(omat)=diag(omat)+1-(1-cdf)/(1-cdf^k)
+diag(omat)=diag(omat)+1-downmove-upmove
 }
 
 return(omat)
@@ -121,8 +133,36 @@ if(target<=0.5)
 return(omat)
 }
 
+### GUD matrix ##############################
 
+gudmat<-function(cdf,cohort,lower,upper)
+{
+## Validation (lots!)
+if(min(cdf)<0 || max(cdf)>1 || any(diff(cdf)<0) || var(cdf)==0) stop("cdf should be a CDF.\n")
+if(length(cdf)<3) stop ("These designs don't work with <3 dose levels.\n")
+if(cohort!=round(cohort) || upper!=round(upper) || lower!=round(lower)) stop('Design parameters must be integers.\n')
+if(cohort<1 || upper<1 || cohort<upper) stop('upper<=cohort and both must be positive.\n')
+if(lower<0 || upper<=lower) stop('lower<upper and lower cannot be negative.\n')
+# /validation
 
+m=length(cdf)
+omat=matrix(0,nrow=m,ncol=m)
+
+## Filling in the tridiagonal matrix
+# Note: filling off-diagonals already designed to include boundary conditions
+# (boundary coded as "diagonal off-diagonal")
+
+# Down moves
+downmove=pbinom(upper-1,size=cohort,prob=cdf,lower.tail=FALSE)
+omat[cbind(1:m,c(1,1:(m-1)))]=downmove
+# Up moves
+upmove=pbinom(lower,size=cohort,prob=cdf)
+omat[cbind(1:m,c(2:m,m))]=upmove
+# The remainder from 1 goes in the diagonal
+diag(omat)=diag(omat)+1-downmove-upmove
+	
+return(omat)
+}
 
 ####################################################
 ### Functions that return a vector
@@ -138,7 +178,7 @@ vout/sum(vout)
 
 ######
 
-advanceMat<-function(startdose=NULL,cdf,n,matfun=bcdmat,...)
+advanceVec<-function(startdose=NULL,cdf,n,designMat=bcdmat,...)
 {
 require(expm)
 m=length(cdf)
@@ -151,7 +191,7 @@ if (!is.null(startdose) && startdose %in% 1:m) {
 ## custom probability vector
 if (length(startdose)==m) vec0=startdose/sum(startdose)
 
-vec0 %*% (matfun(cdf,...) %^% (n-1))
+vec0 %*% (designMat(cdf,...) %^% (n-1))
 }
 
 ###
