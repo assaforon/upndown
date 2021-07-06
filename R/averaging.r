@@ -1,8 +1,18 @@
-## Identify reversals in an UD experiment's time series
-reversals<-function(y) which(diff(y)!=0)+1
+### Up-and-Down target estimates based on dose averaging 
 
-##' Original Dixon-Mood 48 point estimate
+
+##' Original Dixon and Mood (1948) point estimate
+#'
 ##' Basic version; formula assumes uniform spacing but should work anyway
+#'
+#' In their documentation of the Up-and-Down algorithm, Dixon and Mood (1948) presented an estimation method based on tallying responses
+
+
+#' @param x time series of doses given
+#' @param y time series of binary responses, should be coded 0/1 or \code{FALSE/TRUE}
+#' @param full logical: should more detailed information be returned? (default \code{FALSE})
+#' @param flip logical: should we flip D-M's approach and use the more-common outcome? (default \code{FALSE})
+
 dixonmood<-function(x,y,full=FALSE,flip=FALSE)
 {
 n=length(x)
@@ -19,23 +29,32 @@ if(full) return(c(A=sum((track-min(track))/spacing),N=length(track),d=spacing))
 mean(track)+spacing*(0.5-chosen)
 }
 
+
+## Identify reversals in an UD experiment's time series
+reversals<-function(y) which(diff(y)!=0)+1
+
+
 #' Reversal-anchored averaging estimators: reversal-only and reversal-startpoint
-reversmean<-function(x,y,start=3,all=TRUE,before=FALSE,full=FALSE)
+reversmean<-function(x,y,rstart=3,all=TRUE,before=0,full=FALSE)
 {
 n=length(x)
 if (!(length(y) %in% c(n-1,n))) stop('X vector must be equal-length or 1 longer than Y.\n')
 
 revpts=reversals(y)
-# exception handling
-if(length(revpts)==0) return(mean(x[-1]))
-if(start>length(revpts)) start=length(revpts)
-# The est is anti-climactic:
-est=ifelse(all,mean(x[(revpts[start]-before):n]),mean(x[revpts[start:length(revpts)]]))
-if(!full) return(est)
-data.frame(est=est,cutoff=revpts[start]-before)
+#### exception handling
+if(length(revpts)==0) { # fully degenerate, no reversals
+	if(full) return(data.frame(est=mean(x[-1]),cutoff=1))
+	return(mean(x[-1]))
 }
+# part-degenerate: fewer revs than expected
+if(rstart>length(revpts)) rstart=length(revpts) 
 
-##' Average with adaptive starting-point
+# The estimate is anti-climactic:
+est=ifelse(all,mean(x[(revpts[rstart]-before):n]),mean(x[revpts[rstart:length(revpts)]]))
+if(!full) return(est)
+data.frame(est=est,cutoff=revpts[rstart]-before)
+}
+##' Average with adaptive rstarting-point
 ##' Based on an unpblished concept from Oron (2007)
 
 adaptmean<-function(x,minfrac=2/3,before=FALSE,full=FALSE)
@@ -55,9 +74,11 @@ hinge=min(which(signvec!=signvec[1]))
 # Rolling one step backwards, to *before the crossing
 if(before) hinge=hinge-1
 if(signvec[1]==0) hinge=2 # perfect storm
-# Return
+
+### Return
 if(full) return(list(startpt=hinge,signsmeans=rbind(tailmeans,c(signvec,NA))))
 # Applying minimum fraction
 minstart=floor(n*(1-minfrac))
+
 ifelse(hinge<minstart,tailmeans[hinge],tailmeans[minstart])
 }
