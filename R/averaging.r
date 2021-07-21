@@ -82,3 +82,14 @@ minstart=floor(n*(1-minfrac))
 
 ifelse(hinge<minstart,tailmeans[hinge],tailmeans[minstart])
 }
+
+### Averaging standard error
+
+avgHalfCI <- function(x,conf=0.9,refq=c(.1,.9),full=FALSE)
+{
+neff=max(table(x))-1
+sdeff=diff(quantile(x,refq,type=6))/2
+if(!full) return(qt(0.5+conf/2,df=neff-1)*sdeff/sqrt(neff))
+return(data.frame(neff=neff,sdeff=sdeff))
+}
+
