@@ -29,9 +29,18 @@ if(full) return(c(A=sum((track-min(track))/spacing),N=length(track),d=spacing))
 mean(track)+spacing*(0.5-chosen)
 }
 
+#----------------------- Utilities for reversal-anchored averaging -----------------#
 
-## Identify reversals in an UD experiment's time series
-reversals<-function(y) which(diff(y)!=0)+1
+##' Identify reversals in an UD experiment's time series
+#' @param y time series of binary responses, should be coded 0/1 or \code{FALSE/TRUE}
+
+reversals <- function(y) which(diff(y)!=0)+1
+
+xtrace <- function(x) 
+{
+trans=diff(x)
+c(1,which(trans!=0) + 1)
+}
 
 
 #' Reversal-anchored averaging estimators: reversal-only and reversal-startpoint

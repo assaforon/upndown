@@ -50,6 +50,18 @@ p03ropi=DRtrace(x=0.01*c(10:8,9,10:7,8,9:7,8,7:11,10:7,8,7,8,7:12,11,12:10),
 p03ropiRates=doseResponse(p03ropi)
 
 
+### BenHamou et al
+# A Randomized Sequential Allocation Study to Determine the Minimum Effective Analgesic Concentration of Levobupivacaine and Ropivacaine in Patients Receiving Epidural Analgesia for Labor 
+
+xropi = c(11:9,10:8,9,10,9,10:7,8:11,10:12,11:7,8,7:10,9,8,9,8:10,9,10,9,10)
+bhamou03ropi = DRtrace(x=xropi[-40]/100, y=(1-diff(xropi))/2)
+
+xlevo = c(11,10,11,10,11:9,10:7,8,7,8:5,6:8,7,8:6,7,6,7,6,7:5,6,7,6:12)
+bhamou03levo = DRtrace(x=xlevo[-40]/100, y=(1-diff(xlevo))/2)
+
+bhamou03ropiRates = doseResponse(bhamou03ropi)
+bhamou03levoRates = doseResponse(bhamou03levo)
+
 
 
 
