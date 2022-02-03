@@ -57,6 +57,8 @@ if(length(revpts)==0) { # fully degenerate, no reversals
 }
 # part-degenerate: fewer revs than expected
 if(rstart>length(revpts)) rstart=length(revpts) 
+# Exception handling for 'before' (so we don't start before observation 1)
+if (revpts[rstart]<=before) before=revpts[rstart]-1
 
 # The estimate is anti-climactic:
 est=ifelse(all,mean(x[(revpts[rstart]-before):n]),mean(x[revpts[rstart:length(revpts)]]))
@@ -92,7 +94,41 @@ minstart=floor(n*(1-minfrac))
 ifelse(hinge<minstart,tailmeans[hinge],tailmeans[minstart])
 }
 
-### Averaging standard error
+### Choi (1971,1990) point+interval estimate 
+
+choiEst<-function(x,y,rstart=2,conf=0.9,full=FALSE)
+{
+n=length(x)
+if (!(length(y) %in% c(n-1,n))) stop('X vector must be equal-length or 1 longer than Y.\n')
+
+revpts=reversals(y)
+k=length(revpts)
+
+# The silly 'trough-peak' correction
+exes=x[ revpts[rstart:k] ] + 1/2 - y[ revpts[rstart:k] ]
+# the ubiquitous k-1:
+k1=length(exes)
+
+# Point estimate: these shifted reversals 
+pest = mean(exes)
+
+# rho: following Choi (90), we just use the lag-1 ACF to stay out of trouble.
+rho = acf(exes,lag=1,plot=FALSE)$acf[2]
+
+# Estimating single-obs sigma FWIW (Choi 90 eq. 8)
+sig2 = ( exes[1]^2 + exes[k1]^2 + sum(exes[-c(1,k1)]^2)*(1+rho^2) 
+		- 2*sum(exes[-1]*exes[-k1])*rho ) / k1
+
+# Putting it together (Choi 90 eq. 6)!
+eyes = 1:(k1-1)
+se = sqrt ( (sig2 / (k1*(1-rho^2) ) ) * (1 + 2*sum( rho^eyes * (k1-eyes) )/k1 ) )
+
+return(c(pest,rho,k1,se,sd(exes)))
+}
+
+
+
+### Averaging standard error, ad-hoc
 
 avgHalfCI <- function(x,conf=0.9,refq=c(.1,.9),full=FALSE)
 {
@@ -101,4 +137,8 @@ sdeff=diff(quantile(x,refq,type=6))/2
 if(!full) return(qt(0.5+conf/2,df=neff-1)*sdeff/sqrt(neff))
 return(data.frame(neff=neff,sdeff=sdeff))
 }
+
+
+
+
 
