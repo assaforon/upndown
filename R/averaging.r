@@ -113,17 +113,24 @@ k1=length(exes)
 pest = mean(exes)
 
 # rho: following Choi (90), we just use the lag-1 ACF to stay out of trouble.
-rho = acf(exes,lag=1,plot=FALSE)$acf[2]
+rho0 = acf(exes,lag=1,plot=FALSE)$acf[2]
 
 # Estimating single-obs sigma FWIW (Choi 90 eq. 8)
-sig2 = ( exes[1]^2 + exes[k1]^2 + sum(exes[-c(1,k1)]^2)*(1+rho^2) 
-		- 2*sum(exes[-1]*exes[-k1])*rho ) / k1
+
+aa = exes[1]^2 + exes[k1]^2
+bb = sum(exes[-1]*exes[-k1])
+cc = sum(exes[-c(1,k1)]^2)
+rhoot = function(x,aa,bb,cc,k)  
+	(bb-cc*x)*(1-x^2) - x*(aa + cc*(1+x^2) - 2*bb*x)/k
+	
+rho = uniroot(rhoot, interval=c(-1,1), aa=aa,bb=bb,cc=cc,k=k1)$root
+sig2 = ( aa + cc*(1+rho^2) - 2*bb*rho ) / k1
 
 # Putting it together (Choi 90 eq. 6)!
 eyes = 1:(k1-1)
 se = sqrt ( (sig2 / (k1*(1-rho^2) ) ) * (1 + 2*sum( rho^eyes * (k1-eyes) )/k1 ) )
 
-return(c(pest,rho,k1,se,sd(exes)))
+return(c(pest,rho,rho0,k1,se))
 }
 
 
