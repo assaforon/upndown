@@ -44,7 +44,7 @@ c(1,which(trans!=0) + 1)
 
 
 #' Reversal-anchored averaging estimators: reversal-only and reversal-startpoint
-reversmean<-function(x,y,rstart=3,all=TRUE,before=0,full=FALSE)
+reversmean<-function(x,y,rstart=3,all=TRUE,minfrac=0.5,before=0,full=FALSE)
 {
 n=length(x)
 if (!(length(y) %in% c(n-1,n))) stop('X vector must be equal-length or 1 longer than Y.\n')
@@ -58,7 +58,10 @@ if(length(revpts)==0) { # fully degenerate, no reversals
 # part-degenerate: fewer revs than expected
 if(rstart>length(revpts)) rstart=length(revpts) 
 # Exception handling for 'before' (so we don't start before observation 1)
-if (revpts[rstart]<=before) before=revpts[rstart]-1
+if(revpts[rstart]<=before) before=revpts[rstart]-1
+
+# Starting from some minimal start point:
+if(revpts[rstart] > n*minfrac) revpts[rstart] = floor(n*minfrac)
 
 # The estimate is anti-climactic:
 est=ifelse(all,mean(x[(revpts[rstart]-before):n]),mean(x[revpts[rstart:length(revpts)]]))
@@ -115,22 +118,26 @@ pest = mean(exes)
 # rho: following Choi (90), we just use the lag-1 ACF to stay out of trouble.
 rho0 = acf(exes,lag=1,plot=FALSE)$acf[2]
 
-# Estimating single-obs sigma FWIW (Choi 90 eq. 8)
+# Estimating single-obs rho and sigma FWIW (Choi 90 eq. 7-8)
 
 aa = exes[1]^2 + exes[k1]^2
 bb = sum(exes[-1]*exes[-k1])
 cc = sum(exes[-c(1,k1)]^2)
 rhoot = function(x,aa,bb,cc,k)  
 	(bb-cc*x)*(1-x^2) - x*(aa + cc*(1+x^2) - 2*bb*x)/k
-	
+
+# eq. 7	
 rho = uniroot(rhoot, interval=c(-1,1), aa=aa,bb=bb,cc=cc,k=k1)$root
+# eq. 8
 sig2 = ( aa + cc*(1+rho^2) - 2*bb*rho ) / k1
+sig20 = ( aa + cc*(1+rho0^2) - 2*bb*rho0 ) / k1
 
 # Putting it together (Choi 90 eq. 6)!
 eyes = 1:(k1-1)
 se = sqrt ( (sig2 / (k1*(1-rho^2) ) ) * (1 + 2*sum( rho^eyes * (k1-eyes) )/k1 ) )
+se0 = sqrt ( (sig20 / (k1*(1-rho0^2) ) ) * (1 + 2*sum( rho0^eyes * (k1-eyes) )/k1 ) )
 
-return(c(pest,rho,rho0,k1,se))
+return(c(pest,rho,rho0,k1,se,se0))
 }
 
 
