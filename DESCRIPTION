@@ -1,0 +1,13 @@
+Package: upndown
+Type: Package
+Title: Utilities and design aids for Up-and-Down dose-finding studies
+Version: 0.1.0
+Date: 2022-10-01
+Description: Up-and-Down is the most popular design approach for dose-finding, but has been severely underserved by the statistical computing community. This is the first package to address Up-and-Down's needs.
+License: GPL-2
+Authors@R:
+    person('Assaf P.','Oron', role=c('cre','aut'), email='assaf.oron@gmail.com')
+RoxygenNote: 7.2.0
+Encoding: UTF-8
+Suggests: knitr, rmarkdown
+Imports: cir
