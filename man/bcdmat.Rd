@@ -5,6 +5,7 @@
 \alias{cudmat}
 \alias{kmatMarg}
 \alias{kmatFull}
+\alias{gudmat}
 \title{Transition Probability Matrices for Up-and-Down Designs}
 \usage{
 bcdmat(cdf, target)
@@ -14,43 +15,45 @@ cudmat(cdf)
 kmatMarg(cdf, k, repeatNegatives = TRUE)
 
 kmatFull(cdf, k, repeatNegatives = TRUE, fluffup = FALSE)
+
+gudmat(cdf, cohort, lower, upper)
 }
 \arguments{
 \item{cdf}{monotone increasing vector with positive-response probabilities. The number of dose levels $M$ is deduced from vector's length.}
 
-\item{target}{the design's target response rate (`bcdmat()` only).}
+\item{target}{the design's target response rate (\code{bcdmat()} only).}
 
 \item{k}{the number of consecutive identical responses required for dose transitions ($k$-in-a-row functions only)}
 
 \item{repeatNegatives}{logical, relevant only for $k$-in-a-row designs: are repeated negative responses needed to level up, or vice versa (repeated positives to level down)? $k$-in-a-row functions only. See "Details" for more information.}
 }
 \value{
-an $M\times M$ transition probability matrix, except for `kmatFull()` with $k>1$ which returns a larger square matrix.
+an \eqn{$M\times M$} transition probability matrix, except for \code{kmatFull()} with \eqn{$k>1$} which returns a larger square matrix.
 }
 \description{
 Transition Probability Matrices for Common Up-and-Down Designs
 }
 \details{
-Up-and-Down designs (UDDs) generate random walk behavior, whose theoretical properties can be summarized via a transition probability matrix (TPM). Given the number of doses $M$, and the value of the cdf $F$ (i.e., the positive-response probabilities) at each dose, the specific UDD rules uniquely determine the TPM.
+Up-and-Down designs (UDDs) generate random walk behavior, whose theoretical properties can be summarized via a transition probability matrix (TPM). Given the number of doses \eqn{M}, and the value of the cdf $F$ (i.e., the positive-response probabilities) at each dose, the specific UDD rules uniquely determine the TPM.
 
 The utilities described here calculate the TPMs for the most common and simplest UDDs:
+\itemize{
+\item The $k$-in-a-row or \verb{fixed staircase} design common in sensory studies: \verb{kmatMarg(), kmatFull()} (see Note). The design parameters are $k$, a natural number, and whether $k$ negative responses are required for dose transition, or $k$ positive responses. The former is for targets below the median and vice versa.
+\item The Durham-Flournoy Biased Coin Design: \code{bcdmat()} (. This design can target any percentile via the \code{target} argument.
+\item The original \emph{"classical"} median-targeting UDD: \code{cudmat()} (Dixon and Mood, 1948). This is simply a wrapper for \code{bcdmat()} with \code{target} set to 0.5.
+\item Cohort or group UDD: \code{gudmat()} (Gezmu and Flournoy, 2006).
+}
 
- - The $k$-in-a-row or ``fixed staircase`` design common in sensory studies: `kmatMarg(), kmatFull()` (see Note). The design parameters are $k$, a natural number, and whether $k$ negative responses are required for dose transition, or $k$ positive responses. The former is for targets below the median and vice versa.
- - The Durham-Flournoy Biased Coin Design: `bcdmat()` (. This design can target any percentile via the `target` argument.
- - The original *"classical"* median-targeting UDD: `cudmat()` (Dixon and Mood, 1948). This is simply a wrapper for`kmatMarg()` with `k` set to 1)  
- - Cohort or group UDD: `gudmat()` (Gezmu and Flournoy, 2006).
- 
- All functions return $M\times M$ matrices, except for `kmatFull()` (see Note).
- 
- 
- @note As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, $k$-in-a-row UDDs with $k>1$ generate a random walk with internal states. Their full TPM is therefore larger than $M\times M.$ However, in terms of random-walk behavior, most salient properties are better represented via an $M\times M$ matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This is provided by `kmatMarg()`, while `kmatFull()` returns the full matrix including internal states.
+@note As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, $k$-in-a-row UDDs with $k>1$ generate a random walk with internal states. Their full TPM is therefore larger than $M\times M.$ However, in terms of random-walk behavior, most salient properties are better represented via an $M\times M$ matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This is provided by \code{kmatMarg()}, while \code{kmatFull()} returns the full matrix including internal states.
 }
 \references{
-- Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. *J Am Stat Assoc.* 1948;43:109-126.
- - Durham SD, Flournoy N. Random walks for quantile estimation. In: *Statistical Decision Theory and Related Topics V* (West Lafayette, IN, 1992). Springer; 1994:467-476.
- - Gezmu M. The Geometric Up-and-Down Design for Allocating Dosage Levels. PhD Thesis. American University; 1996.
- - Gezmu M, Flournoy N. Group up-and-down designs for dose-finding. *J Stat Plan Inference.* 2006;136(6):1749-1764.
- - Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. *Stat Med.* 2009;28:1805-1820.
+\itemize{
+\item Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. \emph{J Am Stat Assoc.} 1948;43:109-126.
+\item Durham SD, Flournoy N. Random walks for quantile estimation. In: \emph{Statistical Decision Theory and Related Topics V} (West Lafayette, IN, 1992). Springer; 1994:467-476.
+\item Gezmu M. The Geometric Up-and-Down Design for Allocating Dosage Levels. PhD Thesis. American University; 1996.
+\item Gezmu M, Flournoy N. Group up-and-down designs for dose-finding. \emph{J Stat Plan Inference.} 2006;136(6):1749-1764.
+\item Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. \emph{Stat Med.} 2009;28:1805-1820.
+}
 }
 \author{
 Assaf P. Oron \code{<assaf.oron.at.gmail.com>}

@@ -8,6 +8,7 @@ License: GPL-2
 Authors@R:
     person('Assaf P.','Oron', role=c('cre','aut'), email='assaf.oron@gmail.com')
 RoxygenNote: 7.2.0
+Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 Suggests: knitr, rmarkdown
 Imports: cir
