@@ -1,15 +1,41 @@
-
-
-##################################################################
-### Functions that return a matrix
-
-#' Transition Probability Matrix Utilities
+#' Transition Probability Matrices for Up-and-Down Designs
+#' 
+#' 
+#' Transition Probability Matrices for Common Up-and-Down Designs
+#'
+#' @details
+#' Up-and-Down designs (UDDs) generate random walk behavior, whose theoretical properties can be summarized via a transition probability matrix (TPM). Given the number of doses $M$, and the value of the cdf $F$ (i.e., the positive-response probabilities) at each dose, the specific UDD rules uniquely determine the TPM.
+#' 
+#' The utilities described here calculate the TPMs for the most common and simplest UDDs:
+#' 
+#'  - The $k$-in-a-row or ``fixed staircase`` design common in sensory studies: `kmatMarg(), kmatFull()` (see Note). The design parameters are $k$, a natural number, and whether $k$ negative responses are required for dose transition, or $k$ positive responses. The former is for targets below the median and vice versa.
+#'  - The Durham-Flournoy Biased Coin Design: `bcdmat()` (. This design can target any percentile via the `target` argument.
+#'  - The original *"classical"* median-targeting UDD: `cudmat()` (Dixon and Mood, 1948). This is simply a wrapper for`bcdmat()` with `target` set to 0.5.
+#'  - Cohort or group UDD: `gudmat()` (Gezmu and Flournoy, 2006).
+#'  
+#'  All functions return $M\times M$ matrices, except for `kmatFull()` (see Note).
+#'  
+#'  
+#'  @note As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, $k$-in-a-row UDDs with $k>1$ generate a random walk with internal states. Their full TPM is therefore larger than $M\times M.$ However, in terms of random-walk behavior, most salient properties are better represented via an $M\times M$ matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This is provided by `kmatMarg()`, while `kmatFull()` returns the full matrix including internal states.
+#'  
 #'
 #' @param cdf monotone increasing vector with positive-response probabilities. The number of dose levels $M$ is deduced from vector's length.
-#' @param target the design's target response rate.
-#' @param repeatNegatives logical, relevant only for k-in-a-row designs: are repeated negative responses needed to level up, or vice versa (repeated positives to level down)? See "Details" for more information.
-#' @return for `bcdmat` and `kmatMarg`, an $M\times M$ transition probability matrix. For `pivec`,  an $M$-length vector with stationary/asymptotic visit frequencies.
+#' @param target the design's target response rate (`bcdmat()` only).
+#' @param k the number of consecutive identical responses required for dose transitions ($k$-in-a-row functions only)
+#' @param repeatNegatives logical, relevant only for $k$-in-a-row designs: are repeated negative responses needed to level up, or vice versa (repeated positives to level down)? $k$-in-a-row functions only. See "Details" for more information.
 
+
+#' @return an $M\times M$ transition probability matrix, except for `kmatFull()` with $k>1$ which returns a larger square matrix. 
+
+#' @references 
+#'  - Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. *J Am Stat Assoc.* 1948;43:109-126.
+#'  - Durham SD, Flournoy N. Random walks for quantile estimation. In: *Statistical Decision Theory and Related Topics V* (West Lafayette, IN, 1992). Springer; 1994:467-476.
+#'  - Gezmu M. The Geometric Up-and-Down Design for Allocating Dosage Levels. PhD Thesis. American University; 1996.
+#'  - Gezmu M, Flournoy N. Group up-and-down designs for dose-finding. *J Stat Plan Inference.* 2006;136(6):1749-1764.
+#'  - Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. *Stat Med.* 2009;28:1805-1820.
+#'  
+#' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
+#' @export
 
 ### BCD matrix ##############################
 
@@ -52,10 +78,21 @@ diag(omat)=diag(omat)+1-downmove-upmove
 return(omat)
 }
 
+# Classical, using bcdmat()
+
+#' @rdname bcdmat
+#' @export
+
+cudmat <- function(cdf) bcdmat(cdf, target = 1/2)
+
+
 ############## K-in-row (geometric) *marginal* stationary matrix 
 ##############  (one state for each dose)
 
-kmatMarg<-function(cdf,k,repeatNegatives=TRUE)
+#' @rdname bcdmat
+#' @export
+
+kmatMarg <- function(cdf,k,repeatNegatives=TRUE)
 {
 # Finding target from k and direction
 kpower=0.5^(1/k)
@@ -99,8 +136,12 @@ diag(omat)=diag(omat)+1-downmove-upmove
 return(omat)
 }
 
+
 ############## K-in-row (geometric) *full* stationary matrix 
 ##############  (with internal states for each dose except top one)
+
+#' @rdname bcdmat
+#' @export
 
 kmatFull<-function(cdf,k,repeatNegatives=TRUE,fluffup=FALSE)
 {
@@ -108,7 +149,7 @@ kmatFull<-function(cdf,k,repeatNegatives=TRUE,fluffup=FALSE)
 kpower=0.5^(1/k)
 target=ifelse(repeatNegatives,1-kpower,kpower)
 # External validation
-validUDinput(cdf,target)
+validUDinput(cdf, target)
 
 m=length(cdf)
 mm=(m-1)*k+1
@@ -134,6 +175,9 @@ return(omat)
 }
 
 ### GUD matrix ##############################
+
+#' @rdname bcdmat
+#' @export
 
 gudmat<-function(cdf,cohort,lower,upper)
 {
@@ -166,6 +210,7 @@ return(omat)
 
 ####################################################
 ### Functions that return a vector
+### They go in a different help file
 
 pivec<-function(cdf,matfun=bcdmat,...)
 {
@@ -231,3 +276,9 @@ if(min(cdf)<0 || max(cdf)>1 || any(diff(cdf)<0) || var(cdf)==0) stop("cdf should
 #ttarg=ifelse(target>0.5,1-target,target)
 if(length(cdf)<3) stop ("These designs don't work with <3 dose levels.\n")
 }
+
+
+
+
+# For `pivec`,  an $M$-length vector with stationary/asymptotic visit frequencies.
+
