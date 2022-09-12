@@ -10,13 +10,13 @@
 #' 
 #'  - The k-in-a-row or ``fixed staircase`` design common in sensory studies: `kmatMarg(), kmatFull()` (see Note). The design parameters are k, a natural number, and whether k negative responses are required for dose transition, or k positive responses. The former is for targets below the median and vice versa.
 #'  - The Durham-Flournoy Biased Coin Design: `bcdmat()` (. This design can target any percentile via the `target` argument.
-#'  - The original *"classical"* median-targeting UDD: `cudmat()` (Dixon and Mood, 1948). This is simply a wrapper for `bcdmat()` with `target` set to 0.5.
+#'  - The original *"classical"* median-targeting UDD: `classicmat()` (Dixon and Mood, 1948). This is simply a wrapper for `bcdmat()` with `target` set to 0.5.
 #'  - Cohort or group UDD: `gudmat()` (Gezmu and Flournoy, 2006).
 #'  
 #'  
-#'  @notes As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, k-in-a-row UDDs with \eqn{k>1} generate a random walk with internal states. Their full TPM is therefore larger than \eqn{M\times M.} However, in terms of random-walk behavior, most salient properties are better represented via an \eqn{M\times M} matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This matrix is provided by `kmatMarg()`, while `kmatFull()` returns the full matrix including internal states.
+#'  @section Notes: As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, k-in-a-row UDDs with \eqn{k>1} generate a random walk *with internal states*. Their full TPM is therefore larger than \eqn{M\times M.} However, in terms of random-walk behavior, most salient properties are better represented via an \eqn{M\times M} matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This matrix is provided by `kmatMarg()`, while `kmatFull()` returns the full matrix including internal states.
 #'  
-#'  Also, in `kmatFull()` there are two matrix-size options. Near one of the boundaries (upper boundary with `repeatNegatives = TRUE` and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable so in some sense they don't really exist. Using the `fluffup` argument, user can choose between having a more pleasantly symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its practically true size by \eqn{k-1} rows and columns.
+#'  Also, in `kmatFull()` there are two matrix-size options. Near one of the boundaries (upper boundary with `repeatNegatives = TRUE`, and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable, so in some sense only one of them really exists. Using the `fluffup` argument, users can choose between having a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its practically true size by removing \eqn{k-1} rows and columns.
 #'  
 #'
 #' @param cdf monotone increasing vector with positive-response probabilities. The number of dose levels $M$ is deduced from vector's length.
@@ -29,8 +29,9 @@
 #' @return An \eqn{M\times M} transition probability matrix, except for `kmatFull()` with \eqn{k>1} which returns a larger square matrix. 
 
 #' @seealso 
-#'  - \code{\link{k2targ}}, \code{\link{targ2k}} to find the k-in-a-r-w target-response rate for specific k and vice versa
+#'  - \code{\link{k2targ}}, \code{\link{targ2k}} to find the k-in-a-row target-response rate for specific k and vice versa
 #'  - \code{\link{gudtarg}} to calculate group UDD target-response rate given a `cohort,lower,upper` combination
+#'  - \code{\link{pivec}}, \code{\link{advancevec}}, \code{\link{cumulpi}}, which provide probability vectors of dose-allocation distributions using Up-and-Down TPMs.
 
 
 #' @references 
@@ -84,12 +85,12 @@ diag(omat)=diag(omat)+1-downmove-upmove
 return(omat)
 }
 
-# Classical, using bcdmat()
+##### Classical, using bcdmat()
 
 #' @rdname bcdmat
 #' @export
 
-cudmat <- function(cdf) bcdmat(cdf, target = 1/2)
+classicmat <- function(cdf) bcdmat(cdf, target = 1/2)
 
 
 ############## K-in-row (geometric) *marginal* stationary matrix 
@@ -100,6 +101,9 @@ cudmat <- function(cdf) bcdmat(cdf, target = 1/2)
 
 kmatMarg <- function(cdf,k,repeatNegatives=TRUE)
 {
+#### Validation and prep
+if (k != round(k) | k < 1) stop("k must be a natural number.\n")
+  
 # Finding target from k and direction
 kpower=0.5^(1/k)
 target=ifelse(repeatNegatives,1-kpower,kpower)
@@ -142,20 +146,23 @@ diag(omat)=diag(omat)+1-downmove-upmove
 return(omat)
 }
 
-
 ############## K-in-row (geometric) *full* stationary matrix 
-##############  (with internal states for each dose except top one)
+##############  (with internal states)
 
 #' @rdname bcdmat
 #' @export
 
-kmatFull<-function(cdf,k,repeatNegatives=TRUE,fluffup=FALSE)
+kmatFull<-function(cdf, k, repeatNegatives=TRUE, fluffup=FALSE)
 {
+#### Validation and prep
+if (k != round(k) | k < 1) stop("k must be a natural number.\n")
 # Finding target from k and direction
 kpower=0.5^(1/k)
 target=ifelse(repeatNegatives,1-kpower,kpower)
 # External validation
 validUDinput(cdf, target)
+# A bit more validation/prep:
+if(k==1) fluffup = FALSE # fluffup is irrelevant w/k=1
 
 m=length(cdf)
 mm=(m-1)*k+1
@@ -169,6 +176,23 @@ if(target<=0.5)
 	omat[cbind(1:mm,rep(c(1,k*(1:(m-1))-k+1),each=k)[1:mm])]=rep(cdf,each=k)[1:mm]
 # Up moves
 	omat[cbind(1:mm,c(2:mm,mm))]=rep(1-cdf,each=k)[1:mm]
+	
+# Optionally dding "semi-dummy" rows+columns 
+#   to get a "nicer" m*k square matrix
+
+	if(fluffup)
+	{
+	  mm = m * k
+	  d = nrow(omat) - 1 # shorthand for the m-1 levels we won't touch
+	  omat = rbind(omat[1:d, 1:d], matrix(0, nrow = k, ncol = d))
+	  omat = cbind(omat, matrix(0, nrow = d+k, ncol = k))
+	  # Down moves
+	  omat[ cbind( (d+1):mm, d-k+1 ) ] =cdf [m]
+	  # "Up" moves (really, meaningless internal-state increments)
+# The first one got deleted in the expansion
+	  omat[d, d+1] = 1-cdf[m-1]
+	  omat[ cbind( (d+1):mm,c((d+2):mm,mm) ) ] = 1-cdf[m]
+	}
 
 } else {
 # Up moves
@@ -229,7 +253,7 @@ vout/sum(vout)
 
 ######
 
-advanceVec<-function(startdose=NULL,cdf,n,designMat=bcdmat,...)
+advancevec<-function(startdose=NULL,cdf,n,designMat=bcdmat,...)
 {
 require(expm)
 m=length(cdf)

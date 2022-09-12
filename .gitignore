@@ -18,6 +18,11 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Rstudio
+.Rproj*
+.Rbuild*
+
+
 # =========================
 # Operating System Files
 # =========================
