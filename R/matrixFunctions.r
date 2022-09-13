@@ -186,12 +186,12 @@ if(target<=0.5)
 	  d = nrow(omat) - 1 # shorthand for the m-1 levels we won't touch
 	  omat = rbind(omat[1:d, 1:d], matrix(0, nrow = k, ncol = d))
 	  omat = cbind(omat, matrix(0, nrow = d+k, ncol = k))
-	  # Down moves
+# Down moves
 	  omat[ cbind( (d+1):mm, d-k+1 ) ] = cdf[m]
-	  # "Up" moves (really, meaningless internal-state increments)
+# "Up" moves (really, meaningless internal-state increments)
 # The first one got deleted in the expansion
-	  omat[d, d+1] = 1-cdf[m-1]
-	  omat[ cbind( (d:mm,c((d+1):mm,mm) ) ] = 1 - cdf[m]
+	  omat[d, d+1] = 1 - cdf[m-1]
+	  omat[ cbind( (d+1):mm,c((d+2):mm,mm) ) ] = 1 - cdf[m]
 	}                           # end fluffup; no 'else' for this one
 
 } else {       #  target > 0.5
@@ -211,8 +211,8 @@ if(target<=0.5)
 	  omat[ cbind( 1:k, k+1 ) ] = 1 -cdf[1]
 	  # "Down" moves (really, meaningless internal-state decrements)
 	  # The first one got deleted in the expansion
-	  omat[k, k-1] = cdf[2]
-	  omat[ cbind( (1:k, c( 1,1:(k-1) ) ) ) ] = cdf[2]
+	  omat[k+1, k] = cdf[2]
+	  omat[ cbind( 1:k, c( 1,1:(k-1) ) )  ] = cdf[1]
 	}              
 }
 
