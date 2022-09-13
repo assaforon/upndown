@@ -42,15 +42,15 @@ Up-and-Down designs (UDDs) generate random walk behavior, whose theoretical prop
 
 The utilities described here calculate the TPMs for the most common and simplest UDDs:
 \itemize{
-\item The k-in-a-row or \verb{fixed staircase} design common in sensory studies: \verb{kmatMarg(), kmatFull()} (see Note). The design parameters are k, a natural number, and whether k negative responses are required for dose transition, or k positive responses. The former is for targets below the median and vice versa.
-\item The Durham-Flournoy Biased Coin Design: \code{bcdmat()} (. This design can target any percentile via the \code{target} argument.
+\item The k-in-a-row or \verb{fixed staircase} design common in sensory studies: \verb{kmatMarg(), kmatFull()} (Gezmu, 1996; Oron and HOff, 2009; see Note). Design parameters are k, a natural number, and whether k negative responses are required for dose transition, or k positive responses. The former is for targets below the median and vice versa.
+\item The Durham-Flournoy Biased Coin Design: \code{bcdmat()}. This design can target any percentile via the \code{target} argument (Durham and Flournoy, 1994).
 \item The original \emph{"classical"} median-targeting UDD: \code{classicmat()} (Dixon and Mood, 1948). This is simply a wrapper for \code{bcdmat()} with \code{target} set to 0.5.
-\item Cohort or group UDD: \code{gudmat()} (Gezmu and Flournoy, 2006).
+\item Cohort or group UDD: \code{gudmat()}, with three design parameters for the group size and the up/down rule thresholds  (Gezmu and Flournoy, 2006).
 }
 
 @section Notes: As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, k-in-a-row UDDs with \eqn{k>1} generate a random walk \emph{with internal states}. Their full TPM is therefore larger than \eqn{M\times M.} However, in terms of random-walk behavior, most salient properties are better represented via an \eqn{M\times M} matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This matrix is provided by \code{kmatMarg()}, while \code{kmatFull()} returns the full matrix including internal states.
 
-Also, in \code{kmatFull()} there are two matrix-size options. Near one of the boundaries (upper boundary with \code{repeatNegatives = TRUE}, and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable, so in some sense only one of them really exists. Using the \code{fluffup} argument, users can choose between having a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its practically true size by removing \eqn{k-1} rows and columns.
+Also, in \code{kmatFull()} there are two matrix-size options. Near one of the boundaries (upper boundary with \code{repeatNegatives = TRUE}, and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable, so in some sense only one of them really exists. Using the \code{fluffup} argument, users can choose between having a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its effectivelly true size by removing \eqn{k-1} rows and columns.
 }
 \references{
 \itemize{

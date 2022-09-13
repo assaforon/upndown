@@ -8,15 +8,15 @@
 #' 
 #' The utilities described here calculate the TPMs for the most common and simplest UDDs:
 #' 
-#'  - The k-in-a-row or ``fixed staircase`` design common in sensory studies: `kmatMarg(), kmatFull()` (see Note). The design parameters are k, a natural number, and whether k negative responses are required for dose transition, or k positive responses. The former is for targets below the median and vice versa.
-#'  - The Durham-Flournoy Biased Coin Design: `bcdmat()` (. This design can target any percentile via the `target` argument.
+#'  - The k-in-a-row or ``fixed staircase`` design common in sensory studies: `kmatMarg(), kmatFull()` (Gezmu, 1996; Oron and HOff, 2009; see Note). Design parameters are k, a natural number, and whether k negative responses are required for dose transition, or k positive responses. The former is for targets below the median and vice versa.
+#'  - The Durham-Flournoy Biased Coin Design: `bcdmat()`. This design can target any percentile via the `target` argument (Durham and Flournoy, 1994).
 #'  - The original *"classical"* median-targeting UDD: `classicmat()` (Dixon and Mood, 1948). This is simply a wrapper for `bcdmat()` with `target` set to 0.5.
-#'  - Cohort or group UDD: `gudmat()` (Gezmu and Flournoy, 2006).
+#'  - Cohort or group UDD: `gudmat()`, with three design parameters for the group size and the up/down rule thresholds  (Gezmu and Flournoy, 2006).
 #'  
 #'  
 #'  @section Notes: As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, k-in-a-row UDDs with \eqn{k>1} generate a random walk *with internal states*. Their full TPM is therefore larger than \eqn{M\times M.} However, in terms of random-walk behavior, most salient properties are better represented via an \eqn{M\times M} matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This matrix is provided by `kmatMarg()`, while `kmatFull()` returns the full matrix including internal states.
 #'  
-#'  Also, in `kmatFull()` there are two matrix-size options. Near one of the boundaries (upper boundary with `repeatNegatives = TRUE`, and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable, so in some sense only one of them really exists. Using the `fluffup` argument, users can choose between having a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its practically true size by removing \eqn{k-1} rows and columns.
+#'  Also, in `kmatFull()` there are two matrix-size options. Near one of the boundaries (upper boundary with `repeatNegatives = TRUE`, and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable, so in some sense only one of them really exists. Using the `fluffup` argument, users can choose between having a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its effectivelly true size by removing \eqn{k-1} rows and columns.
 #'  
 #'
 #' @param cdf monotone increasing vector with positive-response probabilities. The number of dose levels $M$ is deduced from vector's length.
@@ -187,18 +187,33 @@ if(target<=0.5)
 	  omat = rbind(omat[1:d, 1:d], matrix(0, nrow = k, ncol = d))
 	  omat = cbind(omat, matrix(0, nrow = d+k, ncol = k))
 	  # Down moves
-	  omat[ cbind( (d+1):mm, d-k+1 ) ] =cdf [m]
+	  omat[ cbind( (d+1):mm, d-k+1 ) ] = cdf[m]
 	  # "Up" moves (really, meaningless internal-state increments)
 # The first one got deleted in the expansion
 	  omat[d, d+1] = 1-cdf[m-1]
-	  omat[ cbind( (d+1):mm,c((d+2):mm,mm) ) ] = 1-cdf[m]
-	}
+	  omat[ cbind( (d:mm,c((d+1):mm,mm) ) ] = 1 - cdf[m]
+	}                           # end fluffup; no 'else' for this one
 
-} else {
+} else {       #  target > 0.5
+
 # Up moves
 	omat[cbind(1:mm,c(k+1,rep(k*c(2:(m-1),m-1)+1,each=k)))]=c(1-cdf[1],rep(1-cdf[-1],each=k))
 # Down moves
 	omat[cbind(1:mm,c(1,1:(mm-1)))]=c(cdf[1],rep(cdf[-1],each=k))
+
+	if(fluffup)
+	{
+	  mm = m * k
+	  d = nrow(omat) - 1 # shorthand for the m-1 levels we won't touch
+	  omat = rbind( matrix(0, nrow = k, ncol = d), omat[2:(d+1), 2:(d+1)] )
+	  omat = cbind(matrix(0, nrow = d+k, ncol = k), omat)
+	  # Up moves
+	  omat[ cbind( 1:k, k+1 ) ] = 1 -cdf[1]
+	  # "Down" moves (really, meaningless internal-state decrements)
+	  # The first one got deleted in the expansion
+	  omat[k, k-1] = cdf[2]
+	  omat[ cbind( (1:k, c( 1,1:(k-1) ) ) ) ] = cdf[2]
+	}              
 }
 
 return(omat)
