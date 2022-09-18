@@ -2,6 +2,9 @@
 
 export(bcdmat)
 export(classicmat)
+export(cumulvec)
+export(currentvec)
 export(gudmat)
 export(kmatFull)
 export(kmatMarg)
+export(pivec)

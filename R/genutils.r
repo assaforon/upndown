@@ -8,7 +8,7 @@ uniroot(f=function(x,kay,you,ell,bee1,bee2) {bee1*pbinom(q=ell,size=kay,prob=x)+
 
 k2targ<-function(k,hitarg=TRUE)
 {
-if(k!=round(k) || k<=0) stop("k can only be a natural number.")
+checkNatural(k, parname = 'k', toolarge = 30)  
 tmp=0.5^(1/k)
 if(hitarg) return(tmp)
 1-tmp
@@ -26,16 +26,25 @@ data.frame(k=krange,balancePt=k2targ(krange,hitarg=hi))
 }
 
 
-############################### Auxiliary utilities
+############################### Auxiliary validation utilities
 
 
 validUDinput<-function(cdf,target)
 {
-  if(target<=0 || target>=1) stop("Target has to be in (0,1).\n")
-  if(min(cdf)<0 || max(cdf)>1 || any(diff(cdf)<0) || var(cdf)==0) stop("cdf should be a CDF.\n")
-  
-  #ttarg=ifelse(target>0.5,1-target,target)
-  if(length(cdf)<3) stop ("These designs don't work with <3 dose levels.\n")
+  checkCDF(cdf)
+  checkTarget(target)
+  if(length(cdf) < 3) stop ("These designs don't work with <3 dose levels.\n")
 }
 
+checkTarget <- function(target)
+  if(target<=0 || target>=1) stop("Target has to be in (0,1).\n")
+
+checkCDF <- function(cdf)
+  if(min(cdf)<0 || max(cdf)>1 || any(diff(cdf) < 0) || var(cdf)==0) stop("cdf should be a CDF.\n")
+
+## Natural number verification
+
+checkNatural <- function(k, parname, toolarge = 1000)
+if (any(k != round(k) | k < 1 | k >= toolarge)) 
+  stop(parname, "must be a natural number smaller than", toolarge, ".\n")
 

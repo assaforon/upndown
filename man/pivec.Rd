@@ -2,9 +2,15 @@
 % Please edit documentation in R/vectorFunctions.r
 \name{pivec}
 \alias{pivec}
+\alias{currentvec}
+\alias{cumulvec}
 \title{Key Probability Vectors of Up-and-Down Designs}
 \usage{
 pivec(cdf, matfun, ...)
+
+currentvec(startdose = NULL, cdf, n, matfun, ...)
+
+cumulvec(startdose = NULL, cdf, n, matfun, average = TRUE, exclude = 0, ...)
 }
 \arguments{
 \item{cdf}{vector of positive-response probabilities at the doses}
@@ -19,4 +25,7 @@ Up-and-Down designs (UDDs) generate random walk behavior, whose theoretical prop
 }
 \note{
 When using the k-in-a-row design, set \code{matfun = kmatMarg}, not \code{kmatFull}.
+}
+\author{
+Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 }

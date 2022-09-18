@@ -102,8 +102,9 @@ classicmat <- function(cdf) bcdmat(cdf, target = 1/2)
 kmatMarg <- function(cdf, k, lowTarget)
 {
 #### Validation and prep
-if (k != round(k) | k < 1) stop("k must be a natural number.\n")
-  
+
+checkCDF(cdf)
+checkNatural(k, parname = 'k', toolarge = 30)  
 # Finding target from k and direction
 kpower=0.5^(1/k)
 target=ifelse(lowTarget,1-kpower,kpower)
@@ -155,7 +156,9 @@ return(omat)
 kmatFull<-function(cdf, k, lowTarget, fluffup = FALSE)
 {
 #### Validation and prep
-if (k != round(k) | k < 1) stop("k must be a natural number.\n")
+
+checkCDF(cdf)
+checkNatural(k, parname = 'k', toolarge = 30)  
 # Finding target from k and direction
 kpower=0.5^(1/k)
 target=ifelse(lowTarget,1-kpower,kpower)
@@ -227,11 +230,9 @@ return(omat)
 gudmat<-function(cdf,cohort,lower,upper)
 {
 ## Validation (lots!)
-if(min(cdf)<0 || max(cdf)>1 || any(diff(cdf)<0) || var(cdf)==0) stop("cdf should be a CDF.\n")
-if(length(cdf)<3) stop ("These designs don't work with <3 dose levels.\n")
-if(cohort!=round(cohort) || upper!=round(upper) || lower!=round(lower)) stop('Design parameters must be integers.\n')
-if(cohort<1 || upper<1 || cohort<upper) stop('upper<=cohort and both must be positive.\n')
-if(lower<0 || upper<=lower) stop('lower<upper and lower cannot be negative.\n')
+checkCDF(cdf)
+checkNatural(k, parname = 'cohort, lower, upper', toolarge = 50)  
+if(cohort<upper || upper<=lower) stop('Order must be lower < upper <= cohort.\n')
 # /validation
 
 m=length(cdf)
