@@ -1,6 +1,5 @@
 #' Transition Probability Matrices for Up-and-Down Designs
 #' 
-#' 
 #' Transition Probability Matrices for Common Up-and-Down Designs
 #'
 #' @details
@@ -14,7 +13,7 @@
 #'  - Cohort or group UDD: `gudmat()`, with three design parameters for the group size and the up/down rule thresholds  (Gezmu and Flournoy, 2006).
 #'  
 #'  
-#' @section Notes: 
+#' @note 
 #' As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, k-in-a-row UDDs with \eqn{k>1} generate a random walk *with internal states*. Their full TPM is therefore larger than \eqn{M\times M.} However, in terms of random-walk behavior, most salient properties are better represented via an \eqn{M\times M} matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This matrix is provided by `kmatMarg()`, while `kmatFull()` returns the full matrix including internal states.
 #'  
 #'  Also, in `kmatFull()` there are two matrix-size options. Near one of the boundaries (upper boundary with `lowTarget = TRUE`, and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable, so in some sense only one of them really exists. Using the `fluffup` argument, users can choose between having a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its effectivelly true size by removing \eqn{k-1} rows and columns.

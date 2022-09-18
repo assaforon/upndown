@@ -24,6 +24,6 @@ equivF = pnorm( (doses - zeroPt) / 20)
 
 # Finally, the values feeding into the Fig. 2B barplot
 
-cumulpi((m+1)/2,equivF,n
+cumulpi(startdose = 6,equivF,n
 
 

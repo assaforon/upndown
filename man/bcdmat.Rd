@@ -12,9 +12,9 @@ bcdmat(cdf, target)
 
 classicmat(cdf)
 
-kmatMarg(cdf, k, repeatNegatives = TRUE)
+kmatMarg(cdf, k, lowTarget)
 
-kmatFull(cdf, k, repeatNegatives = TRUE, fluffup = FALSE)
+kmatFull(cdf, k, lowTarget, fluffup = FALSE)
 
 gudmat(cdf, cohort, lower, upper)
 }
@@ -25,7 +25,7 @@ gudmat(cdf, cohort, lower, upper)
 
 \item{k}{the number of consecutive identical responses required for dose transitions (k-in-a-row functions only).}
 
-\item{repeatNegatives}{logical: are k repeated negative responses needed to level up, or vice versa (k repeated positives to level down)? k-in-a-row functions only. See "Details" for more information.}
+\item{lowTarget}{logical k-in-a-row functions only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa? . See "Details" for more information.}
 
 \item{fluffup}{logical (\code{kmatFull} only): in the full k-in-a-row internal-state representation, should we \emph{"fluff"} the matrix up so that it has \eqn{Mk} rows and columns (\code{TRUE}, default), or exclude \eqn{k-1} "phantom" states near one of the boundaries?}
 
@@ -38,19 +38,20 @@ An \eqn{M\times M} transition probability matrix, except for \code{kmatFull()} w
 Transition Probability Matrices for Common Up-and-Down Designs
 }
 \details{
-Up-and-Down designs (UDDs) generate random walk behavior, whose theoretical properties can be summarized via a transition probability matrix (TPM). Given the number of doses \eqn{M}, and the value of the cdf \eqn{F} (i.e., the positive-response probabilities) at each dose, the specific UDD rules uniquely determine the TPM.
+Up-and-Down designs (UDDs) generate random walk behavior, whose theoretical properties can be summarized via a transition probability matrix (TPM). Given the number of doses \eqn{M}, and the value of the cdf \eqn{F} at each dose (i.e., the positive-response probabilities), the specific UDD rules uniquely determine the TPM.
 
-The utilities described here calculate the TPMs for the most common and simplest UDDs:
+The utilities described here calculate the TPMs of the most common and simplest UDDs:
 \itemize{
-\item The k-in-a-row or \verb{fixed staircase} design common in sensory studies: \verb{kmatMarg(), kmatFull()} (Gezmu, 1996; Oron and HOff, 2009; see Note). Design parameters are k, a natural number, and whether k negative responses are required for dose transition, or k positive responses. The former is for targets below the median and vice versa.
+\item The k-in-a-row or \strong{fixed staircase} design common in sensory studies: \verb{kmatMarg(), kmatFull()} (Gezmu, 1996; Oron and Hoff, 2009; see Note). Design parameters are k, a natural number, and whether k negative responses are required for dose transition, or k positive responses. The former is for targets below the median and vice versa.
 \item The Durham-Flournoy Biased Coin Design: \code{bcdmat()}. This design can target any percentile via the \code{target} argument (Durham and Flournoy, 1994).
 \item The original \emph{"classical"} median-targeting UDD: \code{classicmat()} (Dixon and Mood, 1948). This is simply a wrapper for \code{bcdmat()} with \code{target} set to 0.5.
 \item Cohort or group UDD: \code{gudmat()}, with three design parameters for the group size and the up/down rule thresholds  (Gezmu and Flournoy, 2006).
 }
+}
+\note{
+As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, k-in-a-row UDDs with \eqn{k>1} generate a random walk \emph{with internal states}. Their full TPM is therefore larger than \eqn{M\times M.} However, in terms of random-walk behavior, most salient properties are better represented via an \eqn{M\times M} matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This matrix is provided by \code{kmatMarg()}, while \code{kmatFull()} returns the full matrix including internal states.
 
-@section Notes: As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, k-in-a-row UDDs with \eqn{k>1} generate a random walk \emph{with internal states}. Their full TPM is therefore larger than \eqn{M\times M.} However, in terms of random-walk behavior, most salient properties are better represented via an \eqn{M\times M} matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This matrix is provided by \code{kmatMarg()}, while \code{kmatFull()} returns the full matrix including internal states.
-
-Also, in \code{kmatFull()} there are two matrix-size options. Near one of the boundaries (upper boundary with \code{repeatNegatives = TRUE}, and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable, so in some sense only one of them really exists. Using the \code{fluffup} argument, users can choose between having a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its effectivelly true size by removing \eqn{k-1} rows and columns.
+Also, in \code{kmatFull()} there are two matrix-size options. Near one of the boundaries (upper boundary with \code{lowTarget = TRUE}, and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable, so in some sense only one of them really exists. Using the \code{fluffup} argument, users can choose between having a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its effectivelly true size by removing \eqn{k-1} rows and columns.
 }
 \references{
 \itemize{
