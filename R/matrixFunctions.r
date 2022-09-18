@@ -4,25 +4,26 @@
 #' Transition Probability Matrices for Common Up-and-Down Designs
 #'
 #' @details
-#' Up-and-Down designs (UDDs) generate random walk behavior, whose theoretical properties can be summarized via a transition probability matrix (TPM). Given the number of doses \eqn{M}, and the value of the cdf \eqn{F} (i.e., the positive-response probabilities) at each dose, the specific UDD rules uniquely determine the TPM.
+#' Up-and-Down designs (UDDs) generate random walk behavior, whose theoretical properties can be summarized via a transition probability matrix (TPM). Given the number of doses \eqn{M}, and the value of the cdf \eqn{F} at each dose (i.e., the positive-response probabilities), the specific UDD rules uniquely determine the TPM.
 #' 
-#' The utilities described here calculate the TPMs for the most common and simplest UDDs:
+#' The utilities described here calculate the TPMs of the most common and simplest UDDs:
 #' 
-#'  - The k-in-a-row or ``fixed staircase`` design common in sensory studies: `kmatMarg(), kmatFull()` (Gezmu, 1996; Oron and HOff, 2009; see Note). Design parameters are k, a natural number, and whether k negative responses are required for dose transition, or k positive responses. The former is for targets below the median and vice versa.
+#'  - The k-in-a-row or **fixed staircase** design common in sensory studies: `kmatMarg(), kmatFull()` (Gezmu, 1996; Oron and Hoff, 2009; see Note). Design parameters are k, a natural number, and whether k negative responses are required for dose transition, or k positive responses. The former is for targets below the median and vice versa.
 #'  - The Durham-Flournoy Biased Coin Design: `bcdmat()`. This design can target any percentile via the `target` argument (Durham and Flournoy, 1994).
 #'  - The original *"classical"* median-targeting UDD: `classicmat()` (Dixon and Mood, 1948). This is simply a wrapper for `bcdmat()` with `target` set to 0.5.
 #'  - Cohort or group UDD: `gudmat()`, with three design parameters for the group size and the up/down rule thresholds  (Gezmu and Flournoy, 2006).
 #'  
 #'  
-#'  @section Notes: As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, k-in-a-row UDDs with \eqn{k>1} generate a random walk *with internal states*. Their full TPM is therefore larger than \eqn{M\times M.} However, in terms of random-walk behavior, most salient properties are better represented via an \eqn{M\times M} matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This matrix is provided by `kmatMarg()`, while `kmatFull()` returns the full matrix including internal states.
+#' @section Notes: 
+#' As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, k-in-a-row UDDs with \eqn{k>1} generate a random walk *with internal states*. Their full TPM is therefore larger than \eqn{M\times M.} However, in terms of random-walk behavior, most salient properties are better represented via an \eqn{M\times M} matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This matrix is provided by `kmatMarg()`, while `kmatFull()` returns the full matrix including internal states.
 #'  
-#'  Also, in `kmatFull()` there are two matrix-size options. Near one of the boundaries (upper boundary with `repeatNegatives = TRUE`, and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable, so in some sense only one of them really exists. Using the `fluffup` argument, users can choose between having a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its effectivelly true size by removing \eqn{k-1} rows and columns.
+#'  Also, in `kmatFull()` there are two matrix-size options. Near one of the boundaries (upper boundary with `lowTarget = TRUE`, and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable, so in some sense only one of them really exists. Using the `fluffup` argument, users can choose between having a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its effectivelly true size by removing \eqn{k-1} rows and columns.
 #'  
 #'
 #' @param cdf monotone increasing vector with positive-response probabilities. The number of dose levels $M$ is deduced from vector's length.
 #' @param target the design's target response rate (`bcdmat()` only).
 #' @param k the number of consecutive identical responses required for dose transitions (k-in-a-row functions only).
-#' @param repeatNegatives logical: are k repeated negative responses needed to level up, or vice versa (k repeated positives to level down)? k-in-a-row functions only. See "Details" for more information.
+#' @param lowTarget logical k-in-a-row functions only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa? . See "Details" for more information.
 #' @param fluffup logical (`kmatFull` only): in the full k-in-a-row internal-state representation, should we *"fluff"* the matrix up so that it has \eqn{Mk} rows and columns (`TRUE`, default), or exclude \eqn{k-1} "phantom" states near one of the boundaries?
 #' @param cohort,lower,upper (`gudmat` only): the cohort (group) size, how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example `cohort=3, lower=0, upper=2` evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.
 
@@ -99,14 +100,14 @@ classicmat <- function(cdf) bcdmat(cdf, target = 1/2)
 #' @rdname bcdmat
 #' @export
 
-kmatMarg <- function(cdf,k,repeatNegatives=TRUE)
+kmatMarg <- function(cdf, k, lowTarget)
 {
 #### Validation and prep
 if (k != round(k) | k < 1) stop("k must be a natural number.\n")
   
 # Finding target from k and direction
 kpower=0.5^(1/k)
-target=ifelse(repeatNegatives,1-kpower,kpower)
+target=ifelse(lowTarget,1-kpower,kpower)
 # External validation
 validUDinput(cdf,target)
 
@@ -152,13 +153,13 @@ return(omat)
 #' @rdname bcdmat
 #' @export
 
-kmatFull<-function(cdf, k, repeatNegatives=TRUE, fluffup=FALSE)
+kmatFull<-function(cdf, k, lowTarget, fluffup = FALSE)
 {
 #### Validation and prep
 if (k != round(k) | k < 1) stop("k must be a natural number.\n")
 # Finding target from k and direction
 kpower=0.5^(1/k)
-target=ifelse(repeatNegatives,1-kpower,kpower)
+target=ifelse(lowTarget,1-kpower,kpower)
 # External validation
 validUDinput(cdf, target)
 # A bit more validation/prep:
@@ -252,78 +253,4 @@ diag(omat)=diag(omat)+1-downmove-upmove
 	
 return(omat)
 }
-
-####################################################
-### Functions that return a vector
-### They go in a different help file
-
-pivec<-function(cdf,matfun=bcdmat,...)
-{
-m=length(cdf)
-imat=matfun(cdf,...)
-
-vout=cumprod(c(1,imat[cbind(1:(m-1),2:m)]/imat[cbind(2:m,1:(m-1))]))
-vout/sum(vout)
-}
-
-######
-
-advancevec<-function(startdose=NULL,cdf,n,designMat=bcdmat,...)
-{
-require(expm)
-m=length(cdf)
-## Starting vector
-vec0=rep(1/m,m)
-if (!is.null(startdose) && startdose %in% 1:m) {
-	vec0=rep(0,m)
-	vec0[startdose]=1
-}
-## custom probability vector
-if (length(startdose)==m) vec0=startdose/sum(startdose)
-
-vec0 %*% (designMat(cdf,...) %^% (n-1))
-}
-
-###
-
-cumulpi<-function(startdose=NULL,cdf,n,matfun=bcdmat,average=TRUE,exclude=1,...)
-{
-require(expm)
-m=length(cdf)
-## Starting vector
-vec0=rep(1/m,m)
-if (!is.null(startdose) && startdose %in% 1:m) {
-	vec0=rep(0,m)
-	vec0[startdose]=1
-}
-## custom probability vector
-if (length(startdose)==m) vec0=startdose/sum(startdose)
-
-progmat=matfun(cdf,...)
-
-ovec=rep(0,m)
-if (is.null(exclude)) exclude=0
-for (a in exclude:(n-1)) ovec=ovec+vec0 %*% (progmat %^% a)
-if(average) ovec=ovec/(n-exclude)
-
-ovec
-}
-
-
-############################### Auxiliary utilities
-
-
-validUDinput<-function(cdf,target)
-{
-if(target<=0 || target>=1) stop("Target has to be in (0,1).\n")
-if(min(cdf)<0 || max(cdf)>1 || any(diff(cdf)<0) || var(cdf)==0) stop("cdf should be a CDF.\n")
-
-#ttarg=ifelse(target>0.5,1-target,target)
-if(length(cdf)<3) stop ("These designs don't work with <3 dose levels.\n")
-}
-
-
-
-
-# For `pivec`,  an $M$-length vector with stationary/asymptotic visit frequencies.
 

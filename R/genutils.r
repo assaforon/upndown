@@ -25,3 +25,17 @@ krange=krange[krange>0]
 data.frame(k=krange,balancePt=k2targ(krange,hitarg=hi))
 }
 
+
+############################### Auxiliary utilities
+
+
+validUDinput<-function(cdf,target)
+{
+  if(target<=0 || target>=1) stop("Target has to be in (0,1).\n")
+  if(min(cdf)<0 || max(cdf)>1 || any(diff(cdf)<0) || var(cdf)==0) stop("cdf should be a CDF.\n")
+  
+  #ttarg=ifelse(target>0.5,1-target,target)
+  if(length(cdf)<3) stop ("These designs don't work with <3 dose levels.\n")
+}
+
+
