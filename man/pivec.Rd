@@ -8,23 +8,57 @@
 \usage{
 pivec(cdf, matfun, ...)
 
-currentvec(startdose = NULL, cdf, n, matfun, ...)
+currentvec(cdf, matfun, n, startdose = NULL, ...)
 
-cumulvec(startdose = NULL, cdf, n, matfun, average = TRUE, exclude = 0, ...)
+cumulvec(
+  cdf,
+  matfun,
+  n,
+  startdose = NULL,
+  proportions = TRUE,
+  exclude = 0,
+  ...
+)
 }
 \arguments{
 \item{cdf}{vector of positive-response probabilities at the doses}
 
-\item{matfun}{The function to calculate the TPM. Depends on the specific design; see \code{\link{bcdmat}}. Must}
+\item{matfun}{The function to calculate the TPM. Depends on the specific design; see \code{\link{bcdmat}}. For all functions except \code{classicmat}, user must provide auxiliary parameters via \code{...}.}
+
+\item{n}{For \verb{currentvec, cumulvec}, at what step (= after how many observations) in the experiment would you like the vector calculated?}
+
+\item{startdose}{For \verb{currentvec, cumulvec}, where does the experiment start? To be given as a dose-level index between 1 and \eqn{M}. If left as \code{NULL} (default), function will assume the equivalent of \emph{"fair die roll"} among all doses. User can also specify your own \eqn{M}-length probability vector.}
+
+\item{proportions}{Logical (\code{cumulvec} only) Would you like the results returned as proportions (= a probability vector; \code{TRUE}, default), or as cumulative allocation counts?}
+
+\item{exclude}{Integer (\code{cumulvec} only) Should the cumulative distribution exclude a certain number of initial observations? Default 0.
+
+#'}
 }
 \description{
-Asymptotic and progression
+Dose-allocation probability vectors that quantify the instantaneous, cumulative, and asymptotic behavior of Up-and-Down designs.
 }
 \details{
-Up-and-Down designs (UDDs) generate random walk behavior, whose theoretical properties can be summarized via a transition probability matrix (TPM). Given the number of doses \eqn{M}, and the value of the cdf \eqn{F} at each dose (i.e., the positive-response probabilities), the specific UDD rules uniquely determine the TPM.
+Up-and-Down designs (UDDs) generate random walk behavior, which concentrates doses around the target quantile. Asymptotically, dose allocations follow a stationary distribution \eqn{\boldsymbol{\pi}} which can be calculated given the number of doses \eqn{M}, and the value of the cdf \eqn{F} at each dose (i.e., the positive-response probabilities), and the specific UDD rules. No matter the starting dose, the allocation distribution converges to \eqn{\boldsymbol{\pi}} at a geometric rate (Diaconis and Stroock, 1991).
+
+Three functions are offered:
+\itemize{
+\item \code{pivec} returns \eqn{\boldsymbol{\pi}}.
+\item \code{currentvec} returns the current (instantaneous) allocation distribution at step \code{n}, using the formula from Diaconis and Stroock (1991).
+\item \code{cumulvec} returns the \emph{cumulative} allocations, i.e., the expected proportions (or counts) of allocations during the experiment after \code{n} observations. This function is perhaps of greatest practical use.
+}
+
+All functions first calculate the transition probability matrix (TPM), by calling one of the functions described under \code{\link{bcdmat}}. See that help page for more details.
 }
 \note{
 When using the k-in-a-row design, set \code{matfun = kmatMarg}, not \code{kmatFull}.
+}
+\references{
+\itemize{
+\item Diaconis P, Stroock D. Geometric Bounds for Eigenvalues of Markov Chains. \emph{Ann. Appl. Probab.} 1991;1(1):36-61.
+\item Hughes BD. \emph{Random Walks and Random Environments, Vol. 1.} Oxford University Press, 1995.
+\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50.
+}
 }
 \author{
 Assaf P. Oron \code{<assaf.oron.at.gmail.com>}

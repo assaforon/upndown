@@ -9,21 +9,21 @@
 # What is *not* known at present, is which mix proportions produce 0 delta BP
 #     on average among the population. 
 
-# The classical UD design below administers the mix 0-100% ketamine in 10% increments
-#    The design will concentrate doses around the point where 50% of the population 
+# The classical UD design below administers the mix 0-100% ketamine in 10% increments.
+#    The design will concentrate doses around the point where half the population 
 #    experiences 0 delta BP. ('zeroPt')
 
 doses = seq(0, 100, 10)
-m=length(doses)
+m=length(doses) # 11 dose levels
 
 zeroPt=63 # percent ketamine
+
 # We assume a Normal ("Probit") dose-response curve,
 #   and calculate the value of F (i.e.,  prob (delta BP > 0) at the doses:
-
 equivF = pnorm( (doses - zeroPt) / 20)
 
 # Finally, the values feeding into the Fig. 2B barplot
-
-cumulpi(startdose = 6,equivF,n
+# "startdose = 6" means we begin from the 6th out of 11 doses, i.e., a 50:50 mix.
+cumulvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 30)
 
 

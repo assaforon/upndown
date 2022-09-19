@@ -26,16 +26,19 @@
 #' @param n For `currentvec, cumulvec`, at what step (= after how many observations) in the experiment would you like the vector calculated?
 #' @param startdose For `currentvec, cumulvec`, where does the experiment start? To be given as a dose-level index between 1 and \eqn{M}. If left as `NULL` (default), function will assume the equivalent of *"fair die roll"* among all doses. User can also specify your own \eqn{M}-length probability vector.
 #' @param proportions Logical (`cumulvec` only) Would you like the results returned as proportions (= a probability vector; `TRUE`, default), or as cumulative allocation counts? 
-#' @param exclude Integer (`cumulvec` only) Should the cumulative distribution exclude a certain number of initial allocations? Default 0. 
+#' @param exclude Integer (`cumulvec` only) Should the cumulative distribution exclude a certain number of initial observations? Default 0. 
 #' 
 #' #' 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
 #' @export
+#' 
+#' @example ../inst/examples/vecExamples.r
 
 
 #' @references 
-#'  - Diaconis P, Stroock P. Geometric Bounds for Eigenvalues of Markov Chains. *Ann. Appl. Probab.* 1991;1(1):36-61. 
+#'  - Diaconis P, Stroock D. Geometric Bounds for Eigenvalues of Markov Chains. *Ann. Appl. Probab.* 1991;1(1):36-61. 
 #'  - Hughes BD. *Random Walks and Random Environments, Vol. 1.* Oxford University Press, 1995.
+#'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50.
 
 ########################## Whew! Now the actual functions.
 
@@ -65,17 +68,19 @@ currentvec <- function(cdf, matfun, n, startdose = NULL, ...)
 
 ### Starting vector
 # The NULL default sets a uniform starting vector
-  if(is.null(startdose)) vec0=rep(1/m,m)
-  if (startdose %in% 1:m) {
+if(is.null(startdose)) vec0=rep(1/m,m)
+if (startdose %in% 1:m) {
     vec0=rep(0,m)
     vec0[startdose]=1
-  }
-# Now some validation 
-  if(any(startdose<0) || sum(startdose) != 1 || length(startdose)!=m) 
+}
+if(!exists('vec0')) vec0 = startdose
+  # Now some validation 
+if(any(vec0<0) || sum(vec0) != 1 || length(vec0)!=m) 
     stop("'startdose' must be a single dose level, or a probability vector over doses.\n")
 
-### Then, the actual function is just a one-liner :)
-  return( vec0 %*% (matfun(cdf = cdf,...) %^% (n-1)) )
+### Then, the actual function is just a one-liner :) 
+#      We do need to de-matrix it though:
+return(as.numeric(vec0 %*% (matfun(cdf = cdf,...) %^% (n-1)) ))
 }
 
 ####### *Cumulative* allocation frequencies - perhaps the most practically useful
@@ -97,8 +102,9 @@ cumulvec <- function(cdf, matfun, n, startdose = NULL, proportions = TRUE, exclu
     vec0 = rep(0, m)
     vec0[startdose] = 1
   }
+  if(!exists('vec0')) vec0 = startdose
   # Now some validation 
-  if(any(startdose<0) || sum(startdose) != 1 || length(startdose)!=m) 
+  if(any(vec0<0) || sum(vec0) != 1 || length(vec0) != m) 
     stop("'startdose' must be a single dose or a probability vector over doses.\n")
   
   progmat = matfun(cdf, ...) 
@@ -108,8 +114,9 @@ cumulvec <- function(cdf, matfun, n, startdose = NULL, proportions = TRUE, exclu
   for ( a in exclude:(n-1) ) ovec = ovec + vec0 %*% (progmat %^% a)
 # Proportions or counts?
   if(proportions) ovec = ovec / (n - exclude)
-  
-  return(ovec)
+
+# de-matrixing the output
+  return(as.numeric(ovec))
 }
 
 
