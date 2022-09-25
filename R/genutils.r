@@ -18,6 +18,8 @@
 #'  
 #'  Lastly, `bcoin()` returns the biased-coin probabilities given the user's designated target. In contrast to the two other UDDs described above, the biased-coin design can target any percentile with a precisely matched balance point. That said, k-in-a-row and group UDDs offer some advantages over biased-coin in terms of properties and operational simplicity.
 
+
+#------------------------------------- The actual functions ----------------------------#
 ### K-in-a-row targets
 
 #' @export
