@@ -35,6 +35,9 @@ cumulvec(
 
 #'}
 }
+\value{
+A vector of allocation frequencies/probabilities for the doses, summing up to 1. Exception: \code{cumulvec(propotions = FALSE)} returns a vector of expected allocation counts, summing up to \code{n - exclude}.
+}
 \description{
 Dose-allocation probability vectors that quantify the instantaneous, cumulative, and asymptotic behavior of Up-and-Down designs.
 }
@@ -43,9 +46,9 @@ Up-and-Down designs (UDDs) generate random walk behavior, which concentrates dos
 
 Three functions are offered:
 \itemize{
-\item \code{pivec} returns \eqn{\boldsymbol{\pi}}.
-\item \code{currentvec} returns the current (instantaneous) allocation distribution at step \code{n}, using the formula from Diaconis and Stroock (1991).
-\item \code{cumulvec} returns the \emph{cumulative} allocations, i.e., the expected proportions (or counts) of allocations during the experiment after \code{n} observations. This function is perhaps of greatest practical use.
+\item \code{pivec()} returns \eqn{\boldsymbol{\pi}}.
+\item \code{currentvec()} returns the current (instantaneous) allocation distribution at step \code{n}, using the formula from Diaconis and Stroock (1991).
+\item \code{cumulvec()} returns the \emph{cumulative} allocations, i.e., the expected proportions (or counts) of allocations during the experiment after \code{n} observations. This function is perhaps of greatest practical use.
 }
 
 All functions first calculate the transition probability matrix (TPM), by calling one of the functions described under \code{\link{bcdmat}}. See that help page for more details.

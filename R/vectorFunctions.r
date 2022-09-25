@@ -7,13 +7,13 @@
 #' 
 #' Three functions are offered:
 #' 
-#'  - `pivec` returns \eqn{\boldsymbol{\pi}}.
-#'  - `currentvec` returns the current (instantaneous) allocation distribution at step `n`, using the formula from Diaconis and Stroock (1991). 
-#'  - `cumulvec` returns the *cumulative* allocations, i.e., the expected proportions (or counts) of allocations during the experiment after `n` observations. This function is perhaps of greatest practical use. 
+#'  - `pivec()` returns \eqn{\boldsymbol{\pi}}.
+#'  - `currentvec()` returns the current (instantaneous) allocation distribution at step `n`, using the formula from Diaconis and Stroock (1991). 
+#'  - `cumulvec()` returns the *cumulative* allocations, i.e., the expected proportions (or counts) of allocations during the experiment after `n` observations. This function is perhaps of greatest practical use. 
 #'  
 #' All functions first calculate the transition probability matrix (TPM), by calling one of the functions described under \code{\link{bcdmat}}. See that help page for more details.
 #' 
-#' @return 
+#' @return A vector of allocation frequencies/probabilities for the doses, summing up to 1. Exception: `cumulvec(propotions = FALSE)` returns a vector of expected allocation counts, summing up to `n - exclude`. 
 #' 
 
 # For `pivec`,  an $M$-length vector with stationary/asymptotic visit frequencies.

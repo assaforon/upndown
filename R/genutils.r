@@ -1,29 +1,64 @@
-## GUD target finding
-gudtarg<-function(k,u=0,l,b1=1,b2=1)
+#' Up-and-Down Target Calculation and Calibration
+#' 
+#' Up-and-down target calculation and design options/guidance given a user-desired target.  
+#' 
+#' @details  
+#' This suite of utilities helps users 
+#' 
+#'  - Figure out the approximate target response-rate given design parameters
+#'  - Suggest or specify design parameters, given user's target response-rate.
+#'  
+#'  Up-and-down designs (UDDs) generate random walks over dose space, with most dose-allocations usually taking place near the design's de-facto target percentile, called the **"balance point"** by some theorists to distinguish it from the user's designated target (Oron and Hoff 2009, Oron et al. 2022).
+#'  
+#'  Most k-in-a-row and group UDD parameter combinations yield balance points that are irrational percentiles of the dose-response function, and therefore are unappealing as official experimental targets.
+#'  
+#'  However, since the UD dose distribution has some width, and since even the balance point itself is only a close approximation for the actual average of allocated doses, the user's target **does not have to be identical to the balance point.** It only needs to be *"close enough"*.
+#'  
+#'  The `k2targ()` and `g2targ()` utilities are intended for users who already have a specific k-in-a-row or group design in mind, and only want to verify its balance point. The complementary utilities `ktargOptions(), gtargOptions()` provide a broader survey of design-parameter options within user-specified constraints, given a desired target.
+#'  
+#'  Lastly, `bcoin()` returns the biased-coin probabilities given the user's designated target. In contrast to the two other UDDs described above, the biased-coin design can target any percentile with a precisely matched balance point. That said, k-in-a-row and group UDDs offer some advantages over biased-coin in terms of properties and operational simplicity.
+
+### K-in-a-row targets
+
+#' @export
+
+k2targ<-function(k, hitarg=TRUE)
+{
+  checkNatural(k, parname = 'k', toolarge = 30)  
+  tmp = 0.5 ^ (1/k)
+  if(hitarg) return(tmp)
+  1-tmp
+}
+
+#' @rdname k2targ
+#' @export
+
+ktargOptions<-function(target, tolerance = 0.1)
+{
+  if(length(target) > 1) stop("target must be a single number between 0 and 1.\n")
+  checkTarget(target)
+  
+  hi = (target>=0.5) 
+  if(!hi) target = 1-target
+  
+  klo = -1 / log2(target - tolerance)
+  khi = -1 / log2(target + tolerance)
+  krange = floor(klo):ceiling(khi)
+  krange = krange[krange > 0]
+  
+  data.frame(k = krange, BalancePoint = k2targ(krange, hitarg = hi) )
+}
+
+
+## GUD targets
+g2targ<-function(k, u, l, b1 = 1, b2 = 1)
 {
 uniroot(f=function(x,kay,you,ell,bee1,bee2) {bee1*pbinom(q=ell,size=kay,prob=x)+bee2*(pbinom(q=you-1,size=kay,prob=x)-1)},interval=0:1,kay=k,you=u,ell=l,bee1=b1,bee2=b2)$root
 }
 
-### K-in-a-row targets
 
-k2targ<-function(k,hitarg=TRUE)
-{
-checkNatural(k, parname = 'k', toolarge = 30)  
-tmp=0.5^(1/k)
-if(hitarg) return(tmp)
-1-tmp
-}
 
-targ2k<-function(targ,expand=1)
-{
-hi=(targ>=0.5) 
-if(!hi) targ=1-targ
 
-kcand=-1/log2(targ)
-krange=(floor(kcand-expand):ceiling(kcand+expand))
-krange=krange[krange>0]
-data.frame(k=krange,balancePt=k2targ(krange,hitarg=hi))
-}
 
 
 ############################### Auxiliary validation utilities
