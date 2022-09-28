@@ -53,11 +53,33 @@ ktargOptions<-function(target, tolerance = 0.1)
 
 
 ## GUD targets
-g2targ<-function(k, u, l, b1 = 1, b2 = 1)
+
+#' @rdname k2targ
+#' @export
+
+
+g2targ<-function(cohort, lower, upper)
 {
-uniroot(f=function(x,kay,you,ell,bee1,bee2) {bee1*pbinom(q=ell,size=kay,prob=x)+bee2*(pbinom(q=you-1,size=kay,prob=x)-1)},interval=0:1,kay=k,you=u,ell=l,bee1=b1,bee2=b2)$root
+checkNatural(c(cohort, lower+1, upper), parname = 'cohort, lower+1, upper', toolarge = 50)  
+if(cohort<upper || upper<=lower) stop('Order must be lower < upper <= cohort.\n')
+  
+uniroot(f=function(x, k, u, l) {pbinom(q=l, size=k, prob=x) + (pbinom(q=u-1, size=k, prob=x) - 1)}, interval=0:1, k=cohort, u=upper, l=lower)$root
 }
 
+# uniroot(f=function(x,kay,you,ell,bee1,bee2) {bee1*pbinom(q=ell,size=kay,prob=x)+bee2*(pbinom(q=you-1,size=kay,prob=x)-1)},interval=0:1,kay=k,you=u,ell=l,bee1=b1,bee2=b2)$root
+
+gtargOptions<-function(target, maxsize = 6, tolerance = 0.1)
+{
+  if(length(target) > 1) stop("target must be a single number between 0 and 1.\n")
+  checkTarget(target)
+
+  klo = -1 / log2(target - tolerance)
+  khi = -1 / log2(target + tolerance)
+  krange = floor(klo):ceiling(khi)
+  krange = krange[krange > 0]
+  
+  data.frame(k = krange, BalancePoint = k2targ(krange, hitarg = hi) )
+}
 
 
 
@@ -83,5 +105,5 @@ checkCDF <- function(cdf)
 
 checkNatural <- function(k, parname, toolarge = 1000)
 if (any(k != round(k) | k < 1 | k >= toolarge)) 
-  stop(parname, "must be a natural number smaller than", toolarge, ".\n")
+  stop(parname, "must be a natural number smaller than ", toolarge, ".\n")
 

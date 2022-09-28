@@ -228,11 +228,11 @@ return(omat)
 #' @rdname bcdmat
 #' @export
 
-gudmat<-function(cdf,cohort,lower,upper)
+gudmat<-function(cdf, cohort, lower, upper)
 {
 ## Validation (lots!)
 checkCDF(cdf)
-checkNatural(k, parname = 'cohort, lower, upper', toolarge = 50)  
+checkNatural(c(cohort, lower+1, upper), parname = 'cohort, lower+1, upper', toolarge = 50)  
 if(cohort<upper || upper<=lower) stop('Order must be lower < upper <= cohort.\n')
 # /validation
 
