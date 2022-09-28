@@ -62,6 +62,8 @@ g2targ<-function(cohort, lower, upper)
 {
 checkNatural(c(cohort, lower+1, upper), parname = 'cohort, lower+1, upper', toolarge = 50)  
 if(cohort<upper || upper<=lower) stop('Order must be lower < upper <= cohort.\n')
+
+if(upper + lower == cohort) return(0.5)
   
 uniroot(f=function(x, k, u, l) {pbinom(q=l, size=k, prob=x) + (pbinom(q=u-1, size=k, prob=x) - 1)}, interval=0:1, k=cohort, u=upper, l=lower)$root
 }
@@ -70,15 +72,21 @@ uniroot(f=function(x, k, u, l) {pbinom(q=l, size=k, prob=x) + (pbinom(q=u-1, siz
 
 gtargOptions<-function(target, maxsize = 6, tolerance = 0.1)
 {
-  if(length(target) > 1) stop("target must be a single number between 0 and 1.\n")
-  checkTarget(target)
+checkNatural(cmaxsize, parname = 'maxsize', toolarge = 50)  
+if(length(target) > 1) stop("target must be a single number between 0 and 1.\n")
+checkTarget(target)
 
-  klo = -1 / log2(target - tolerance)
-  khi = -1 / log2(target + tolerance)
-  krange = floor(klo):ceiling(khi)
-  krange = krange[krange > 0]
-  
-  data.frame(k = krange, BalancePoint = k2targ(krange, hitarg = hi) )
+dout = data.frame()
+for(k in 2:maxsize)
+{
+  for(l in 0:floor(target*k - 1e-10))
+  {
+    u = l+1
+    while(u<a & g2targ(cohort=k, lower=l, upper=u) < target-tolerance) 
+    while(u<a)
+      & g2targ(cohort=k, lower=l, upper=u) < target+tolerance) 
+    {
+      data.frame(k = krange, BalancePoint = k2targ(krange, hitarg = hi) )
 }
 
 
