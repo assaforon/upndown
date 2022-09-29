@@ -70,23 +70,44 @@ uniroot(f=function(x, k, u, l) {pbinom(q=l, size=k, prob=x) + (pbinom(q=u-1, siz
 
 # uniroot(f=function(x,kay,you,ell,bee1,bee2) {bee1*pbinom(q=ell,size=kay,prob=x)+bee2*(pbinom(q=you-1,size=kay,prob=x)-1)},interval=0:1,kay=k,you=u,ell=l,bee1=b1,bee2=b2)$root
 
+#' @rdname k2targ
+#' @export
+
 gtargOptions<-function(target, maxsize = 6, tolerance = 0.1)
 {
-checkNatural(cmaxsize, parname = 'maxsize', toolarge = 50)  
+checkNatural(maxsize-1, parname = 'maxsize less 1', toolarge = 50)  
 if(length(target) > 1) stop("target must be a single number between 0 and 1.\n")
 checkTarget(target)
 
 dout = data.frame()
 for(k in 2:maxsize)
 {
-  for(l in 0:floor(target*k - 1e-10))
+  refval = floor(target * k - 1e-10)
+  for(l in 0:refval)
   {
-    u = l+1
-    while(u<a & g2targ(cohort=k, lower=l, upper=u) < target-tolerance) 
-    while(u<a)
-      & g2targ(cohort=k, lower=l, upper=u) < target+tolerance) 
+    dtmp = data.frame()
+    ucand = 2 * refval - l
+    if(ucand > k) next
+#    cat(k, l, ucand,'\n')
+    u = ucand
+   if(ucand > l) for(u in seq(ucand, l+1, -1))
     {
-      data.frame(k = krange, BalancePoint = k2targ(krange, hitarg = hi) )
+      bal = g2targ(cohort=k, lower=l, upper=u) 
+      if(bal < target-tolerance) break
+      if(bal > target+tolerance) next
+      dtmp = rbind(dtmp, data.frame( cohort=k, lower=l, upper=u, BalancePoint=bal ) )
+    }
+    if(ucand < k) for(u in seq(max(l+1,ucand+1), k, 1))
+    {
+      bal = g2targ(cohort=k, lower=l, upper=u) 
+      if(bal > target+tolerance) break
+      if(bal < target-tolerance) next
+      dtmp = rbind(dtmp, data.frame( cohort=k, lower=l, upper=u, BalancePoint=bal ) )
+    }
+    if(nrow(dtmp)>0) dout = rbind(dout, dtmp[order(dtmp$upper), ])
+  }
+}
+return(dout)
 }
 
 

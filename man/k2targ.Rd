@@ -4,6 +4,7 @@
 \alias{k2targ}
 \alias{ktargOptions}
 \alias{g2targ}
+\alias{gtargOptions}
 \title{Up-and-Down Target Calculation and Calibration}
 \usage{
 k2targ(k, hitarg = TRUE)
@@ -11,6 +12,8 @@ k2targ(k, hitarg = TRUE)
 ktargOptions(target, tolerance = 0.1)
 
 g2targ(cohort, lower, upper)
+
+gtargOptions(target, maxsize = 6, tolerance = 0.1)
 }
 \description{
 Up-and-down target calculation and design options/guidance given a user-desired target.
