@@ -5,6 +5,7 @@
 \alias{ktargOptions}
 \alias{g2targ}
 \alias{gtargOptions}
+\alias{bcdCoin}
 \title{Up-and-Down Target Calculation and Calibration}
 \usage{
 k2targ(k, hitarg = TRUE)
@@ -14,6 +15,8 @@ ktargOptions(target, tolerance = 0.1)
 g2targ(cohort, lower, upper)
 
 gtargOptions(target, maxsize = 6, tolerance = 0.1)
+
+bcdCoin(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
 }
 \description{
 Up-and-down target calculation and design options/guidance given a user-desired target.
@@ -21,7 +24,7 @@ Up-and-down target calculation and design options/guidance given a user-desired 
 \details{
 This suite of utilities helps users
 \itemize{
-\item Figure out the approximate target response-rate given design parameters
+\item Figure out the approximate target response-rate, given design parameters
 \item Suggest or specify design parameters, given user's target response-rate.
 }
 

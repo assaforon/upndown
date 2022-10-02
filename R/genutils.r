@@ -5,7 +5,7 @@
 #' @details  
 #' This suite of utilities helps users 
 #' 
-#'  - Figure out the approximate target response-rate given design parameters
+#'  - Figure out the approximate target response-rate, given design parameters
 #'  - Suggest or specify design parameters, given user's target response-rate.
 #'  
 #'  Up-and-down designs (UDDs) generate random walks over dose space, with most dose-allocations usually taking place near the design's de-facto target percentile, called the **"balance point"** by some theorists to distinguish it from the user's designated target (Oron and Hoff 2009, Oron et al. 2022).
@@ -20,7 +20,7 @@
 
 
 #------------------------------------- The actual functions ----------------------------#
-### K-in-a-row targets
+### K-in-a-row functions
 
 #' @export
 
@@ -52,7 +52,7 @@ ktargOptions<-function(target, tolerance = 0.1)
 }
 
 
-## GUD targets
+## GUD functions
 
 #' @rdname k2targ
 #' @export
@@ -110,7 +110,73 @@ for(k in 2:maxsize)
 return(dout)
 }
 
+################## BCD function
 
+#' @rdname k2targ
+#' @export
+
+bcdCoin <- function(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
+{
+require(numbers)
+  
+## Validations
+checkTarget(target)
+checkTarget(tolerance, tname = "'tolerance'")
+if(tolerance >= min(target, 1 - target)/2) stop("'tolerance' is set too large.\n")
+if(tolerance < 1e-4) stop("'tolerance' is set unrealistically small. Change it to 1e-4 or more.\n")
+
+### Targets too close to 0.5:
+
+if(target >= 0.5 - tolerance && target <= 0.5 + tolerance) 
+{
+  cat("No need for coin with a target this close to 0.5. Just use Classical UD:
+ - Move UP   after each negative response,                      
+ - Move DOWN after each positive response.\n")
+  
+} else if(target < 0.5) { 
+  
+  coin = target / (1-target)
+  cout = round(coin, digits = ceiling(-log10(tolerance)))
+  if(fraction) 
+# Find rational coin fraction, erring upwards b/c at <0.5 BCD biases a bit down
+  {
+    coinFrac = ratFarey(coin, n = round(1/tolerance), upper = TRUE) 
+    if(nameplate)
+    {
+      frac2 = ratFarey(coin, n = round(1/tolerance), upper = FALSE) 
+      if(abs(coin - frac2[1]/frac2[2]) < abs(coin - coinFrac[1]/coinFrac[2]))
+        coinFrac = frac2
+    }
+    cout = paste(coinFrac[1], '/', coinFrac[2])
+  }
+  cat(paste("After positive response, move DOWN.
+After negative response, 'toss a COIN':
+   - with probability of approximately", cout, 'move UP
+   - Otherwise REPEAT same dose.\n') )
+  
+} else if(target > 0.5) { 
+  
+  coin = (1-target) / target 
+  cout = round(coin, digits = ceiling(-log10(tolerance)))
+  if(fraction) 
+    # Find rational coin fraction, erring upwards b/c at <0.5 BCD biases a bit down
+  {
+    coinFrac = ratFarey(coin, n = round(1/tolerance), upper = FALSE) 
+    if(nameplate)
+    {
+      frac2 = ratFarey(coin, n = round(1/tolerance), upper = TRUE) 
+      if(abs(coin - frac2[1]/frac2[2]) < abs(coin - coinFrac[1]/coinFrac[2]))
+        coinFrac = frac2
+    }
+    cout = paste(coinFrac[1], '/', coinFrac[2])
+  }
+  cat(paste("After negative response, move UP.
+After positive response, 'toss a COIN':
+   - with probability of approximately", cout, 'move DOWN
+   - Otherwise REPEAT same dose.\n') )
+}  
+  
+}
 
 
 
@@ -124,8 +190,8 @@ validUDinput<-function(cdf,target)
   if(length(cdf) < 3) stop ("These designs don't work with <3 dose levels.\n")
 }
 
-checkTarget <- function(target)
-  if(target<=0 || target>=1) stop("Target has to be in (0,1).\n")
+checkTarget <- function(target, tname = 'Target')
+  if(target<=0 || target>=1) stop(paste(tname, "has to be in (0,1).\n"))
 
 checkCDF <- function(cdf)
   if(min(cdf)<0 || max(cdf)>1 || any(diff(cdf) < 0) || var(cdf)==0) stop("cdf should be a CDF.\n")
