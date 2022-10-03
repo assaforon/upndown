@@ -5,10 +5,10 @@
 \alias{ktargOptions}
 \alias{g2targ}
 \alias{gtargOptions}
-\alias{bcdCoin}
-\title{Up-and-Down Target Calculation and Calibration}
+\alias{bcoin}
+\title{Up-and-Down Target Calculation and Design Calibration}
 \usage{
-k2targ(k, hitarg = TRUE)
+k2targ(k, lowTarget = TRUE)
 
 ktargOptions(target, tolerance = 0.1)
 
@@ -16,15 +16,50 @@ g2targ(cohort, lower, upper)
 
 gtargOptions(target, maxsize = 6, tolerance = 0.1)
 
-bcdCoin(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
+bcoin(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
+}
+\arguments{
+\item{k}{the number of consecutive identical responses required for dose transitions (k-in-a-row functions only).}
+
+\item{lowTarget}{logical, \code{k2targ()} only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa? Default \code{FALSE}.}
+
+\item{target}{the desired target response rate (as a fraction in \eqn{(0,1)}), where relevant.}
+
+\item{tolerance}{\itemize{
+\item For \verb{ktargOptions(), gtargOptions()}: the half-width of the interval around \code{target} in which to search for design options. Default 0.1.
+\item For \code{bcoin()}: the half-width of the interval around 0.5 in which the function recommends to simply use classical UD without a coin, as well as the approximate amount of rounding to the returned coin probability (whether in decimal on rational terms). Default 0.02, and hard-coded to be no less than 0.0001.
+}}
+
+\item{cohort, lower, upper}{\code{g2targ()} only: the cohort (group) size, how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example \verb{cohort=3, lower=0, upper=2} evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.}
+
+\item{maxsize}{for \code{gtargOptions()}, the maximum cohort size to consider. Function will always start seeking from the minimum cohort size of 2 (cohort size 1 is equivalent to classical UD).}
+
+\item{fraction}{\code{bcoin()} only: whether to report the coin probability as a rational rather than decimal fraction. Default \code{FALSE}.}
+
+\item{nameplate}{\code{bcoin()} only: in case \code{fraction = TRUE}, whether to return the "exact" rational probability, or allow some nudging of the resulting balance point (a.k.a \emph{"target"}) towards the median. Default \code{FALSE}, and moot when \code{fraction = FALSE}.}
+}
+\value{
+\itemize{
+\item \verb{k2targ(), g2targ()}: the official balance point given the user-provided design parameters.
+\item \verb{ktargOptions(), gtargOptions()}: a \code{data.frame} with design parameters and official balance point, for all options that meet user-provided constraints.
+\item \verb{bcoin():} a printed string that informs user of the biased-coin design rules, including the 'coin' probability in its user-chosen format. In case the user-desired target is 0.5 or very close to it, the string will inform user that they are better off just using classical UD without a coin.
+}
+
+#' @references
+\itemize{
+\item Durham SD, Flournoy N. Random walks for quantile estimation. In: \emph{Statistical Decision Theory and Related Topics V} (West Lafayette, IN, 1992). Springer; 1994:467-476.
+\item Gezmu M, Flournoy N. Group up-and-down designs for dose-finding. \emph{J Stat Plan Inference.} 2006;136(6):1749-1764.
+\item Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. \emph{Stat Med.} 2009;28:1805-1820.
+\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50.
+}
 }
 \description{
-Up-and-down target calculation and design options/guidance given a user-desired target.
+Up-and-down target calculation, and design options/guidance given a user-desired target.
 }
 \details{
 This suite of utilities helps users
 \itemize{
-\item Figure out the approximate target response-rate, given design parameters
+\item Figure out the approximate target response-rate, given design parameters;
 \item Suggest or specify design parameters, given user's target response-rate.
 }
 
@@ -37,4 +72,9 @@ However, since the UD dose distribution has some width, and since even the balan
 The \code{k2targ()} and \code{g2targ()} utilities are intended for users who already have a specific k-in-a-row or group design in mind, and only want to verify its balance point. The complementary utilities \verb{ktargOptions(), gtargOptions()} provide a broader survey of design-parameter options within user-specified constraints, given a desired target.
 
 Lastly, \code{bcoin()} returns the biased-coin probabilities given the user's designated target. In contrast to the two other UDDs described above, the biased-coin design can target any percentile with a precisely matched balance point. That said, k-in-a-row and group UDDs offer some advantages over biased-coin in terms of properties and operational simplicity.
+
+\code{bcoin()} can return the probability as a decimal (default) or approximate rational fraction. In the latter case, if \code{nameplate} is set to \code{TRUE}, you will get the exact \emph{"nameplate"} coin probability \eqn{\Gamma/(1 - \Gamma)}, with \eqn{\Gamma} being the target percentile between 0 and 1. However, the default \code{nameplate = FALSE} might nudge the resulting target to the median somewhat. This choice is based upon the theoretical finding that the biased-coin design does tend to concentrate doses a bit further away from the median than its official target would suggest (Oron and Hoff, 2009). See more information in \code{bcoin()} argument descriptions.
+}
+\author{
+Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 }
