@@ -47,40 +47,46 @@
 #'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50.
 
 #------------------------------------- The actual functions ----------------------------#
-### K-in-a-row functions
+###-------------- K-in-a-row functions
 
 #' @export
 
-k2targ<-function(k, lowTarget=TRUE)
+k2targ<-function(k, lowTarget=FALSE)
 {
   checkNatural(k, parname = 'k', toolarge = 30)  
   tmp = 0.5 ^ (1/k)
-  if(lowTarget) return(tmp)
-  1-tmp
+  if(lowTarget) return(1-tmp)
+  tmp
 }
 
 #' @rdname k2targ
 #' @export
 
-ktargOptions<-function(target, tolerance = 0.1)
+ktargOptions<-function(target, tolerance = 0.1, maxsize = 20)
 {
   if(length(target) > 1) stop("target must be a single number between 0 and 1.\n")
   checkTarget(target)
-  checkTarget(tolerance, tname = "'tolerance'")
+  checkTarget(target - tolerance, tname = "target minus tolerance")
   
   hi = (target>=0.5) 
   if(!hi) target = 1-target
   
-  klo = -1 / log2(target - tolerance)
-  khi = -1 / log2(target + tolerance)
-  krange = floor(klo):ceiling(khi)
-  krange = krange[krange > 0]
+  hiend = k2targ(maxsize)
+  
+  klo = -1 / log2( max(0.5, target - tolerance) )
+  khi = -1 / log2( min(hiend, target + tolerance) )
+  krange = ceiling(klo):floor(khi)
+  krange = sort( krange[krange > 0 & krange <= maxsize] )
+  
+  cat("For the following targets, k", ifelse(hi, "positive", "negative"),
+      "responses are needed for a move", ifelse(hi, "down.\n", "up.\n"),
+      "Only one", ifelse(hi, "negative", "positive"), "opposite response is needed for the opposite move.\n")
   
   data.frame(k = krange, BalancePoint = k2targ(krange, lowTarget = !hi) )
 }
 
 
-## GUD functions
+##--------------------- GUD functions
 
 #' @rdname k2targ
 #' @export
@@ -101,14 +107,14 @@ uniroot(f=function(x, k, u, l) {pbinom(q=l, size=k, prob=x) + (pbinom(q=u-1, siz
 #' @rdname k2targ
 #' @export
 
-gtargOptions<-function(target, maxsize = 6, tolerance = 0.1)
+gtargOptions<-function(target, minsize = 2, maxsize = 6, tolerance = 0.1)
 {
 checkNatural(maxsize-1, parname = 'maxsize less 1', toolarge = 50)  
 if(length(target) > 1) stop("target must be a single number between 0 and 1.\n")
 checkTarget(target)
 
 dout = data.frame()
-for(k in 2:maxsize)
+for(k in minsize:maxsize)
 {
   refval = floor(target * k - 1e-10)
   for(l in 0:refval)

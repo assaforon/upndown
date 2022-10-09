@@ -8,13 +8,13 @@
 \alias{bcoin}
 \title{Up-and-Down Target Calculation and Design Calibration}
 \usage{
-k2targ(k, lowTarget = TRUE)
+k2targ(k, lowTarget = FALSE)
 
-ktargOptions(target, tolerance = 0.1)
+ktargOptions(target, tolerance = 0.1, maxsize = 20)
 
 g2targ(cohort, lower, upper)
 
-gtargOptions(target, maxsize = 6, tolerance = 0.1)
+gtargOptions(target, minsize = 2, maxsize = 6, tolerance = 0.1)
 
 bcoin(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
 }
@@ -30,9 +30,9 @@ bcoin(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
 \item For \code{bcoin()}: the half-width of the interval around 0.5 in which the function recommends to simply use classical UD without a coin, as well as the approximate amount of rounding to the returned coin probability (whether in decimal on rational terms). Default 0.02, and hard-coded to be no less than 0.0001.
 }}
 
-\item{cohort, lower, upper}{\code{g2targ()} only: the cohort (group) size, how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example \verb{cohort=3, lower=0, upper=2} evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.}
-
 \item{maxsize}{for \code{gtargOptions()}, the maximum cohort size to consider. Function will always start seeking from the minimum cohort size of 2 (cohort size 1 is equivalent to classical UD).}
+
+\item{cohort, lower, upper}{\code{g2targ()} only: the cohort (group) size, how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example \verb{cohort=3, lower=0, upper=2} evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.}
 
 \item{fraction}{\code{bcoin()} only: whether to report the coin probability as a rational rather than decimal fraction. Default \code{FALSE}.}
 
