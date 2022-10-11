@@ -6,11 +6,11 @@
 \alias{g2targ}
 \alias{gtargOptions}
 \alias{bcoin}
-\title{Up-and-Down Target Calculation and Design Calibration}
+\title{Up-and-Down Target Calculation and Design Guidance}
 \usage{
 k2targ(k, lowTarget = FALSE)
 
-ktargOptions(target, tolerance = 0.1, maxsize = 20)
+ktargOptions(target, tolerance = 0.1, maxk = 20)
 
 g2targ(cohort, lower, upper)
 
@@ -30,22 +30,24 @@ bcoin(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
 \item For \code{bcoin()}: the half-width of the interval around 0.5 in which the function recommends to simply use classical UD without a coin, as well as the approximate amount of rounding to the returned coin probability (whether in decimal on rational terms). Default 0.02, and hard-coded to be no less than 0.0001.
 }}
 
-\item{maxsize}{for \code{gtargOptions()}, the maximum cohort size to consider. Function will always start seeking from the minimum cohort size of 2 (cohort size 1 is equivalent to classical UD).}
+\item{maxk}{\code{ktargOptions()} only: the maximum value of \eqn{k} to consider.}
 
 \item{cohort, lower, upper}{\code{g2targ()} only: the cohort (group) size, how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example \verb{cohort=3, lower=0, upper=2} evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.}
 
+\item{minsize, maxsize}{\code{gtargOptions()} only: the minimum and maximum cohort size to consider. \code{minsize} has to be at least 2 (cohort size 1 is equivalent to classical UD).}
+
 \item{fraction}{\code{bcoin()} only: whether to report the coin probability as a rational rather than decimal fraction. Default \code{FALSE}.}
 
-\item{nameplate}{\code{bcoin()} only: in case \code{fraction = TRUE}, whether to return the "exact" rational probability, or allow some nudging of the resulting balance point (a.k.a \emph{"target"}) towards the median. Default \code{FALSE}, and moot when \code{fraction = FALSE}.}
+\item{nameplate}{\code{bcoin()} only: in case \code{fraction = TRUE}, whether to return the "exact" rational probability, or allow some nudging of the resulting balance point towards the median. Default \code{FALSE}, and moot when \code{fraction = FALSE}.}
 }
 \value{
 \itemize{
 \item \verb{k2targ(), g2targ()}: the official balance point given the user-provided design parameters.
-\item \verb{ktargOptions(), gtargOptions()}: a \code{data.frame} with design parameters and official balance point, for all options that meet user-provided constraints.
-\item \verb{bcoin():} a printed string that informs user of the biased-coin design rules, including the 'coin' probability in its user-chosen format. In case the user-desired target is 0.5 or very close to it, the string will inform user that they are better off just using classical UD without a coin.
+\item \verb{ktargOptions(), gtargOptions()}: a \code{data.frame} with design parameters and official balance point, for all options that meet user-provided constraints. A printed string provides dose transition rule guidance.
+\item \verb{bcoin():} a printed string that informs user of the biased-coin design rules, including the 'coin' probability in its user-chosen format (decimal or fraction). In case the user-desired target is 0.5 or very close to it, the string will inform user that they are better off just using classical UDD without a coin.
 }
 
-#' @references
+@references
 \itemize{
 \item Durham SD, Flournoy N. Random walks for quantile estimation. In: \emph{Statistical Decision Theory and Related Topics V} (West Lafayette, IN, 1992). Springer; 1994:467-476.
 \item Gezmu M, Flournoy N. Group up-and-down designs for dose-finding. \emph{J Stat Plan Inference.} 2006;136(6):1749-1764.
@@ -59,11 +61,11 @@ Up-and-down target calculation, and design options/guidance given a user-desired
 \details{
 This suite of utilities helps users
 \itemize{
-\item Figure out the approximate target response-rate, given design parameters;
-\item Suggest or specify design parameters, given user's target response-rate.
+\item Figure out the approximate target response-rate (a.k.a. the \emph{balance point}), given design parameters;
+\item Suggest potential design parameters, given user's desired target response-rate and other constraints.
 }
 
-Up-and-down designs (UDDs) generate random walks over dose space, with most dose-allocations usually taking place near the design's de-facto target percentile, called the \strong{"balance point"} by some theorists to distinguish it from the user's designated target (Oron and Hoff 2009, Oron et al. 2022).
+Up-and-down designs (UDDs) generate random walks over dose space, with most dose-allocations usually taking place near the design's de-facto target percentile, called the \strong{"balance point"} by some theorists to distinguish it from the user-designated target in case they differ (Oron and Hoff 2009, Oron et al. 2022).
 
 Most k-in-a-row and group UDD parameter combinations yield balance points that are irrational percentiles of the dose-response function, and therefore are unappealing as official experimental targets.
 
@@ -73,7 +75,7 @@ The \code{k2targ()} and \code{g2targ()} utilities are intended for users who alr
 
 Lastly, \code{bcoin()} returns the biased-coin probabilities given the user's designated target. In contrast to the two other UDDs described above, the biased-coin design can target any percentile with a precisely matched balance point. That said, k-in-a-row and group UDDs offer some advantages over biased-coin in terms of properties and operational simplicity.
 
-\code{bcoin()} can return the probability as a decimal (default) or approximate rational fraction. In the latter case, if \code{nameplate} is set to \code{TRUE}, you will get the exact \emph{"nameplate"} coin probability \eqn{\Gamma/(1 - \Gamma)}, with \eqn{\Gamma} being the target percentile between 0 and 1. However, the default \code{nameplate = FALSE} might nudge the resulting target to the median somewhat. This choice is based upon the theoretical finding that the biased-coin design does tend to concentrate doses a bit further away from the median than its official target would suggest (Oron and Hoff, 2009). See more information in \code{bcoin()} argument descriptions.
+\code{bcoin()} can return the probability as a decimal (default) or approximate rational fraction. In the latter case, if \code{nameplate} is set to \code{TRUE}, you will get the exact \emph{"nameplate"} coin probability \eqn{\Gamma/(1 - \Gamma)}, with \eqn{\Gamma} being the target percentile between 0 and 1. However, the default \code{nameplate = FALSE} might nudge the coin to yield a balance point somewhat closer to the median. This choice is based upon the theoretical finding that the biased-coin design does tend to concentrate doses a bit further away from the median than the balance point would suggest (Oron and Hoff, 2009). See more information in \code{bcoin()}'s argument descriptions.
 }
 \author{
 Assaf P. Oron \code{<assaf.oron.at.gmail.com>}

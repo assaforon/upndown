@@ -1,14 +1,14 @@
-#' Up-and-Down Target Calculation and Design Calibration
+#' Up-and-Down Target Calculation and Design Guidance
 #' 
 #' Up-and-down target calculation, and design options/guidance given a user-desired target.  
 #' 
 #' @details  
 #' This suite of utilities helps users 
 #' 
-#'  - Figure out the approximate target response-rate, given design parameters;
-#'  - Suggest or specify design parameters, given user's target response-rate.
+#'  - Figure out the approximate target response-rate (a.k.a. the *balance point*), given design parameters;
+#'  - Suggest potential design parameters, given user's desired target response-rate and other constraints.
 #'  
-#'  Up-and-down designs (UDDs) generate random walks over dose space, with most dose-allocations usually taking place near the design's de-facto target percentile, called the **"balance point"** by some theorists to distinguish it from the user's designated target (Oron and Hoff 2009, Oron et al. 2022).
+#'  Up-and-down designs (UDDs) generate random walks over dose space, with most dose-allocations usually taking place near the design's de-facto target percentile, called the **"balance point"** by some theorists to distinguish it from the user-designated target in case they differ (Oron and Hoff 2009, Oron et al. 2022).
 #'  
 #'  Most k-in-a-row and group UDD parameter combinations yield balance points that are irrational percentiles of the dose-response function, and therefore are unappealing as official experimental targets.
 #'  
@@ -18,7 +18,7 @@
 #'  
 #'  Lastly, `bcoin()` returns the biased-coin probabilities given the user's designated target. In contrast to the two other UDDs described above, the biased-coin design can target any percentile with a precisely matched balance point. That said, k-in-a-row and group UDDs offer some advantages over biased-coin in terms of properties and operational simplicity.
 #'  
-#'  `bcoin()` can return the probability as a decimal (default) or approximate rational fraction. In the latter case, if `nameplate` is set to `TRUE`, you will get the exact *"nameplate"* coin probability \eqn{\Gamma/(1 - \Gamma)}, with \eqn{\Gamma} being the target percentile between 0 and 1. However, the default `nameplate = FALSE` might nudge the resulting target to the median somewhat. This choice is based upon the theoretical finding that the biased-coin design does tend to concentrate doses a bit further away from the median than its official target would suggest (Oron and Hoff, 2009). See more information in `bcoin()` argument descriptions.
+#'  `bcoin()` can return the probability as a decimal (default) or approximate rational fraction. In the latter case, if `nameplate` is set to `TRUE`, you will get the exact *"nameplate"* coin probability \eqn{\Gamma/(1 - \Gamma)}, with \eqn{\Gamma} being the target percentile between 0 and 1. However, the default `nameplate = FALSE` might nudge the coin to yield a balance point somewhat closer to the median. This choice is based upon the theoretical finding that the biased-coin design does tend to concentrate doses a bit further away from the median than the balance point would suggest (Oron and Hoff, 2009). See more information in `bcoin()`'s argument descriptions.
 #'  
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	
 #' 
@@ -29,18 +29,19 @@
 #' @param tolerance 
 #'  - For `ktargOptions(), gtargOptions()`: the half-width of the interval around `target` in which to search for design options. Default 0.1. 
 #'  - For `bcoin()`: the half-width of the interval around 0.5 in which the function recommends to simply use classical UD without a coin, as well as the approximate amount of rounding to the returned coin probability (whether in decimal on rational terms). Default 0.02, and hard-coded to be no less than 0.0001.
-#' @param maxsize for `gtargOptions()`, the maximum cohort size to consider. Function will always start seeking from the minimum cohort size of 2 (cohort size 1 is equivalent to classical UD).
+#' @param maxk `ktargOptions()` only: the maximum value of \eqn{k} to consider.
+#' @param minsize,maxsize `gtargOptions()` only: the minimum and maximum cohort size to consider. `minsize` has to be at least 2 (cohort size 1 is equivalent to classical UD).
 #' @param fraction `bcoin()` only: whether to report the coin probability as a rational rather than decimal fraction. Default `FALSE`. 
-#' @param nameplate `bcoin()` only: in case `fraction = TRUE`, whether to return the "exact" rational probability, or allow some nudging of the resulting balance point (a.k.a *"target"*) towards the median. Default `FALSE`, and moot when `fraction = FALSE`.
+#' @param nameplate `bcoin()` only: in case `fraction = TRUE`, whether to return the "exact" rational probability, or allow some nudging of the resulting balance point towards the median. Default `FALSE`, and moot when `fraction = FALSE`.
 #' 
 #' 
 #' @return 
 #'  - `k2targ(), g2targ()`: the official balance point given the user-provided design parameters.
-#'  - `ktargOptions(), gtargOptions()`: a `data.frame` with design parameters and official balance point, for all options that meet user-provided constraints.
-#'  - `bcoin():` a printed string that informs user of the biased-coin design rules, including the 'coin' probability in its user-chosen format. In case the user-desired target is 0.5 or very close to it, the string will inform user that they are better off just using classical UD without a coin.
+#'  - `ktargOptions(), gtargOptions()`: a `data.frame` with design parameters and official balance point, for all options that meet user-provided constraints. A printed string provides dose transition rule guidance.
+#'  - `bcoin():` a printed string that informs user of the biased-coin design rules, including the 'coin' probability in its user-chosen format (decimal or fraction). In case the user-desired target is 0.5 or very close to it, the string will inform user that they are better off just using classical UDD without a coin.
 #'  
 #'  
-#'  #' @references 
+#'  @references 
 #'  - Durham SD, Flournoy N. Random walks for quantile estimation. In: *Statistical Decision Theory and Related Topics V* (West Lafayette, IN, 1992). Springer; 1994:467-476.
 #'  - Gezmu M, Flournoy N. Group up-and-down designs for dose-finding. *J Stat Plan Inference.* 2006;136(6):1749-1764.
 #'  - Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. *Stat Med.* 2009;28:1805-1820.
@@ -62,7 +63,7 @@ k2targ<-function(k, lowTarget=FALSE)
 #' @rdname k2targ
 #' @export
 
-ktargOptions<-function(target, tolerance = 0.1, maxsize = 20)
+ktargOptions<-function(target, tolerance = 0.1, maxk = 20)
 {
   if(length(target) > 1) stop("target must be a single number between 0 and 1.\n")
   checkTarget(target)
@@ -71,12 +72,12 @@ ktargOptions<-function(target, tolerance = 0.1, maxsize = 20)
   hi = (target>=0.5) 
   if(!hi) target = 1-target
   
-  hiend = k2targ(maxsize)
+  hiend = k2targ(maxk)
   
   klo = -1 / log2( max(0.5, target - tolerance) )
   khi = -1 / log2( min(hiend, target + tolerance) )
   krange = ceiling(klo):floor(khi)
-  krange = sort( krange[krange > 0 & krange <= maxsize] )
+  krange = sort( krange[krange > 0 & krange <= maxk] )
   
   cat("For the following targets, k", ifelse(hi, "positive", "negative"),
       "responses are needed for a move", ifelse(hi, "down.\n", "up.\n"),
@@ -107,11 +108,14 @@ uniroot(f=function(x, k, u, l) {pbinom(q=l, size=k, prob=x) + (pbinom(q=u-1, siz
 #' @rdname k2targ
 #' @export
 
+# Vals
 gtargOptions<-function(target, minsize = 2, maxsize = 6, tolerance = 0.1)
 {
-checkNatural(maxsize-1, parname = 'maxsize less 1', toolarge = 50)  
+if(maxsize<minsize) stop("'maxsize' cannot be smaller than 'minsize'.\n")
+checkNatural(c(maxsize-1, minsize-1), parname = 'Cohort size less 1', toolarge = 50)  
 if(length(target) > 1) stop("target must be a single number between 0 and 1.\n")
 checkTarget(target)
+# \vals
 
 dout = data.frame()
 for(k in minsize:maxsize)
@@ -129,18 +133,23 @@ for(k in minsize:maxsize)
       bal = g2targ(cohort=k, lower=l, upper=u) 
       if(bal < target-tolerance) break
       if(bal > target+tolerance) next
-      dtmp = rbind(dtmp, data.frame( cohort=k, lower=l, upper=u, BalancePoint=bal ) )
+      dtmp = rbind(dtmp, data.frame( Cohort=k, Lower=l, Upper=u, BalancePoint=bal ) )
     }
     if(ucand < k) for(u in seq(max(l+1,ucand+1), k, 1))
     {
       bal = g2targ(cohort=k, lower=l, upper=u) 
       if(bal > target+tolerance) break
       if(bal < target-tolerance) next
-      dtmp = rbind(dtmp, data.frame( cohort=k, lower=l, upper=u, BalancePoint=bal ) )
+      dtmp = rbind(dtmp, data.frame( Cohort=k, Lower=l, Upper=u, BalancePoint=bal ) )
     }
-    if(nrow(dtmp)>0) dout = rbind(dout, dtmp[order(dtmp$upper), ])
+    if(nrow(dtmp)>0) dout = rbind(dout, dtmp[order(dtmp$Upper), ])
   }
 }
+
+cat("For each design, if positive responses <= Lower, move up\n")
+cat("                 if positive responses >= Upper, move down\n")
+cat("  otherwise repeat same dose (relevant only when Upper - Lower > 1).\n")
+
 return(dout)
 }
 

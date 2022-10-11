@@ -31,19 +31,18 @@ mean(track)+spacing*(0.5-chosen)
 
 #----------------------- Utilities for reversal-anchored averaging -----------------#
 
-##' Identify reversals in an UD experiment's time series
-#' @param y time series of binary responses, should be coded 0/1 or \code{FALSE/TRUE}
-
-reversals <- function(y) which(diff(y)!=0)+1
-
-xtrace <- function(x) 
-{
-trans=diff(x)
-c(1,which(trans!=0) + 1)
-}
+#' @param y vector of binary responses in the order they were observed. Should be coded 0/1 or \code{FALSE/TRUE}
+#' 
+#' @return
 
 
-#' Reversal-anchored averaging estimators: reversal-only and reversal-startpoint
+
+#' Reversal-anchored averaging estimators for Up-and-Down
+#' 
+#' Dose-averaging target estimation for Up-and-Down experiments, historically the most popular approach but not recommended as primary nowadays. Provided for completeness.
+#' 
+#' 
+#' 
 reversmean<-function(x,y,rstart=3,all=TRUE,minfrac=0.5,before=0,full=FALSE)
 {
 n=length(x)
@@ -68,6 +67,21 @@ est=ifelse(all,mean(x[(revpts[rstart]-before):n]),mean(x[revpts[rstart:length(re
 if(!full) return(est)
 data.frame(est=est,cutoff=revpts[rstart]-before)
 }
+
+
+#' @rdname reversmean
+#' @export
+#' 
+reversals <- function(y) 
+{
+  if( any( !is.logical(y) | !(y %in% 0:1) ) )
+    stop("'y' must be logical or coded as 0/1.\n")
+  which(diff(y)!=0)+1
+}
+
+
+
+
 ##' Average with adaptive rstarting-point
 ##' Based on an unpblished concept from Oron (2007)
 
