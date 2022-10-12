@@ -245,3 +245,19 @@ checkNatural <- function(k, parname, toolarge = 1000)
 if (any(k != round(k) | k < 1 | k >= toolarge)) 
   stop(parname, "must be a natural number smaller than ", toolarge, ".\n")
 
+## Response coding
+
+checkDose <- function(x, maxfrac = 0.5)
+{
+  if(length(dim(y))>1 || any(dim(y))>1) stop("Dose must be a vector or equivalent.\n")
+  if( length(unique(x)) > maxfrac * length(x))
+    stop("Too many unique dose values")
+}
+
+checkResponse <- function(y)
+{
+if(length(dim(y))>1 || any(dim(y))>1) stop("Response must be a vector or equivalent.\n")
+if( any( !is.logical(y) | !(y %in% 0:1) ) )
+  stop("Response must be logical or coded as 0/1.\n")
+}
+

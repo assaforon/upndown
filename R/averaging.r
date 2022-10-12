@@ -39,14 +39,25 @@ mean(track)+spacing*(0.5-chosen)
 
 #' Reversal-anchored averaging estimators for Up-and-Down
 #' 
-#' Dose-averaging target estimation for Up-and-Down experiments, historically the most popular approach but not recommended as primary nowadays. Provided for completeness.
+#' Dose-averaging target estimation for Up-and-Down experiments, historically the most popular approach, but not recommended as primary nowadays. Provided for completeness.
 #' 
 #' 
+#' @param x numeric vector: sequence of administered doses, treatments, stimuli, etc.
+#' @param y numeric vector: sequence of observed responses. Must be same or one shorter than `x`, and must be coded `TRUE/FALSE` or 0/1.
 #' 
-reversmean<-function(x,y,rstart=3,all=TRUE,minfrac=0.5,before=0,full=FALSE)
+#' @export
+#'  
+reversmean <- function(x, y, rstart=3, all=TRUE,
+                       minfrac=0.5, before=FALSE, full=FALSE)
 {
+# vals
+checkDose(x)
+checkResponse(y)
 n=length(x)
 if (!(length(y) %in% c(n-1,n))) stop('X vector must be equal-length or 1 longer than Y.\n')
+
+checkNatural(rstart, toolarge = floor(n/2))
+# /vals
 
 revpts=reversals(y)
 #### exception handling
@@ -63,9 +74,9 @@ if(revpts[rstart]<=before) before=revpts[rstart]-1
 if(revpts[rstart] > n*minfrac) revpts[rstart] = floor(n*minfrac)
 
 # The estimate is anti-climactic:
-est=ifelse(all,mean(x[(revpts[rstart]-before):n]),mean(x[revpts[rstart:length(revpts)]]))
+est=ifelse(all,mean(x[(revpts[rstart] - as.integer(before)):n]),mean(x[revpts[rstart:length(revpts)]]))
 if(!full) return(est)
-data.frame(est=est,cutoff=revpts[rstart]-before)
+data.frame(est = est, cutoff = revpts[rstart] - as.integer(before) )
 }
 
 
@@ -74,8 +85,6 @@ data.frame(est=est,cutoff=revpts[rstart]-before)
 #' 
 reversals <- function(y) 
 {
-  if( any( !is.logical(y) | !(y %in% 0:1) ) )
-    stop("'y' must be logical or coded as 0/1.\n")
   which(diff(y)!=0)+1
 }
 
