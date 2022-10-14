@@ -7,13 +7,11 @@
 #'
 #' In their documentation of the Up-and-Down algorithm, Dixon and Mood (1948) presented an estimation method based on tallying responses
 
-
-#' @param x time series of doses given
-#' @param y time series of binary responses, should be coded 0/1 or \code{FALSE/TRUE}
-#' @param full logical: should more detailed information be returned? (default \code{FALSE})
+#' @inheritParams reversmean
+#' 
 #' @param flip logical: should we flip D-M's approach and use the more-common outcome? (default \code{FALSE})
 
-dixonmood<-function(x,y,full=FALSE,flip=FALSE)
+dixonmood<-function(x, y, full=FALSE, flip=FALSE)
 {
 n=length(x)
 if (!(length(y)==n)) stop('Mismatched lengths.\n')
@@ -31,9 +29,6 @@ mean(track)+spacing*(0.5-chosen)
 
 #----------------------- Utilities for reversal-anchored averaging -----------------#
 
-#' @param y vector of binary responses in the order they were observed. Should be coded 0/1 or \code{FALSE/TRUE}
-#' 
-#' @return
 
 
 
@@ -41,14 +36,36 @@ mean(track)+spacing*(0.5-chosen)
 #' 
 #' Dose-averaging target estimation for Up-and-Down experiments, historically the most popular approach, but not recommended as primary nowadays. Provided for completeness.
 #' 
+#' Up-and-Down designs (UDDs) allocate doses in a random walk centered nearly symmetrically around a balance point. Therefore, a modified average of allocated doses could be a plausible estimate of the balance point's location.
+#' 
+#' During UDDs' first generation, a variety of dose-averaging estimators was developed, with the one proposed by Wetherill et al. (1966) eventually becoming the most popular. This estimator uses only doses observed at *reversal* points: points with a negative response following a positive one, or vice versa. More recent research (Kershaw 1985, 1987; Oron et al. 2022, supplement) strongly indicates that in fact it is better to use all doses starting from some cut-point, rather than skip and choose only reversals. 
+#' 
+#' The `reversals()` utility identifies reversal points, while `reversmean()` produces a dose-averaging estimate whose starting cut-point is determined by a reversal. User can choose whether to use all doses from that cut-point onwards, or only the reversals as in the older approaches.
+#' 
+#' More broadly, dose-averaging despite some advantages is not very robust, and also lacks an interval estimate with reliable coverage. Therefore, `reversmean()` provides neither a confidence interval nor a standard erro. Instead, for UDD target estimation we recommend using centered isotonic regression, available via `quickInverse()` in the `cir` package. See Oron et al. 2022 (both article and supplement) for further information.
+#' 
+#' @references 
+#'  - Kershaw CD: A comparison of the estimators of the ED50 in up-and-down experiments. *J Stat Comput Simul* 1987; 27:175–84.
+#'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50.
+#'  Wetherill GB, Chen H, Vasudeva RB: Sequential estimation of quantal response curves: A new method of estimation. *Biometrika* 1966; 53:439–54
+
 #' 
 #' @param x numeric vector: sequence of administered doses, treatments, stimuli, etc.
-#' @param y numeric vector: sequence of observed responses. Must be same or one shorter than `x`, and must be coded `TRUE/FALSE` or 0/1.
+#' @param y numeric vector: sequence of observed responses. Must be same length as `x` or shorter by 1, and must be coded `TRUE/FALSE` or 0/1.
+#' @param rstart the reversal point from which the averaging begins. See Details.
+#' @param all logical: from the starting point onwards, should all values of `x` be used (`TRUE`, default), or only reversal points?
+#' @param before logical: whether to start the averaging one step earlier than the starting reversal point. Default `FALSE`, and ignored when `all=FALSE`.
+#' @param minfrac a fraction in \eqn{0,1} indicating the minimum fraction of the vector `x` to be used in averaging, in case reversal `rstart` occurs too late in the experiment. Default 0.5.
+#' @param full logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})
+
 #' 
+#' @return For `reversals()`, the indices of reversal points. For `reversmean()`, if `full=FALSE` returns the point estimate and otherwise returns a data frame with the estimate as well, as the index of the cutoff point used to start the averaging.
+
+#'  
 #' @export
 #'  
-reversmean <- function(x, y, rstart=3, all=TRUE,
-                       minfrac=0.5, before=FALSE, full=FALSE)
+reversmean <- function(x, y, rstart=3, all=TRUE, before=FALSE,
+                       maxExclude=0.5,  full=FALSE)
 {
 # vals
 checkDose(x)
@@ -57,21 +74,18 @@ n=length(x)
 if (!(length(y) %in% c(n-1,n))) stop('X vector must be equal-length or 1 longer than Y.\n')
 
 checkNatural(rstart, toolarge = floor(n/2))
+checkTarget(maxExclude, tname = 'maxExclude')
 # /vals
 
 revpts=reversals(y)
-#### exception handling
-if(length(revpts)==0) { # fully degenerate, no reversals
-	if(full) return(data.frame(est=mean(x[-1]),cutoff=1))
-	return(mean(x[-1]))
-}
-# part-degenerate: fewer revs than expected
-if(rstart>length(revpts)) rstart=length(revpts) 
-# Exception handling for 'before' (so we don't start before observation 1)
-if(revpts[rstart]<=before) before=revpts[rstart]-1
 
-# Starting from some minimal start point:
-if(revpts[rstart] > n*minfrac) revpts[rstart] = floor(n*minfrac)
+#### exception handling: 
+# if zero reversals, we err out 
+if(length(revpts)==0) stop('No reversals. Experiment likely too short, or data-quality error.\n')
+# part-degenerate: fewer revs than expected
+if(rstart > length(revpts)) rstart=length(revpts) 
+# Late start: reverting to some minimal start point:
+if(revpts[rstart] > n*maxExclude) revpts[rstart] = floor(n*maxExclude)
 
 # The estimate is anti-climactic:
 est=ifelse(all,mean(x[(revpts[rstart] - as.integer(before)):n]),mean(x[revpts[rstart:length(revpts)]]))
