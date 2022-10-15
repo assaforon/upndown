@@ -1,11 +1,14 @@
 ### Up-and-Down target estimates based on dose averaging 
 
 
-##' Original Dixon and Mood (1948) point estimate
+#' Original Dixon and Mood (1948) point estimate
 #'
-##' Basic version; formula assumes uniform spacing but should work anyway
+#' Basic version; formula assumes uniform spacing but should work anyway
 #'
-#' In their documentation of the Up-and-Down algorithm, Dixon and Mood (1948) presented an estimation method based on tallying responses
+#' In their documentation of the Up-and-Down algorithm, Dixon and Mood (1948) presented an estimation method based on tallying responses, choosgin
+#' 
+#' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
+
 
 #' @inheritParams reversmean
 #' 
@@ -31,31 +34,35 @@ mean(track)+spacing*(0.5-chosen)
 
 
 
-
 #' Reversal-anchored averaging estimators for Up-and-Down
 #' 
 #' Dose-averaging target estimation for Up-and-Down experiments, historically the most popular approach, but not recommended as primary nowadays. Provided for completeness.
 #' 
 #' Up-and-Down designs (UDDs) allocate doses in a random walk centered nearly symmetrically around a balance point. Therefore, a modified average of allocated doses could be a plausible estimate of the balance point's location.
 #' 
-#' During UDDs' first generation, a variety of dose-averaging estimators was developed, with the one proposed by Wetherill et al. (1966) eventually becoming the most popular. This estimator uses only doses observed at *reversal* points: points with a negative response following a positive one, or vice versa. More recent research (Kershaw 1985, 1987; Oron et al. 2022, supplement) strongly indicates that in fact it is better to use all doses starting from some cut-point, rather than skip and choose only reversals. 
+#' During UDDs' first generation, a variety of dose-averaging estimators was developed, with the one proposed by Wetherill et al. (1966) eventually becoming the most popular. This estimator uses only doses observed at *reversal* points: points with a negative response following a positive one, or vice versa. More recent research (Kershaw 1985, 1987; Oron et al. 2022, supplement) strongly indicates that in fact it is better to use all doses starting from some cut-point, rather than skip most of them and choose only reversals. 
 #' 
-#' The `reversals()` utility identifies reversal points, while `reversmean()` produces a dose-averaging estimate whose starting cut-point is determined by a reversal. User can choose whether to use all doses from that cut-point onwards, or only the reversals as in the older approaches.
+#' The `reversals()` utility identifies reversal points, whereas `reversmean()` produces a dose-averaging estimate whose starting cut-point is determined by a reversal. User can choose whether to use all doses from that cut-point onwards, or only the reversals as in the older approaches. A few additional options make the estimate even more flexible.
 #' 
-#' More broadly, dose-averaging despite some advantages is not very robust, and also lacks an interval estimate with reliable coverage. Therefore, `reversmean()` provides neither a confidence interval nor a standard erro. Instead, for UDD target estimation we recommend using centered isotonic regression, available via `quickInverse()` in the `cir` package. See Oron et al. 2022 (both article and supplement) for further information.
+#' More broadly, dose-averaging despite some advantages is not very robust, and also **lacks an interval estimate with reliable coverage.** Therefore, `reversmean()` provides neither a confidence interval nor a standard error. 
+#' 
+#' For UDD target estimation we recommend using centered isotonic regression, available via `quickInverse()` in the `cir` package. See Oron et al. 2022 (both article and supplement) for further information, as well as the `cir` package vignette.
 #' 
 #' @references 
 #'  - Kershaw CD: A comparison of the estimators of the ED50 in up-and-down experiments. *J Stat Comput Simul* 1987; 27:175–84.
 #'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50.
-#'  Wetherill GB, Chen H, Vasudeva RB: Sequential estimation of quantal response curves: A new method of estimation. *Biometrika* 1966; 53:439–54
+#'  - Wetherill GB, Chen H, Vasudeva RB: Sequential estimation of quantal response curves: A new method of estimation. *Biometrika* 1966; 53:439–54
+#'  
+#'  @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
+
 
 #' 
 #' @param x numeric vector: sequence of administered doses, treatments, stimuli, etc.
 #' @param y numeric vector: sequence of observed responses. Must be same length as `x` or shorter by 1, and must be coded `TRUE/FALSE` or 0/1.
-#' @param rstart the reversal point from which the averaging begins. See Details.
-#' @param all logical: from the starting point onwards, should all values of `x` be used (`TRUE`, default), or only reversal points?
+#' @param rstart the reversal point from which the averaging begins. Default 3, considered a good compromise between performance and robustness. See Details.
+#' @param all logical: from the starting point onwards, should all values of `x` be used (`TRUE`, default), or only reversal points as in the Wetherill et al. approach?
 #' @param before logical: whether to start the averaging one step earlier than the starting reversal point. Default `FALSE`, and ignored when `all=FALSE`.
-#' @param minfrac a fraction in \eqn{0,1} indicating the minimum fraction of the vector `x` to be used in averaging, in case reversal `rstart` occurs too late in the experiment. Default 0.5.
+#' @param maxExclude a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector `x` to exclude from averaging, in case reversal `rstart` occurs too late in the experiment. Default 0.5.
 #' @param full logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})
 
 #' 
@@ -103,12 +110,26 @@ reversals <- function(y)
 }
 
 
+#' Up-and-Down averaging estimate with adaptive starting-point
+
+#' A dose-averaging estimate based on a concept from Oron (2007). Provides an alternative to reversal-based averaging.
+
+#' Oron (2007) noted that 
 
 
-##' Average with adaptive rstarting-point
-##' Based on an unpblished concept from Oron (2007)
+#' @inheritParams reversmean
 
-adaptmean<-function(x,minfrac=2/3,before=FALSE,full=FALSE)
+
+#' @export
+
+#' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	
+#' 
+#' @references 
+#' 
+#'  - Oron AP. *Up-and-Down and the Percentile-finding Problem.* Ph.D. Dissertation, University of Washington, 2007. https://arxiv.org/abs/0808.3004
+
+
+adaptmean<-function(x, maxExclude=1/3, before=FALSE, full=FALSE)
 {
 # Degenerate case
 if(length(unique(x))==1) return(x[1])
@@ -123,15 +144,15 @@ if(abs(tailmeans[2]-x[1])<=spacing) return (tailmeans[1])
 signvec=sign(x[-n]-tailmeans[-1])
 hinge=min(which(signvec!=signvec[1]))
 # Rolling one step backwards, to *before the crossing
-if(before) hinge=hinge-1
-if(signvec[1]==0) hinge=2 # perfect storm
+if(before) hinge = hinge-1
+if(signvec[1]==0) hinge = 2 # perfect storm
 
 ### Return
 if(full) return(list(startpt=hinge,signsmeans=rbind(tailmeans,c(signvec,NA))))
 # Applying minimum fraction
-minstart=floor(n*(1-minfrac))
+minstart = floor(n * maxExclude)
 
-ifelse(hinge<minstart,tailmeans[hinge],tailmeans[minstart])
+ifelse(hinge<minstart, tailmeans[hinge], tailmeans[minstart])
 }
 
 ### Choi (1971,1990) point+interval estimate 

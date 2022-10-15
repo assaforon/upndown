@@ -7,11 +7,11 @@
 dixonmood(x, y, full = FALSE, flip = FALSE)
 }
 \arguments{
-\item{x}{time series of doses given}
+\item{x}{numeric vector: sequence of administered doses, treatments, stimuli, etc.}
 
-\item{y}{time series of binary responses, should be coded 0/1 or \code{FALSE/TRUE}}
+\item{y}{numeric vector: sequence of observed responses. Must be same length as \code{x} or shorter by 1, and must be coded \code{TRUE/FALSE} or 0/1.}
 
-\item{full}{logical: should more detailed information be returned? (default \code{FALSE})}
+\item{full}{logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})}
 
 \item{flip}{logical: should we flip D-M's approach and use the more-common outcome? (default \code{FALSE})}
 }
