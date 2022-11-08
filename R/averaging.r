@@ -5,8 +5,12 @@
 #'
 #' Basic version; formula assumes uniform spacing but should work anyway
 #'
-#' In their documentation of the Up-and-Down algorithm, Dixon and Mood (1948) presented an estimation method based on tallying responses, choosgin
+#' In their documentation of the Up-and-Down algorithm, Dixon and Mood (1948) presented an estimation method based on tallying responses, choosing to use only the positive or negative responses (the less-common of the two), since they reasoned the two mirror each other. This is not strictly true: it ignores both leading/trailing "tail" sequences of identical responses, and repeated visits to the boundary dose in case there are dose boundaries.
 #' 
+#' The Dixon-Mood (sometimes called Dixon-Massey) is provided here mostly for historical reasons and comparative-simulation reasons, and also because  estimate is apparently *(and unfortunately)* still in use in some fields. **It should not be used for actual target-dose estimation in real experiments.** It behaves very poorly even under minor deviations from the most optimal conditions (see, e.g., simulations in the supplement to Oron et al. 2022.).
+#' 
+#' In order to discourage from actual use in experiments, we do not provide a method for the Dixon-Mood estimator's confidence interval. It behaves even more poorly than the point estimate. 
+#' #' 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
 
 
@@ -14,20 +18,22 @@
 #' 
 #' @param flip logical: should we flip D-M's approach and use the more-common outcome? (default \code{FALSE})
 
-dixonmood<-function(x, y, full=FALSE, flip=FALSE)
+dixonmood <- function(x, y, full=FALSE, flip=FALSE)
 {
 n=length(x)
 if (!(length(y)==n)) stop('Mismatched lengths.\n')
 if(length(unique(y))==1) return(NA) # degenerate case, all 0's or 1's
-xvals=sort(unique(x))
-spacing=mean(diff(xvals))
+xvals = sort(unique(x))
+spacing = mean(diff(xvals))
 # D-M method uses the less frequent outcome, hence might drop leading/trailing "tails"
-chosen=ifelse(mean(y)<0.5,1,0)
-if(flip) chosen=1-chosen
-track=x[y==chosen]
+chosen = ifelse(mean(y)<0.5, 1, 0)
+if(flip) chosen = 1-chosen
+track = x[y==chosen]
+
 # After all this prep, the formula is anticlimactic :)
-if(full) return(c(A=sum((track-min(track))/spacing),N=length(track),d=spacing))
-mean(track)+spacing*(0.5-chosen)
+if(full) return(c(A=sum((track-min(track))/spacing), N=length(track), d=spacing))
+
+mean(track) + spacing * (0.5-chosen)
 }
 
 #----------------------- Utilities for reversal-anchored averaging -----------------#
