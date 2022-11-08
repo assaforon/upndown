@@ -22,15 +22,15 @@ reversals(y)
 
 \item{y}{numeric vector: sequence of observed responses. Must be same length as \code{x} or shorter by 1, and must be coded \code{TRUE/FALSE} or 0/1.}
 
-\item{rstart}{the reversal point from which the averaging begins. See Details.}
+\item{rstart}{the reversal point from which the averaging begins. Default 3, considered a good compromise between performance and robustness. See Details.}
 
-\item{all}{logical: from the starting point onwards, should all values of \code{x} be used (\code{TRUE}, default), or only reversal points?}
+\item{all}{logical: from the starting point onwards, should all values of \code{x} be used (\code{TRUE}, default), or only reversal points as in the Wetherill et al. approach?}
 
 \item{before}{logical: whether to start the averaging one step earlier than the starting reversal point. Default \code{FALSE}, and ignored when \code{all=FALSE}.}
 
-\item{full}{logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})}
+\item{maxExclude}{a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector \code{x} to exclude from averaging, in case reversal \code{rstart} occurs too late in the experiment. Default 0.5.}
 
-\item{minfrac}{a fraction in \eqn{0,1} indicating the minimum fraction of the vector \code{x} to be used in averaging, in case reversal \code{rstart} occurs too late in the experiment. Default 0.5.}
+\item{full}{logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})}
 }
 \value{
 For \code{reversals()}, the indices of reversal points. For \code{reversmean()}, if \code{full=FALSE} returns the point estimate and otherwise returns a data frame with the estimate as well, as the index of the cutoff point used to start the averaging.
@@ -41,16 +41,20 @@ Dose-averaging target estimation for Up-and-Down experiments, historically the m
 \details{
 Up-and-Down designs (UDDs) allocate doses in a random walk centered nearly symmetrically around a balance point. Therefore, a modified average of allocated doses could be a plausible estimate of the balance point's location.
 
-During UDDs' first generation, a variety of dose-averaging estimators was developed, with the one proposed by Wetherill et al. (1966) eventually becoming the most popular. This estimator uses only doses observed at \emph{reversal} points: points with a negative response following a positive one, or vice versa. More recent research (Kershaw 1985, 1987; Oron et al. 2022, supplement) strongly indicates that in fact it is better to use all doses starting from some cut-point, rather than skip and choose only reversals.
+During UDDs' first generation, a variety of dose-averaging estimators was developed, with the one proposed by Wetherill et al. (1966) eventually becoming the most popular. This estimator uses only doses observed at \emph{reversal} points: points with a negative response following a positive one, or vice versa. More recent research (Kershaw 1985, 1987; Oron et al. 2022, supplement) strongly indicates that in fact it is better to use all doses starting from some cut-point, rather than skip most of them and choose only reversals.
 
-The \code{reversals()} utility identifies reversal points, while \code{reversmean()} produces a dose-averaging estimate whose starting cut-point is determined by a reversal. User can choose whether to use all doses from that cut-point onwards, or only the reversals as in the older approaches.
+The \code{reversals()} utility identifies reversal points, whereas \code{reversmean()} produces a dose-averaging estimate whose starting cut-point is determined by a reversal. User can choose whether to use all doses from that cut-point onwards, or only the reversals as in the older approaches. A few additional options make the estimate even more flexible.
 
-More broadly, dose-averaging despite some advantages is not very robust, and also lacks an interval estimate with reliable coverage. Therefore, \code{reversmean()} provides neither a confidence interval nor a standard erro. Instead, for UDD target estimation we recommend using centered isotonic regression, available via \code{quickInverse()} in the \code{cir} package. See Oron et al. 2022 (both article and supplement) for further information.
+More broadly, dose-averaging despite some advantages is not very robust, and also \strong{lacks an interval estimate with reliable coverage.} Therefore, \code{reversmean()} provides neither a confidence interval nor a standard error.
+
+For UDD target estimation we recommend using centered isotonic regression, available via \code{quickInverse()} in the \code{cir} package. See Oron et al. 2022 (both article and supplement) for further information, as well as the \code{cir} package vignette.
 }
 \references{
 \itemize{
 \item Kershaw CD: A comparison of the estimators of the ED50 in up-and-down experiments. \emph{J Stat Comput Simul} 1987; 27:175–84.
 \item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50.
-Wetherill GB, Chen H, Vasudeva RB: Sequential estimation of quantal response curves: A new method of estimation. \emph{Biometrika} 1966; 53:439–54
+\item Wetherill GB, Chen H, Vasudeva RB: Sequential estimation of quantal response curves: A new method of estimation. \emph{Biometrika} 1966; 53:439–54
 }
+
+@author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 }

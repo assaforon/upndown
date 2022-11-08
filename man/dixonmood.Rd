@@ -19,5 +19,13 @@ dixonmood(x, y, full = FALSE, flip = FALSE)
 Basic version; formula assumes uniform spacing but should work anyway
 }
 \details{
-In their documentation of the Up-and-Down algorithm, Dixon and Mood (1948) presented an estimation method based on tallying responses
+In their documentation of the Up-and-Down algorithm, Dixon and Mood (1948) presented an estimation method based on tallying responses, choosing to use only the positive or negative responses (the less-common of the two), since they reasoned the two mirror each other. This is not strictly true: it ignores both leading/trailing "tail" sequences of identical responses, and repeated visits to the boundary dose in case there are dose boundaries.
+
+The Dixon-Mood (sometimes called Dixon-Massey) is provided here mostly for historical reasons and comparative-simulation reasons, and also because  estimate is apparently \emph{(and unfortunately)} still in use in some fields. \strong{It should not be used for actual target-dose estimation in real experiments.} It behaves very poorly even under minor deviations from the most optimal conditions (see, e.g., simulations in the supplement to Oron et al. 2022.).
+
+In order to discourage from actual use in experiments, we do not provide a method for the Dixon-Mood estimator's confidence interval. It behaves even more poorly than the point estimate.
+#'
+}
+\author{
+Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 }

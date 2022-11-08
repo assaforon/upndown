@@ -2,12 +2,31 @@
 % Please edit documentation in R/averaging.r
 \name{adaptmean}
 \alias{adaptmean}
-\title{Average with adaptive rstarting-point
-Based on an unpblished concept from Oron (2007)}
+\title{Up-and-Down averaging estimate with adaptive starting-point
+A dose-averaging estimate based on a concept from Oron (2007). Provides an alternative to reversal-based averaging.
+Oron (2007) noted that}
 \usage{
-adaptmean(x, minfrac = 2/3, before = FALSE, full = FALSE)
+adaptmean(x, maxExclude = 1/3, before = FALSE, full = FALSE)
+}
+\arguments{
+\item{x}{numeric vector: sequence of administered doses, treatments, stimuli, etc.}
+
+\item{maxExclude}{a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector \code{x} to exclude from averaging, in case reversal \code{rstart} occurs too late in the experiment. Default 0.5.}
+
+\item{before}{logical: whether to start the averaging one step earlier than the starting reversal point. Default \code{FALSE}, and ignored when \code{all=FALSE}.}
+
+\item{full}{logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})}
 }
 \description{
-Average with adaptive rstarting-point
-Based on an unpblished concept from Oron (2007)
+Up-and-Down averaging estimate with adaptive starting-point
+A dose-averaging estimate based on a concept from Oron (2007). Provides an alternative to reversal-based averaging.
+Oron (2007) noted that
+}
+\references{
+\itemize{
+\item Oron AP. \emph{Up-and-Down and the Percentile-finding Problem.} Ph.D. Dissertation, University of Washington, 2007. https://arxiv.org/abs/0808.3004
+}
+}
+\author{
+Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 }

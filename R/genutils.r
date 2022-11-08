@@ -257,7 +257,7 @@ checkDose <- function(x, maxfrac = 0.5)
 checkResponse <- function(y)
 {
 if(length(dim(y))>1 || any(dim(y))>1) stop("Response must be a vector or equivalent.\n")
-if( any( !is.logical(y) | !(y %in% 0:1) ) )
+if( any( !is.logical(y) & !(y %in% 0:1) ) )
   stop("Response must be logical or coded as 0/1.\n")
 }
 
