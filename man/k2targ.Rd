@@ -46,14 +46,6 @@ bcoin(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
 \item \verb{ktargOptions(), gtargOptions()}: a \code{data.frame} with design parameters and official balance point, for all options that meet user-provided constraints. A printed string provides dose transition rule guidance.
 \item \verb{bcoin():} a printed string that informs user of the biased-coin design rules, including the 'coin' probability in its user-chosen format (decimal or fraction). In case the user-desired target is 0.5 or very close to it, the string will inform user that they are better off just using classical UDD without a coin.
 }
-
-@references
-\itemize{
-\item Durham SD, Flournoy N. Random walks for quantile estimation. In: \emph{Statistical Decision Theory and Related Topics V} (West Lafayette, IN, 1992). Springer; 1994:467-476.
-\item Gezmu M, Flournoy N. Group up-and-down designs for dose-finding. \emph{J Stat Plan Inference.} 2006;136(6):1749-1764.
-\item Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. \emph{Stat Med.} 2009;28:1805-1820.
-\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50.
-}
 }
 \description{
 Up-and-down target calculation, and design options/guidance given a user-desired target.
@@ -76,6 +68,20 @@ The \code{k2targ()} and \code{g2targ()} utilities are intended for users who alr
 Lastly, \code{bcoin()} returns the biased-coin probabilities given the user's designated target. In contrast to the two other UDDs described above, the biased-coin design can target any percentile with a precisely matched balance point. That said, k-in-a-row and group UDDs offer some advantages over biased-coin in terms of properties and operational simplicity.
 
 \code{bcoin()} can return the probability as a decimal (default) or approximate rational fraction. In the latter case, if \code{nameplate} is set to \code{TRUE}, you will get the exact \emph{"nameplate"} coin probability \eqn{\Gamma/(1 - \Gamma)}, with \eqn{\Gamma} being the target percentile between 0 and 1. However, the default \code{nameplate = FALSE} might nudge the coin to yield a balance point somewhat closer to the median. This choice is based upon the theoretical finding that the biased-coin design does tend to concentrate doses a bit further away from the median than the balance point would suggest (Oron and Hoff, 2009). See more information in \code{bcoin()}'s argument descriptions.
+}
+\references{
+\itemize{
+\item Durham SD, Flournoy N. Random walks for quantile estimation. In: \emph{Statistical Decision Theory and Related Topics V} (West Lafayette, IN, 1992). Springer; 1994:467-476.
+\item Gezmu M, Flournoy N. Group up-and-down designs for dose-finding. \emph{J Stat Plan Inference.} 2006;136(6):1749-1764.
+\item Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. \emph{Stat Med.} 2009;28:1805-1820.
+\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50.
+}
+}
+\seealso{
+\itemize{
+\item \code{\link{bcdmat}} for the functions calculating transition probability matrices for various up-and-down designs.
+\item \code{\link{pivec}} for functions calculating key probability vectors for the designs.
+}
 }
 \author{
 Assaf P. Oron \code{<assaf.oron.at.gmail.com>}

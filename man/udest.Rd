@@ -9,22 +9,31 @@ udest(x, y, target, balancePt = target, conf = 0.9)
 \arguments{
 \item{x}{numeric vector: sequence of administered doses, treatments, stimuli, etc.}
 
-\item{y}{numeric vector: sequence of observed responses. Must be same length as \code{x} or shorter by 1, and must be coded \code{TRUE/FALSE} or 0/1.}
+\item{y}{numeric vector: sequence of observed responses. Must be same length as \code{x}, and must be coded \code{TRUE/FALSE} or 0/1.}
 
-\item{target}{The target response rate for which target dose estimate is requested. Must be a single number in $(0,1).$}
+\item{target}{The target response rate for which target dose estimate is requested. Must be a single number in \eqn{(0,1).}}
 
-\item{balancePt}{In case the design's inherent balance point differs somewhat from \code{target}, specify it here to improve estimation accuracy. See Details for further explanation. Otherwise, this argument defaults to be equal to \code{target}}
+\item{balancePt}{In case the design's inherent balance point differs somewhat from \code{target}, specify it here to improve estimation accuracy. See Details for further explanation. Otherwise, this argument defaults to be equal to \code{target}.}
 
-\item{conf}{The desired confidence level for the confidence interval. Default $90\\%,$ and we recommend not increasing to $95\\%$ unless you have about $\sim 100$ or more observations.
-https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf}
+\item{conf}{The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations.}
+}
+\value{
+A one-row data frame with 4 variables: \code{target}, \code{point} (the point estimate), \verb{lowerXYconf, upperXYconf} (the confidence bounds, with \code{XY} standing for the percents, default \code{90}).
 }
 \description{
-CIR is the recommended method for estimating up-and-down (UD) targets. This is a UD-adapted convenience wrapper for a function from the \code{cir} package.
+Centered Isotonic Regression (CIR) is an extension of isotonic regression (IR), substantially improving upon IR's estimation performance in the dose-response and dose-finding contexts (Oron and Flournoy 2017, Flournoy and Oron 2020). CIR is the recommended method for estimating up-and-down targets.
 }
 \details{
-Centered Isotonic Regression (CIR) is an extension of isotonic regression (IR), substantially improving upon IR's estimation performance in the dose-response and dose-finding contexts (Oron and Flournoy 2017, Flournoy and Oron 2020). CIR and related methods are available in the \code{cir} package. The \code{udest()} function in the present package provides a convenient wrapper for \code{cir::quickInverse()}, with arguments already set to the appropriate values for estimating the target dose after an up-and-down experiment.
+CIR and related methods are available in the \code{cir} package. The \code{udest()} function in the present package provides a convenient wrapper for \code{cir::quickInverse()}, with arguments already set to the appropriate values for estimating the target dose after an up-and-down experiment. The function also returns a confidence interval as default.
 
-WARNING! You should not estimate
+\strong{WARNING!} You should not estimate target doses too far removed from the design's actual balance point (definitely no further than 0.1, e.g., estimating the 33rd percentile for a design whose balance point is the median). As Flournoy and Oron (2020) explain, observed response rates are biased away from the balance point. Even though \code{udest()} performs the rudimentary bias correction described in that article, practically speaking this correction's role is mostly to expand the confidence intervals in response to the bias. It cannot guarantee to provide reliable off-balance-point estimates.
+}
+\references{
+\itemize{
+\item Oron AP, Flournoy N.  Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. \emph{Statistics in Biopharmaceutical Research} 2017; 9, 258-267. \href{https://arxiv.org/pdf/1701.05964.pdf}{Author's public version available on arxiv.org.}
+\item Flournoy N, Oron AP. Bias Induced by Adaptive Dose-Finding Designs. \emph{Journal of Applied Statistics} 2020; 47, 2431-2442.
+\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50. \href{https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf}{See in particular the open-access Supplement.}
+}
 }
 \author{
 Assaf P. Oron \code{<assaf.oron.at.gmail.com>}

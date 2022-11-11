@@ -27,12 +27,18 @@
 #' @param startdose For `currentvec, cumulvec`, where does the experiment start? To be given as a dose-level index between 1 and \eqn{M}. If left as `NULL` (default), function will assume the equivalent of *"fair die roll"* among all doses. User can also specify your own \eqn{M}-length probability vector.
 #' @param proportions Logical (`cumulvec` only) Would you like the results returned as proportions (= a probability vector; `TRUE`, default), or as cumulative allocation counts? 
 #' @param exclude Integer (`cumulvec` only) Should the cumulative distribution exclude a certain number of initial observations? Default 0. 
+#' @param ... Arguments passed on to the design's matrix-calculating function.
 #' 
-#' #' 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
 #' @export
+#'
+#' @seealso
+#'  - \code{\link{bcdmat}} for the functions calculating transition probability matrices for various up-and-down designs.
+#'  - \code{\link{k2targ}} for target-finding design aids.
+#'
 #' 
 #' @example ../inst/examples/vecExamples.r
+
 
 
 #' @references 

@@ -29,10 +29,10 @@
 #' @return An \eqn{M\times M} transition probability matrix, except for `kmatFull()` with \eqn{k>1} which returns a larger square matrix. 
 
 #' @seealso 
-#'  - \code{\link{k2targ}}, \code{\link{targ2k}} to find the k-in-a-row target-response rate for specific k and vice versa
-#'  - \code{\link{gudtarg}} to calculate group UDD target-response rate given a `cohort,lower,upper` combination
-#'  - \code{\link{pivec}}, \code{\link{advancevec}}, \code{\link{cumulpi}}, which provide probability vectors of dose-allocation distributions using Up-and-Down TPMs.
-
+#'  - \code{\link{k2targ}}, \code{\link{ktargOptions}} to find the k-in-a-row target-response rate for specific k and vice versa.
+#'  - \code{\link{g2targ}}, , \code{\link{gtargOptions}} likewise for group up-and-down.
+#'  - \code{\link{pivec}}, \code{\link{currentvec}}, \code{\link{cumulvec}}, which provide probability vectors of dose-allocation distributions using Up-and-Down TPMs.
+#'
 
 #' @references 
 #'  - Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. *J Am Stat Assoc.* 1948;43:109-126.

@@ -21,6 +21,11 @@
 #'  `bcoin()` can return the probability as a decimal (default) or approximate rational fraction. In the latter case, if `nameplate` is set to `TRUE`, you will get the exact *"nameplate"* coin probability \eqn{\Gamma/(1 - \Gamma)}, with \eqn{\Gamma} being the target percentile between 0 and 1. However, the default `nameplate = FALSE` might nudge the coin to yield a balance point somewhat closer to the median. This choice is based upon the theoretical finding that the biased-coin design does tend to concentrate doses a bit further away from the median than the balance point would suggest (Oron and Hoff, 2009). See more information in `bcoin()`'s argument descriptions.
 #'  
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	
+#'  
+#' @seealso
+#'  - \code{\link{bcdmat}} for the functions calculating transition probability matrices for various up-and-down designs.
+#'  - \code{\link{pivec}} for functions calculating key probability vectors for the designs.
+#'
 #' 
 #' @param target the desired target response rate (as a fraction in \eqn{(0,1)}), where relevant.
 #' @param k the number of consecutive identical responses required for dose transitions (k-in-a-row functions only).
@@ -41,7 +46,7 @@
 #'  - `bcoin():` a printed string that informs user of the biased-coin design rules, including the 'coin' probability in its user-chosen format (decimal or fraction). In case the user-desired target is 0.5 or very close to it, the string will inform user that they are better off just using classical UDD without a coin.
 #'  
 #'  
-#'  @references 
+#' @references 
 #'  - Durham SD, Flournoy N. Random walks for quantile estimation. In: *Statistical Decision Theory and Related Topics V* (West Lafayette, IN, 1992). Springer; 1994:467-476.
 #'  - Gezmu M, Flournoy N. Group up-and-down designs for dose-finding. *J Stat Plan Inference.* 2006;136(6):1749-1764.
 #'  - Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. *Stat Med.* 2009;28:1805-1820.

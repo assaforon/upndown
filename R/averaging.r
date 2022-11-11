@@ -5,13 +5,28 @@
 #'
 #' Basic version; formula assumes uniform spacing but should work anyway
 #'
-#' In their documentation of the Up-and-Down algorithm, Dixon and Mood (1948) presented an estimation method based on tallying responses, choosing to use only the positive or negative responses (the less-common of the two), since they reasoned the two mirror each other. This is not strictly true: it ignores both leading/trailing "tail" sequences of identical responses, and repeated visits to the boundary dose in case there are dose boundaries.
+#' In their documentation of the Up-and-Down algorithm, Dixon and Mood (1948) presented an estimation method based on tallying and averaging responses, choosing to use only the positive or negative responses (the less-common of the two), since they reasoned the two mirror each other. This is not strictly true: it ignores both leading/trailing "tail" sequences of identical responses, and repeated visits to the boundary dose in case there are dose boundaries.
 #' 
-#' The Dixon-Mood (sometimes called Dixon-Massey) is provided here mostly for historical reasons and comparative-simulation reasons, and also because  estimate is apparently *(and unfortunately)* still in use in some fields. **It should not be used for actual target-dose estimation in real experiments.** It behaves very poorly even under minor deviations from the most optimal conditions (see, e.g., simulations in the supplement to Oron et al. 2022.).
+#' The Dixon-Mood estimate (sometimes called Dixon-Massey) is provided here mostly for historical reasons and comparative-simulation uses, and also because this estimate is apparently *(and unfortunately)* still in use in some fields. **It should not be used for actual target-dose estimation in real experiments.** It behaves very poorly even under minor deviations from the most optimal conditions (see, e.g., simulations in the supplement to Oron et al. 2022.).
 #' 
-#' In order to discourage from actual use in experiments, we do not provide a method for the Dixon-Mood estimator's confidence interval. It behaves even more poorly than the point estimate. 
-#' #' 
+#' In order to discourage from actual use in experiments, we do not provide a method for the Dixon-Mood estimator's confidence interval, even though the original article did include one. The interval estimate behaves even more poorly than the point estimate. 
+#' 
+#' For UDD target estimation we recommend using centered isotonic regression, available via \code{\link{udest}}, an up-and-down adapted wrapper to `cir::quickInverse()`. See Oron et al. 2022 (both article and supplement) for further information, as well as the `cir` package vignette.
+#' 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
+#' 
+#' @seealso
+#'   - \code{\link{udest}}, the recommended estimation method for up-and-down targets. 
+#'   - \code{\link{reversmean}}, The most commonly-used dose-averaging approach (*not* recommended; the recommended one is \code{\link{udest}} referenced above).	 
+
+#' 
+#' @export
+#' 
+#' @return The point estimate
+
+#' @references 
+#'  - Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. *J Am Stat Assoc.* 1948;43:109-126.
+#'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. [See in particular the open-access Supplement.](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf)
 
 
 #' @inheritParams reversmean
@@ -52,23 +67,25 @@ mean(track) + spacing * (0.5-chosen)
 #' 
 #' More broadly, dose-averaging despite some advantages is not very robust, and also **lacks an interval estimate with reliable coverage.** Therefore, `reversmean()` provides neither a confidence interval nor a standard error. 
 #' 
-#' For UDD target estimation we recommend using centered isotonic regression, available via `quickInverse()` in the `cir` package. See Oron et al. 2022 (both article and supplement) for further information, as well as the `cir` package vignette.
+#' For UDD target estimation we recommend using centered isotonic regression, available via \code{\link{udest}}, an up-and-down adapted wrapper to `cir::quickInverse()`. See Oron et al. 2022 (both article and supplement) for further information, as well as the `cir` package vignette.
 #' 
 #' @references 
 #'  - Kershaw CD: A comparison of the estimators of the ED50 in up-and-down experiments. *J Stat Comput Simul* 1987; 27:175–84.
-#'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50.
+#'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. [See in particular the open-access Supplement.](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf)
 #'  - Wetherill GB, Chen H, Vasudeva RB: Sequential estimation of quantal response curves: A new method of estimation. *Biometrika* 1966; 53:439–54
 #'  
-#'  @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
-
-
+#'  @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
+#'  
+#'  @seealso 
+#'  - \code{\link{udest}}, the recommended estimation method for up-and-down targets.
+#'  - \code{\link{adaptmean}}, an unpublished but arguably better approach to dose-averaging (this is *not* the recommended method though; that would be \code{\link{udest}} referenced above).
 #' 
 #' @param x numeric vector: sequence of administered doses, treatments, stimuli, etc.
 #' @param y numeric vector: sequence of observed responses. Must be same length as `x` or shorter by 1, and must be coded `TRUE/FALSE` or 0/1.
 #' @param rstart the reversal point from which the averaging begins. Default 3, considered a good compromise between performance and robustness. See Details.
 #' @param all logical: from the starting point onwards, should all values of `x` be used (`TRUE`, default), or only reversal points as in the Wetherill et al. approach?
 #' @param before logical: whether to start the averaging one step earlier than the starting reversal point. Default `FALSE`, and ignored when `all=FALSE`.
-#' @param maxExclude a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector `x` to exclude from averaging, in case reversal `rstart` occurs too late in the experiment. Default 0.5.
+#' @param maxExclude a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector `x` to exclude from averaging, in case the algorithm-identified starting point occurs too late in the experiment. Default 1/3.
 #' @param full logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})
 
 #' 
@@ -78,7 +95,7 @@ mean(track) + spacing * (0.5-chosen)
 #' @export
 #'  
 reversmean <- function(x, y, rstart=3, all=TRUE, before=FALSE,
-                       maxExclude=0.5,  full=FALSE)
+                       maxExclude=1/3,  full=FALSE)
 {
 # vals
 checkDose(x)
@@ -115,27 +132,43 @@ reversals <- function(y)
   which(diff(y)!=0)+1
 }
 
+#------------------------
 
 #' Up-and-Down averaging estimate with adaptive starting-point
-
+#'
 #' A dose-averaging estimate based on a concept from Oron (2007). Provides an alternative to reversal-based averaging.
-
-#' Oron (2007) noted that 
+#'
+#' Historically, most up-and-down studies have used dose-averaging estimates, focusing on reversal points either as anchor points -- points where the averaging begins -- or as the only doses to use in the estimate. Oron (2007) showed that skipping doses is generally a bad idea, and noted that a reversal anchor point is not directly tied to the motivation for having an anchor/cutoff point.
+#' 
+#' Excluding doses before the anchor/cutoff is done in order to mitigate the bias due to the arbitrary location of the starting dose, as opposed to the experiment's balance point which is close to the target percentile. The extent of excluded sample depends on the distance between the two, and the vagaries of an individual experimental run, which is approximated as a random walk. Thus, some *"lucky"* experiments might not need any exclusion at all (because they started right at the balance point), while others might need to exclude dozens of observations. Reversals do not capture this variability well.
+#' 
+#' The estimation method coded in `adaptmean()` identifies **the first crossing point** - the first point at which the dose is *"on the other side"* from the starting point, compared with the average of all remaining doses. This approach is far closer to capturing the dynamics described above, and indeed performs well in comparative simulations (Oron et al. 2022, Supplement).
+#' 
+#' The reason `adaptmean()` has not been further developed or published, is that like all dose-averaging estimators, at present there doesn't seem to be a reliable confidence interval to accompany any of them. 
+#' 
+#' For UDD target estimation we recommend using centered isotonic regression, a more robust method available together with a confidence interval via \code{\link{udest}}, an up-and-down adapted wrapper to `cir::quickInverse()`. See Oron et al. 2022 (both article and supplement) for further information, as well as the `cir` package vignette.
 
 
 #' @inheritParams reversmean
 
-
 #' @export
+#' 
+#' @return The point estimate
 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	
 #' 
+#' @seealso 
+#'   - \code{\link{udest}}, the recommended estimation method for up-and-down targets. 
+#'   - \code{\link{reversmean}} for the commonly-used reversal-anchored averages mentioned in Details.	  
+
+#' 
 #' @references 
 #' 
-#'  - Oron AP. *Up-and-Down and the Percentile-finding Problem.* Ph.D. Dissertation, University of Washington, 2007. https://arxiv.org/abs/0808.3004
+#'  - Oron AP. [*Up-and-Down and the Percentile-finding Problem.*](https://arxiv.org/abs/0808.3004) Ph.D. Dissertation, University of Washington, 2007. 
+#'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. [See in particular the open-access Supplement.](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf)
 
 
-adaptmean<-function(x, maxExclude=1/3, before=FALSE, full=FALSE)
+adaptmean <- function(x, maxExclude=1/3, before=FALSE, full=FALSE)
 {
 # Degenerate case
 if(length(unique(x))==1) return(x[1])
@@ -160,6 +193,8 @@ minstart = floor(n * maxExclude)
 
 ifelse(hinge<minstart, tailmeans[hinge], tailmeans[minstart])
 }
+
+#------------------------------    Un-exported functions; dredge up at your own risk!
 
 ### Choi (1971,1990) point+interval estimate 
 
@@ -203,20 +238,6 @@ se0 = sqrt ( (sig20 / (k1*(1-rho0^2) ) ) * (1 + 2*sum( rho0^eyes * (k1-eyes) )/k
 
 return(c(pest,rho,rho0,k1,se,se0))
 }
-
-
-
-### Averaging standard error, ad-hoc
-
-avgHalfCI <- function(x,conf=0.9,refq=c(.1,.9),full=FALSE)
-{
-neff=max(table(x))-1
-sdeff=diff(quantile(x,refq,type=6))/2
-if(!full) return(qt(0.5+conf/2,df=neff-1)*sdeff/sqrt(neff))
-return(data.frame(neff=neff,sdeff=sdeff))
-}
-
-
 
 
 

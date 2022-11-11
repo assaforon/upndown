@@ -15,16 +15,32 @@ dixonmood(x, y, full = FALSE, flip = FALSE)
 
 \item{flip}{logical: should we flip D-M's approach and use the more-common outcome? (default \code{FALSE})}
 }
+\value{
+The point estimate
+}
 \description{
 Basic version; formula assumes uniform spacing but should work anyway
 }
 \details{
-In their documentation of the Up-and-Down algorithm, Dixon and Mood (1948) presented an estimation method based on tallying responses, choosing to use only the positive or negative responses (the less-common of the two), since they reasoned the two mirror each other. This is not strictly true: it ignores both leading/trailing "tail" sequences of identical responses, and repeated visits to the boundary dose in case there are dose boundaries.
+In their documentation of the Up-and-Down algorithm, Dixon and Mood (1948) presented an estimation method based on tallying and averaging responses, choosing to use only the positive or negative responses (the less-common of the two), since they reasoned the two mirror each other. This is not strictly true: it ignores both leading/trailing "tail" sequences of identical responses, and repeated visits to the boundary dose in case there are dose boundaries.
 
-The Dixon-Mood (sometimes called Dixon-Massey) is provided here mostly for historical reasons and comparative-simulation reasons, and also because  estimate is apparently \emph{(and unfortunately)} still in use in some fields. \strong{It should not be used for actual target-dose estimation in real experiments.} It behaves very poorly even under minor deviations from the most optimal conditions (see, e.g., simulations in the supplement to Oron et al. 2022.).
+The Dixon-Mood estimate (sometimes called Dixon-Massey) is provided here mostly for historical reasons and comparative-simulation uses, and also because this estimate is apparently \emph{(and unfortunately)} still in use in some fields. \strong{It should not be used for actual target-dose estimation in real experiments.} It behaves very poorly even under minor deviations from the most optimal conditions (see, e.g., simulations in the supplement to Oron et al. 2022.).
 
-In order to discourage from actual use in experiments, we do not provide a method for the Dixon-Mood estimator's confidence interval. It behaves even more poorly than the point estimate.
-#'
+In order to discourage from actual use in experiments, we do not provide a method for the Dixon-Mood estimator's confidence interval, even though the original article did include one. The interval estimate behaves even more poorly than the point estimate.
+
+For UDD target estimation we recommend using centered isotonic regression, available via \code{\link{udest}}, an up-and-down adapted wrapper to \code{cir::quickInverse()}. See Oron et al. 2022 (both article and supplement) for further information, as well as the \code{cir} package vignette.
+}
+\references{
+\itemize{
+\item Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. \emph{J Am Stat Assoc.} 1948;43:109-126.
+\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50. \href{https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf}{See in particular the open-access Supplement.}
+}
+}
+\seealso{
+\itemize{
+\item \code{\link{udest}}, the recommended estimation method for up-and-down targets.
+\item \code{\link{reversmean}}, The most commonly-used dose-averaging approach (\emph{not} recommended; the recommended one is \code{\link{udest}} referenced above).
+}
 }
 \author{
 Assaf P. Oron \code{<assaf.oron.at.gmail.com>}

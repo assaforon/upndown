@@ -2,29 +2,46 @@
 % Please edit documentation in R/averaging.r
 \name{adaptmean}
 \alias{adaptmean}
-\title{Up-and-Down averaging estimate with adaptive starting-point
-A dose-averaging estimate based on a concept from Oron (2007). Provides an alternative to reversal-based averaging.
-Oron (2007) noted that}
+\title{Up-and-Down averaging estimate with adaptive starting-point}
 \usage{
 adaptmean(x, maxExclude = 1/3, before = FALSE, full = FALSE)
 }
 \arguments{
 \item{x}{numeric vector: sequence of administered doses, treatments, stimuli, etc.}
 
-\item{maxExclude}{a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector \code{x} to exclude from averaging, in case reversal \code{rstart} occurs too late in the experiment. Default 0.5.}
+\item{maxExclude}{a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector \code{x} to exclude from averaging, in case the algorithm-identified starting point occurs too late in the experiment. Default 1/3.}
 
 \item{before}{logical: whether to start the averaging one step earlier than the starting reversal point. Default \code{FALSE}, and ignored when \code{all=FALSE}.}
 
 \item{full}{logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})}
 }
+\value{
+The point estimate
+}
 \description{
-Up-and-Down averaging estimate with adaptive starting-point
 A dose-averaging estimate based on a concept from Oron (2007). Provides an alternative to reversal-based averaging.
-Oron (2007) noted that
+}
+\details{
+Historically, most up-and-down studies have used dose-averaging estimates, focusing on reversal points either as anchor points -- points where the averaging begins -- or as the only doses to use in the estimate. Oron (2007) showed that skipping doses is generally a bad idea, and noted that a reversal anchor point is not directly tied to the motivation for having an anchor/cutoff point.
+
+Excluding doses before the anchor/cutoff is done in order to mitigate the bias due to the arbitrary location of the starting dose, as opposed to the experiment's balance point which is close to the target percentile. The extent of excluded sample depends on the distance between the two, and the vagaries of an individual experimental run, which is approximated as a random walk. Thus, some \emph{"lucky"} experiments might not need any exclusion at all (because they started right at the balance point), while others might need to exclude dozens of observations. Reversals do not capture this variability well.
+
+The estimation method coded in \code{adaptmean()} identifies \strong{the first crossing point} - the first point at which the dose is \emph{"on the other side"} from the starting point, compared with the average of all remaining doses. This approach is far closer to capturing the dynamics described above, and indeed performs well in comparative simulations (Oron et al. 2022, Supplement).
+
+The reason \code{adaptmean()} has not been further developed or published, is that like all dose-averaging estimators, at present there doesn't seem to be a reliable confidence interval to accompany any of them.
+
+For UDD target estimation we recommend using centered isotonic regression, a more robust method available together with a confidence interval via \code{\link{udest}}, an up-and-down adapted wrapper to \code{cir::quickInverse()}. See Oron et al. 2022 (both article and supplement) for further information, as well as the \code{cir} package vignette.
 }
 \references{
 \itemize{
-\item Oron AP. \emph{Up-and-Down and the Percentile-finding Problem.} Ph.D. Dissertation, University of Washington, 2007. https://arxiv.org/abs/0808.3004
+\item Oron AP. \href{https://arxiv.org/abs/0808.3004}{\emph{Up-and-Down and the Percentile-finding Problem.}} Ph.D. Dissertation, University of Washington, 2007.
+\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50. \href{https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf}{See in particular the open-access Supplement.}
+}
+}
+\seealso{
+\itemize{
+\item \code{\link{udest}}, the recommended estimation method for up-and-down targets.
+\item \code{\link{reversmean}} for the commonly-used reversal-anchored averages mentioned in Details.
 }
 }
 \author{

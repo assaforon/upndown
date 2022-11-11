@@ -25,15 +25,15 @@ cumulvec(
 
 \item{matfun}{The function to calculate the TPM. Depends on the specific design; see \code{\link{bcdmat}}. For all functions except \code{classicmat}, user must provide auxiliary parameters via \code{...}.}
 
+\item{...}{Arguments passed on to the design's matrix-calculating function.}
+
 \item{n}{For \verb{currentvec, cumulvec}, at what step (= after how many observations) in the experiment would you like the vector calculated?}
 
 \item{startdose}{For \verb{currentvec, cumulvec}, where does the experiment start? To be given as a dose-level index between 1 and \eqn{M}. If left as \code{NULL} (default), function will assume the equivalent of \emph{"fair die roll"} among all doses. User can also specify your own \eqn{M}-length probability vector.}
 
 \item{proportions}{Logical (\code{cumulvec} only) Would you like the results returned as proportions (= a probability vector; \code{TRUE}, default), or as cumulative allocation counts?}
 
-\item{exclude}{Integer (\code{cumulvec} only) Should the cumulative distribution exclude a certain number of initial observations? Default 0.
-
-#'}
+\item{exclude}{Integer (\code{cumulvec} only) Should the cumulative distribution exclude a certain number of initial observations? Default 0.}
 }
 \value{
 A vector of allocation frequencies/probabilities for the doses, summing up to 1. Exception: \code{cumulvec(propotions = FALSE)} returns a vector of expected allocation counts, summing up to \code{n - exclude}.
@@ -61,6 +61,12 @@ When using the k-in-a-row design, set \code{matfun = kmatMarg}, not \code{kmatFu
 \item Diaconis P, Stroock D. Geometric Bounds for Eigenvalues of Markov Chains. \emph{Ann. Appl. Probab.} 1991;1(1):36-61.
 \item Hughes BD. \emph{Random Walks and Random Environments, Vol. 1.} Oxford University Press, 1995.
 \item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50.
+}
+}
+\seealso{
+\itemize{
+\item \code{\link{bcdmat}} for the functions calculating transition probability matrices for various up-and-down designs.
+\item \code{\link{k2targ}} for target-finding design aids.
 }
 }
 \author{

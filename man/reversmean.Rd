@@ -11,7 +11,7 @@ reversmean(
   rstart = 3,
   all = TRUE,
   before = FALSE,
-  maxExclude = 0.5,
+  maxExclude = 1/3,
   full = FALSE
 )
 
@@ -28,7 +28,7 @@ reversals(y)
 
 \item{before}{logical: whether to start the averaging one step earlier than the starting reversal point. Default \code{FALSE}, and ignored when \code{all=FALSE}.}
 
-\item{maxExclude}{a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector \code{x} to exclude from averaging, in case reversal \code{rstart} occurs too late in the experiment. Default 0.5.}
+\item{maxExclude}{a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector \code{x} to exclude from averaging, in case the algorithm-identified starting point occurs too late in the experiment. Default 1/3.}
 
 \item{full}{logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})}
 }
@@ -47,14 +47,20 @@ The \code{reversals()} utility identifies reversal points, whereas \code{reversm
 
 More broadly, dose-averaging despite some advantages is not very robust, and also \strong{lacks an interval estimate with reliable coverage.} Therefore, \code{reversmean()} provides neither a confidence interval nor a standard error.
 
-For UDD target estimation we recommend using centered isotonic regression, available via \code{quickInverse()} in the \code{cir} package. See Oron et al. 2022 (both article and supplement) for further information, as well as the \code{cir} package vignette.
+For UDD target estimation we recommend using centered isotonic regression, available via \code{\link{udest}}, an up-and-down adapted wrapper to \code{cir::quickInverse()}. See Oron et al. 2022 (both article and supplement) for further information, as well as the \code{cir} package vignette.
 }
 \references{
 \itemize{
 \item Kershaw CD: A comparison of the estimators of the ED50 in up-and-down experiments. \emph{J Stat Comput Simul} 1987; 27:175–84.
-\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50.
+\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50. \href{https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf}{See in particular the open-access Supplement.}
 \item Wetherill GB, Chen H, Vasudeva RB: Sequential estimation of quantal response curves: A new method of estimation. \emph{Biometrika} 1966; 53:439–54
 }
 
 @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
+
+@seealso
+\itemize{
+\item \code{\link{udest}}, the recommended estimation method for up-and-down targets.
+\item \code{\link{adaptmean}}, an unpublished but arguably better approach to dose-averaging (this is \emph{not} the recommended method though; that would be \code{\link{udest}} referenced above).
+}
 }

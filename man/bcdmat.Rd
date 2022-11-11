@@ -65,9 +65,9 @@ Also, in \code{kmatFull()} there are two matrix-size options. Near one of the bo
 }
 \seealso{
 \itemize{
-\item \code{\link{k2targ}}, \code{\link{targ2k}} to find the k-in-a-row target-response rate for specific k and vice versa
-\item \code{\link{gudtarg}} to calculate group UDD target-response rate given a \verb{cohort,lower,upper} combination
-\item \code{\link{pivec}}, \code{\link{advancevec}}, \code{\link{cumulpi}}, which provide probability vectors of dose-allocation distributions using Up-and-Down TPMs.
+\item \code{\link{k2targ}}, \code{\link{ktargOptions}} to find the k-in-a-row target-response rate for specific k and vice versa.
+\item \code{\link{g2targ}}, , \code{\link{gtargOptions}} likewise for group up-and-down.
+\item \code{\link{pivec}}, \code{\link{currentvec}}, \code{\link{cumulvec}}, which provide probability vectors of dose-allocation distributions using Up-and-Down TPMs.
 }
 }
 \author{
