@@ -6,13 +6,13 @@
 \usage{
 udplot(
   x,
-  y = NULL,
+  y,
   shape = "circle",
   connect = TRUE,
   symbcol = 1,
   doselabels = NULL,
-  xtitle,
-  ytitle,
+  xtitle = "Observation Order",
+  ytitle = "Dose / Stimulus",
   ...
 )
 }
@@ -21,20 +21,33 @@ udplot(
 
 \item{y}{numeric vector: sequence of observed responses. Must be same length as \code{x}, and must be coded \code{TRUE/FALSE} or 0/1.}
 
-\item{shape}{the plotting shape (DRtrace only): 'circle' (default), 'square', or 'triangle'}
+\item{shape}{the plotting shape (DRtrace only): \code{'circle'} (default), \code{'square'}, or \code{'triangle'}.}
 
-\item{connect}{logical: whether to connect the symbols (generic plotting type 'b'). Default \code{TRUE} for \code{\link{DRtrace}} and \code{FALSE} for \code{\link{doseResponse}}}
+\item{connect}{logical: whether to connect the symbols (generic plotting type \code{'b'}). Default \code{TRUE} for \code{udplot()} and \code{FALSE} for \code{drplot()}.}
 
 \item{symbcol}{The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there might be an error message.}
 
 \item{doselabels}{(\code{DRtrace} only) Dose values to be plotted along the y-axis. If \code{NULL} (default), those will be the doses in the dataset (i.e., \code{sort(unique(x))}).}
 
-\item{xtitle, ytitle}{x-axis and y-axis titles}
+\item{xtitle, ytitle}{x-axis and y-axis titles. Some reasonable defaults are provided, to avoid an annoying error message.}
 
-\item{...}{Other arguments passed on to \code{\link{plot}}.}
+\item{...}{Other arguments passed on to \code{\link[graphics]{plot}} (e.g., \code{main} for the main title).}
 }
 \description{
-Visualizing the time series of an up-and-down experiment
+Plotting function for the "trace" (time series) of an up-and-down experiment, showing the observation order on the x-axis, and the dose \emph{(treatment, stimulus, etc.)} strength on the y-axis. Uses utilities from the \code{cir} package.
+}
+\details{
+This simple and handy visualization approach was presented already by Dixon and Mood (1948).
+\itemize{
+\item It conveys directly the meaning of \emph{"up-and-down"}, because the administered dose/stimulus strength is on the y-axis, whereas observation order is on the x-axis.
+\item Filled symbols stand for positive responses and open symbols for negative.
+\item The design's transition rules can be usually inferred directly from the plot.
+}
+
+\code{udplot()} is a convenience wrapper to \code{cir::plot.DRtrace}. This is a base-R plot, so you can use additional options, including preceding the plot command with \code{\link[graphics]{par}} statements. If wishing to save to a file, I recommend utilities such as \code{png()} or \code{pdf()}.
+}
+\seealso{
+\code{\link[cir]{plot.DRtrace}}, \code{cir} package.
 }
 \author{
 Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
