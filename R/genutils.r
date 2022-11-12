@@ -1,6 +1,6 @@
 #' Up-and-Down Target Calculation and Design Guidance
 #' 
-#' Up-and-down target calculation, and design options/guidance given a user-desired target.  
+#' Up-and-down target calculation, as well as design options/guidance given a user-desired target.  
 #' 
 #' @details  
 #' This suite of utilities helps users 

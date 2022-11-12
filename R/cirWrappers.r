@@ -6,9 +6,7 @@
 #' 
 #' **WARNING!** You should not estimate target doses too far removed from the design's actual balance point (definitely no further than 0.1, e.g., estimating the 33rd percentile for a design whose balance point is the median). As Flournoy and Oron (2020) explain, observed response rates are biased away from the balance point. Even though `udest()` performs the rudimentary bias correction described in that article, practically speaking this correction's role is mostly to expand the confidence intervals in response to the bias. It cannot guarantee to provide reliable off-balance-point estimates.
 #'
-
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
-
 #' 
 #' @export
 #'
@@ -25,6 +23,8 @@
 #'  - Flournoy N, Oron AP. Bias Induced by Adaptive Dose-Finding Designs. *Journal of Applied Statistics* 2020; 47, 2431-2442.  
 #'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. [See in particular the open-access Supplement.](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf)
 #'  
+#'  @seealso 
+#'  \code{\link[cir]{quickIsotone}} (in the `cir` package).
 #'  
 udest <- function(x, y, target, balancePt = target, conf = 0.9)
 {
@@ -46,4 +46,37 @@ quickInverse(x=x, y=y, target=target, starget = balancePt,
              conf=conf, adaptiveShrink=TRUE,
               adaptiveCurve = (target != 0.5) )
 
+}
+
+#------------------------------- Plotting -----------------------------
+
+#' Visualizing the time series of an up-and-down experiment
+
+#' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
+#' 
+#' @export
+#' @import graphics
+
+#' @inheritParams udest
+
+#' @param shape the plotting shape (DRtrace only): 'circle' (default), 'square', or 'triangle'
+#' @param connect logical: whether to connect the symbols (generic plotting type 'b'). Default \code{TRUE} for \code{\link{DRtrace}} and \code{FALSE} for \code{\link{doseResponse}}
+#' @param symbcol The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there might be an error message.
+#' @param xtitle,ytitle	x-axis and y-axis titles
+#' @param doselabels (\code{DRtrace} only) Dose values to be plotted along the y-axis. If \code{NULL} (default), those will be the doses in the dataset (i.e., `sort(unique(x))`).
+#' @param ...	Other arguments passed on to \code{\link{plot}}. 
+
+
+udplot <- function(x, y=NULL, shape='circle', connect=TRUE, symbcol=1, doselabels=NULL, xtitle, ytitle,...)
+{
+require(cir)
+
+# val
+checkDose(x)
+checkResponse(y)
+
+  
+plot(DRtrace(x=x, y=y), shape=shape, connect=connect, mcol=symbcol, dosevals=doselabels,
+             xlab=xtitle, ylab=ytitle, ...)
+  
 }
