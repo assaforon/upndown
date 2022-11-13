@@ -14,6 +14,7 @@ drplot(
   addcurve = FALSE,
   target = NULL,
   balancePt = target,
+  conf = 0.9,
   estcol = "purple",
   estsize = 2,
   estsymb = 19,
@@ -35,20 +36,46 @@ drplot(
 
 \item{symbcol}{The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there might be an error message.}
 
+\item{addest}{logical: should we add the CIR target-dose estimate and its confidence interval? If \code{FALSE} (default), then arguments \verb{addcurve, target, balancePt, conf, estcol, estsize, estsymb, estthick, curvecol} - are all ignored.}
+
+\item{addcurve}{logical: should we add the complete estimated CIR dose-response curve? Default \code{FALSE}, and only relevant when \code{addest = TRUE}.}
+
 \item{target}{The target response rate for which target dose estimate is requested. Must be a single number in \eqn{(0,1).}}
 
 \item{balancePt}{In case the design's inherent balance point differs somewhat from \code{target}, specify it here to improve estimation accuracy. See Details for further explanation. Otherwise, this argument defaults to be equal to \code{target}.}
+
+\item{conf}{The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations.}
+
+\item{estcol, estsize, estsymb, estthick, curvecol}{graphical parameters controlling the colors, symbol choice, size, thickness, of the target-dose and CIR-curve visuals.}
 
 \item{xtitle, ytitle}{x-axis and y-axis titles. Some reasonable defaults are provided, to avoid an annoying error message.}
 
 \item{...}{Other arguments passed on to \code{\link[graphics]{plot}} (e.g., \code{main} for the main title).}
 }
 \description{
-Visualizing the dose-response summary of an up-and-down experiment
+Dose-response plotting function for up-and-down data, with doses/stimuli on the x-axis, and the proportion of positive responses on the y-axis. Includes an option to plot the target-dose estimate. Uses utilities from the \code{cir} package.
+}
+\details{
+After an up-and-down experiment, it is highly recommended to plot not just the experiment's \emph{"trace"}  time-series (\code{\link{udplot}}), but also the dose-response summaries. This utility provides a convenient interface for doing that.
+\itemize{
+\item It summarizes the response rates at each participating dose, and plots them. At default, symbol area is proportional to the number of observations at each dose.
+\item Optionally, the centered-isotonic-regression (CIR) target-dose estimate and its confidence interval are also calculated and plotted.
+\item A further option allows for plotting the entire estimated CIR dose-response curve.
+}
+
+\code{drplot()} is a convenience wrapper to \code{cir::plot.doseResponse}, with the added option of plotting the estimate. Some specific options, such as disabling the proportional-area symbol plotting, are accessible only via \code{plot.doseResponse} arguments (specified in your \code{drplot()} call and passed through the \code{...}).
+
+This is a base-R plot, so you can use additional options, including preceding the plot command with \code{\link[graphics]{par}} statements, or following up with \code{\link[graphics]{legend}}. When wishing to save to a file, I recommend utilities such as \code{png()} or \code{pdf()}.
+}
+\references{
+\itemize{
+\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50.
+}
 }
 \seealso{
 \itemize{
 \item \code{\link[cir]{plot.doseResponse}}, \code{cir} package.
+\item \code{\link{udplot}} for the "trace" time-series plot.
 \item \code{cir} package vignette.
 }
 }

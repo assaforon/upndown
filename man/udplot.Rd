@@ -44,10 +44,20 @@ This simple and handy visualization approach was presented already by Dixon and 
 \item The design's transition rules can be usually inferred directly from the plot.
 }
 
-\code{udplot()} is a convenience wrapper to \code{cir::plot.DRtrace}. This is a base-R plot, so you can use additional options, including preceding the plot command with \code{\link[graphics]{par}} statements. If wishing to save to a file, I recommend utilities such as \code{png()} or \code{pdf()}.
+\code{udplot()} is a convenience wrapper to \code{cir::plot.DRtrace}. This is a base-R plot, so you can use additional options, including preceding the plot command with \code{\link[graphics]{par}} statements, or following up with \code{\link[graphics]{legend}}. When wishing to save to a file, I recommend utilities such as \code{png()} or \code{pdf()}.
 }
 \seealso{
-\code{\link[cir]{plot.DRtrace}}, \code{cir} package.
+\itemize{
+\item \code{\link[cir]{plot.DRtrace}}, \code{cir} package.
+\item \code{\link{drplot}} for the up-and-down dose-response and estimate plotting.
+\item \code{cir} package vignette.
+}
+
+#' @references
+\itemize{
+\item Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. \emph{J Am Stat Assoc.} 1948;43:109-126.
+\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50.
+}
 }
 \author{
 Assaf P. Oron \code{<assaf.oron.at.gmail.com>}

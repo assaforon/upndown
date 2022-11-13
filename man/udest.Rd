@@ -38,7 +38,10 @@ CIR and related methods are available in the \code{cir} package. The \code{udest
 }
 
 @seealso
-\code{\link[cir]{quickInverse}}, \code{cir} package.
+\itemize{
+\item \code{\link[cir]{quickInverse}}, \code{cir} package.
+\item \code{cir} package vignette.
+}
 }
 \author{
 Assaf P. Oron \code{<assaf.oron.at.gmail.com>}

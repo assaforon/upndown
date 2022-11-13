@@ -25,8 +25,11 @@
 #'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. [See in particular the open-access Supplement.](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf)
 #'  
 #'  @seealso 
-#'  \code{\link[cir]{quickInverse}}, `cir` package.
-#'  
+#'  - \code{\link[cir]{quickInverse}}, `cir` package.
+#'  - `cir` package vignette.
+
+#### The function:
+
 udest <- function(x, y, target, balancePt = target, conf = 0.9, ...)
 {
   require(cir)
@@ -63,7 +66,7 @@ quickInverse(x=x, y=y, target=target, starget = balancePt,
 #'  - Filled symbols stand for positive responses and open symbols for negative.   
 #'  - The design's transition rules can be usually inferred directly from the plot.
 #'  
-#'  `udplot()` is a convenience wrapper to `cir::plot.DRtrace`. This is a base-R plot, so you can use additional options, including preceding the plot command with \code{\link[graphics]{par}} statements. If wishing to save to a file, I recommend utilities such as `png()` or `pdf()`.
+#'  `udplot()` is a convenience wrapper to `cir::plot.DRtrace`. This is a base-R plot, so you can use additional options, including preceding the plot command with \code{\link[graphics]{par}} statements, or following up with \code{\link[graphics]{legend}}. When wishing to save to a file, I recommend utilities such as `png()` or `pdf()`.
 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
 #' 
@@ -71,7 +74,14 @@ quickInverse(x=x, y=y, target=target, starget = balancePt,
 #' @import graphics
 #' 
 #' @seealso 
-#'  \code{\link[cir]{plot.DRtrace}}, `cir` package.
+#'  - \code{\link[cir]{plot.DRtrace}}, `cir` package.
+#'  - \code{\link{drplot}} for the up-and-down dose-response and estimate plotting.
+#'  - `cir` package vignette.
+#'  
+#'  #' @references 
+#'  - Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. *J Am Stat Assoc.* 1948;43:109-126.
+#'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. 
+
 
 
 #' @inheritParams udest
@@ -103,9 +113,16 @@ plot(DRtrace(x=x, y=y), shape=shape, connect=connect, mcol=symbcol, dosevals=dos
 
 #' Visualizing the dose-response summary of an up-and-down experiment
 #'
-#'
-#'
-#'
+#' Dose-response plotting function for up-and-down data, with doses/stimuli on the x-axis, and the proportion of positive responses on the y-axis. Includes an option to plot the target-dose estimate. Uses utilities from the `cir` package.
+#' 
+#' After an up-and-down experiment, it is highly recommended to plot not just the experiment's *"trace"*  time-series (\code{\link{udplot}}), but also the dose-response summaries. This utility provides a convenient interface for doing that.
+#'  - It summarizes the response rates at each participating dose, and plots them. At default, symbol area is proportional to the number of observations at each dose.
+#'  - Optionally, the centered-isotonic-regression (CIR) target-dose estimate and its confidence interval are also calculated and plotted.   
+#'  - A further option allows for plotting the entire estimated CIR dose-response curve.
+#'  
+#'  `drplot()` is a convenience wrapper to `cir::plot.doseResponse`, with the added option of plotting the estimate. Some specific options, such as disabling the proportional-area symbol plotting, are accessible only via `plot.doseResponse` arguments (specified in your `drplot()` call and passed through the `...`). 
+#'  
+#'  This is a base-R plot, so you can use additional options, including preceding the plot command with \code{\link[graphics]{par}} statements, or following up with \code{\link[graphics]{legend}}. When wishing to save to a file, I recommend utilities such as `png()` or `pdf()`.
 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
 #' 
@@ -114,14 +131,22 @@ plot(DRtrace(x=x, y=y), shape=shape, connect=connect, mcol=symbcol, dosevals=dos
 #' 
 #' @seealso 
 #'  - \code{\link[cir]{plot.doseResponse}}, `cir` package.
+#'  - \code{\link{udplot}} for the "trace" time-series plot.
 #'  - `cir` package vignette.
+
+#' @references 
+#'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. 
 
 
 #' @inheritParams udplot
 #' @inheritParams udest
+#' 
+#' @param addest logical: should we add the CIR target-dose estimate and its confidence interval? If `FALSE` (default), then arguments `addcurve, target, balancePt, conf, estcol, estsize, estsymb, estthick, curvecol` - are all ignored.
+#' @param addcurve logical: should we add the complete estimated CIR dose-response curve? Default `FALSE`, and only relevant when `addest = TRUE`.
+#' @param estcol,estsize,estsymb,estthick,curvecol graphical parameters controlling the colors, symbol choice, size, thickness, of the target-dose and CIR-curve visuals.
 
 drplot <- function(x, y, shape='X', connect=FALSE, symbcol=1, 
-                   addest=FALSE, addcurve=FALSE, target=NULL, balancePt=target, 
+                   addest=FALSE, addcurve=FALSE, target=NULL, balancePt=target, conf=0.9,
                    estcol = 'purple', estsize=2, estsymb=19, esthick=2, curvecol = 'blue',
                    ytitle = "Frequency of Positive Response", xtitle = "Dose / Stimulus",...)
 {
@@ -132,14 +157,14 @@ checkDose(x)
 checkResponse(y)
   
   
-suppressWarnings(plot(doseResponse(x=x, y=y), pch=shape, connect=connect, mcol=symbcol, 
-       xlab=xtitle, ylab=ytitle, ...))
+plot(doseResponse(x=x, y=y), pch=shape, connect=connect, mcol=symbcol, 
+       xlab=xtitle, ylab=ytitle, ...)
 
 if(addest)
 {
   if(is.null(target)) stop("To plot an estimate, please specify the target response rate.\n")
   checkTarget(target)
-  est = udest(x=x, y=y, target=target, balancePt=balancePt, ...)
+  est = udest(x=x, y=y, target=target, balancePt=balancePt, conf=conf)
   points(target~point, data=est, pch=estsymb, col=estcol, cex=estsize)
   lines(x = c(est[1,3], est[1,4]), y = rep(target, 2), col=estcol, lwd = esthick)
   
