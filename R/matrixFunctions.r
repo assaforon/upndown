@@ -19,7 +19,7 @@
 #'  Also, in `kmatFull()` there are two matrix-size options. Near one of the boundaries (upper boundary with `lowTarget = TRUE`, and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable, so in some sense only one of them really exists. Using the `fluffup` argument, users can choose between having a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its effectivelly true size by removing \eqn{k-1} rows and columns.
 #'  
 #'
-#' @param cdf monotone increasing vector with positive-response probabilities. The number of dose levels $M$ is deduced from vector's length.
+#' @param cdf monotone increasing vector with positive-response probabilities. The number of dose levels \eqn{M} is deduced from vector's length.
 #' @param target the design's target response rate (`bcdmat()` only).
 #' @param k the number of consecutive identical responses required for dose transitions (k-in-a-row functions only).
 #' @param lowTarget logical k-in-a-row functions only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa? Default `FALSE`. See "Details" for more information.

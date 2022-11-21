@@ -21,7 +21,8 @@
 #' 
 #' @note When using the k-in-a-row design, set `matfun = kmatMarg`, not `kmatFull`.
 #' 
-#' @param cdf vector of positive-response probabilities at the doses
+#' @inheritParams bcdmat
+#' 
 #' @param matfun The function to calculate the TPM. Depends on the specific design; see \code{\link{bcdmat}}. For all functions except `classicmat`, user must provide auxiliary parameters via `...`.
 #' @param n For `currentvec, cumulvec`, at what step (= after how many observations) in the experiment would you like the vector calculated?
 #' @param startdose For `currentvec, cumulvec`, where does the experiment start? To be given as a dose-level index between 1 and \eqn{M}. If left as `NULL` (default), function will assume the equivalent of *"fair die roll"* among all doses. User can also specify your own \eqn{M}-length probability vector.
@@ -37,7 +38,7 @@
 #'  - \code{\link{k2targ}} for target-finding design aids.
 #'
 #' 
-#' @example ../inst/examples/vecExamples.r
+#' @example examples/vecExamples.r
 
 
 
@@ -71,7 +72,8 @@ currentvec <- function(cdf, matfun, n, startdose = NULL, ...)
   require(expm)
   checkCDF(cdf)
   m=length(cdf)
-
+checkNatural(n, parname = 'n')
+  
 ### Starting vector
 # The NULL default sets a uniform starting vector
 if(is.null(startdose)) vec0=rep(1/m,m)
@@ -99,7 +101,8 @@ cumulvec <- function(cdf, matfun, n, startdose = NULL, proportions = TRUE, exclu
   require(expm)
   checkCDF(cdf)
   m=length(cdf)
-  if(exclude != round(exclude) || exclude < 0) stop("'exclude' should be a non-negative integer.\n")
+  checkNatural(n, parname = 'n')
+  checkNatural(exclude+1, parname = 'exclude', toolarge = n)
 
 ### Starting vector
   # The NULL default sets a uniform starting vector
