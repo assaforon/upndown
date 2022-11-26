@@ -254,7 +254,7 @@ if (any(k != round(k) | k < 1 | k >= toolarge))
 
 checkDose <- function(x, maxfrac = 0.5)
 {
-  if(length(dim(y))>1 || any(dim(y))>1) stop("Dose must be a vector or equivalent.\n")
+  if(length(dim(x))>1 || any(dim(x))>1) stop("Dose must be a vector or equivalent.\n")
   if( length(unique(x)) > maxfrac * length(x))
     stop("Too many unique dose values. Experiment not U&D, or was too short, or data-quality error.\n")
 }

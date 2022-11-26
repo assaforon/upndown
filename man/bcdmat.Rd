@@ -90,7 +90,7 @@ round(kmatMarg(exampleF, k = 6, lowTarget = FALSE), 2)
 # Compare and contrast with the BCD matrix above! At what dose do the "up" and "down"
 #   probabilities flip? 
 
-# Lastly, if you want to see a 48 x 48 matrix - the full state matrix for k-in-a-row, 
+# Lastly, if you want to see a 43 x 43 matrix - the full state matrix for k-in-a-row, 
 #      run the following line:
 
 # round(kmatFull(exampleF, k = 6, lowTarget = FALSE), 2)

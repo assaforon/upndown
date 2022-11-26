@@ -1,17 +1,14 @@
-### Some UD experiment in anesthesiology
 
-## Examples 1a-b: from
+## This example is from one of the earliest applications of up-and-down in anesthesiology:
 ## Columb MO, Lyons, G. 1995. Determination of the Minimum Local Analgesic Concentrations of Epidural Bupivacaine and Lidocaine in Labor, Anesthesia & Analgesia 81, 833-837.
 ## open access: https://journals.lww.com/anesthesia-analgesia/Fulltext/1995/10000/Determination_of_the_Minimum_Local_Analgesic.30.aspx
 
-## Creating dose-response objects using the classes from package 'cir'
+# This was a classical median-finding up-and-down study.
 
-# The experimental trace for bupivacaine 
-# doses and responses are in the order given
-# (doses are in multiples of 0.01%w/v)
-
-cl95bupi=DRtrace(x=0.01*c(15:9,10:6,7,6,7:5,6,7:4,5,6,5:8,7,6),
-	y=c(rep(c(rep(1,5),0),2),1,0,1,1,0,0,rep(1,3),0,0,1,rep(0,3),1,1,0))
+# Bupivacaine: 
+bupix = 0.01 * c(15:9,10:6,7,6,7:5,6,7:4,5,6,5:8,7,6)
+# With classical U&D, responses (except the last one) can be read off the doses:
+bupiy=c( (1 - sign(diff(bupix)))/2, 0 )
 
 layout(matrix(1:4,nrow=2,byrow=TRUE),widths=3:2)
 par(mar=c(4,4,4,1),mgp=c(2.5,.8,0))
@@ -42,27 +39,4 @@ plot(cl95lidoRates,main='Lidocaine Dose-Response')
 # Due to the adaptive design, these observed rates are actually biased. 
 # See the rates after an empirical bias correction:
 points(DRshrink(cl95lidoRates,target=.5),col=2)
-
-##################### Articles from Pace and Stylianou
-
-p03ropi=DRtrace(x=0.01*c(10:8,9,10:7,8,9:7,8,7:11,10:7,8,7,8,7:12,11,12:10),
-	y=c(1,1,0,0,1,1,1,0,0,1,1,0,1,rep(0:1,each=4),0,1,0,1,rep(0,5),1,0,1,1,1))
-p03ropiRates=doseResponse(p03ropi)
-
-
-### BenHamou et al
-# A Randomized Sequential Allocation Study to Determine the Minimum Effective Analgesic Concentration of Levobupivacaine and Ropivacaine in Patients Receiving Epidural Analgesia for Labor 
-
-xropi = c(11:9,10:8,9,10,9,10:7,8:11,10:12,11:7,8,7:10,9,8,9,8:10,9,10,9,10)
-bhamou03ropi = DRtrace(x=xropi[-40]/100, y=(1-diff(xropi))/2)
-
-xlevo = c(11,10,11,10,11:9,10:7,8,7,8:5,6:8,7,8:6,7,6,7,6,7:5,6,7,6:12)
-bhamou03levo = DRtrace(x=xlevo[-40]/100, y=(1-diff(xlevo))/2)
-
-bhamou03ropiRates = doseResponse(bhamou03ropi)
-bhamou03levoRates = doseResponse(bhamou03levo)
-
-
-
-
 
