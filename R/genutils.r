@@ -231,7 +231,7 @@ After positive response, 'toss a COIN':
 ############################### Auxiliary validation utilities
 
 
-validUDinput<-function(cdf,target)
+validUDinput<-function(cdf, target)
 {
   checkCDF(cdf)
   checkTarget(target)

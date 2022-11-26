@@ -44,13 +44,16 @@
 #'  
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
 #' @export
+#' 
+#' @example examples/matrixExamples.r
+
 
 ### BCD matrix ##############################
 
-bcdmat<-function(cdf,target)
+bcdmat<-function(cdf, target)
 {
 # External validation
-validUDinput(cdf,target)
+validUDinput(cdf = cdf, target = target)
 
 m=length(cdf)
 omat=matrix(0,nrow=m,ncol=m)
@@ -91,7 +94,7 @@ return(omat)
 #' @rdname bcdmat
 #' @export
 
-classicmat <- function(cdf) bcdmat(cdf, target = 1/2)
+classicmat <- function(cdf) bcdmat(cdf = cdf, target = 1/2)
 
 
 ############## K-in-row (geometric) *marginal* stationary matrix 

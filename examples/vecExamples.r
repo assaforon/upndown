@@ -1,6 +1,6 @@
 #----- Classical UD Example -----#
 
-# This vector is can be seen as a bar plot in Oron et al. 2022, Fig. 2B.
+# An example used in Oron et al. 2022, Fig. 2.
 # It is presented here via the original motivating story:
 # "Ketofol"  is a commonly-used anesthesia-inducing mix known to combine its 2 components' beneficial properties, while each one
 #     mitigates the other's harmful side-effects. In particular:
@@ -21,7 +21,7 @@ equivF = pnorm( (doses - zeroPt) / 20)
 round(equivF, 3)
 
 # The vector below represents the values feeding into the Fig. 2B barplot.
-# "startdose = 6" means we begin from the 6th out of 11 doses, i.e., a 50:50 mix.
+# "startdose = 6" means the experiment begins from the 6th out of 11 doses, i.e., a 50:50 mix.
 
 round(cumulvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 30), 3)
 
@@ -29,17 +29,17 @@ round(cumulvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 30), 3)
 
 round(currentvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 30), 3)
 # Classic up-and-down has quasi-periodic behavior with a (quasi-)period of 2. 
-# Compare the above to this:
+# Compare the instantaneous vectors at n=30 and 29:
 round(currentvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 29), 3)
 # Note the alternating near-zero values. Distributions at even/odd n "communicate"
 #    with each other only via the dose boundaries.
 
-# Lastly, the asymptotic/stationary distribution. The cumulative vector at n=30 is not very far from it. The main difference is that at n=30 there's still a bit more
-# probability weight at the starting dose.
-
+# Lastly, the asymptotic/stationary distribution. Notice there is no 'n' argument.
 round(pivec(cdf = equivF, matfun = classicmat), 3)
 
-# We can check how much of that extra weight is from the 1st patient, by excluding them:
+# The cumulative vector at n=30 is not very far from it. The main difference is that at n=30 there's still a bit more
+# probability weight at the starting dose.
+# We can check how much of that extra weight is from the 1st patient, by excluding that data point:
 round(cumulvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 30, exclude = 1), 3)
 
 
