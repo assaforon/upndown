@@ -10,6 +10,7 @@ drplot(
   shape = "X",
   connect = FALSE,
   symbcol = 1,
+  percents = FALSE,
   addest = FALSE,
   addcurve = FALSE,
   target = NULL,

@@ -6,7 +6,10 @@
 #' 
 #' **WARNING!** You should not estimate target doses too far removed from the design's actual balance point (definitely no further than 0.1, e.g., estimating the 33rd percentile for a design whose balance point is the median). As Flournoy and Oron (2020) explain, observed response rates are biased away from the balance point. Even though `udest()` performs the rudimentary bias correction described in that article, practically speaking this correction's role is mostly to expand the confidence intervals in response to the bias. It cannot guarantee to provide reliable off-balance-point estimates.
 #'
-#' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
+#' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	 
+#' 
+#' @example examples/estExamples.r
+
 #' 
 #' @export
 #'
@@ -145,7 +148,7 @@ plot(DRtrace(x=x, y=y), shape=shape, connect=connect, mcol=symbcol, dosevals=dos
 #' @param addcurve logical: should we add the complete estimated CIR dose-response curve? Default `FALSE`, and only relevant when `addest = TRUE`.
 #' @param estcol,estsize,estsymb,estthick,curvecol graphical parameters controlling the colors, symbol choice, size, thickness, of the target-dose and CIR-curve visuals.
 
-drplot <- function(x, y, shape='X', connect=FALSE, symbcol=1, 
+drplot <- function(x, y, shape='X', connect=FALSE, symbcol=1, percents = FALSE,
                    addest=FALSE, addcurve=FALSE, target=NULL, balancePt=target, conf=0.9,
                    estcol = 'purple', estsize=2, estsymb=19, esthick=2, curvecol = 'blue',
                    ytitle = "Frequency of Positive Response", xtitle = "Dose / Stimulus",...)
@@ -156,8 +159,10 @@ require(cir)
 checkDose(x)
 checkResponse(y)
   
+tmp = doseResponse(x=x, y=y)
+if(percents) tmp$y = 100 * tmp$y
   
-plot(doseResponse(x=x, y=y), pch=shape, connect=connect, mcol=symbcol, 
+plot(tmp, pch=shape, connect=connect, mcol=symbcol, 
        xlab=xtitle, ylab=ytitle, ...)
 
 if(addest)
@@ -165,12 +170,14 @@ if(addest)
   if(is.null(target)) stop("To plot an estimate, please specify the target response rate.\n")
   checkTarget(target)
   est = udest(x=x, y=y, target=target, balancePt=balancePt, conf=conf)
-  points(target~point, data=est, pch=estsymb, col=estcol, cex=estsize)
-  lines(x = c(est[1,3], est[1,4]), y = rep(target, 2), col=estcol, lwd = esthick)
+  if(percents) est$target = 100 * est$target
+  points(target ~ point, data=est, pch=estsymb, col=estcol, cex=estsize)
+  lines(x = c(est[1,3], est[1,4]), y = rep(est$target, 2), col=estcol, lwd = esthick)
   
   if(addcurve)
   {
     fest = cirPAVA(x=x, y=y, target=balancePt, adaptiveShrink=TRUE, full=TRUE)
+    if(percents) fest$shrinkage$y = 100 * fest$shrinkage$y
     lines(y ~ x, data = fest$shrinkage, col=curvecol, lwd = esthick)
     
   }

@@ -230,7 +230,7 @@ After positive response, 'toss a COIN':
 
 ############################### Auxiliary validation utilities
 
-
+#' @export
 validUDinput<-function(cdf, target)
 {
   checkCDF(cdf)
@@ -238,6 +238,7 @@ validUDinput<-function(cdf, target)
   if(length(cdf) < 3) stop ("These designs don't work with <3 dose levels.\n")
 }
 
+#' @export
 checkTarget <- function(target, tname = 'Target')
   if(target<=0 || target>=1) stop(paste(tname, "has to be in (0,1).\n"))
 
@@ -252,13 +253,14 @@ if (any(k != round(k) | k < 1 | k >= toolarge))
 
 ## Response coding
 
+#' @export
 checkDose <- function(x, maxfrac = 0.5)
 {
   if(length(dim(x))>1 || any(dim(x))>1) stop("Dose must be a vector or equivalent.\n")
   if( length(unique(x)) > maxfrac * length(x))
     stop("Too many unique dose values. Experiment not U&D, or was too short, or data-quality error.\n")
 }
-
+#' @export
 checkResponse <- function(y)
 {
 if(length(dim(y))>1 || any(dim(y))>1) stop("Response must be a vector or equivalent.\n")

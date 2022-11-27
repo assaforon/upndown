@@ -8,35 +8,56 @@
 # Bupivacaine: 
 bupix = 0.01 * c(15:9,10:6,7,6,7:5,6,7:4,5,6,5:8,7,6)
 # With classical U&D, responses (except the last one) can be read off the doses:
-bupiy=c( (1 - sign(diff(bupix)))/2, 0 )
+bupiy = c( (1 - sign(diff(bupix)))/2, 0 )
 
-layout(matrix(1:4,nrow=2,byrow=TRUE),widths=3:2)
-par(mar=c(4,4,4,1),mgp=c(2.5,.8,0))
-plot(cl95bupi,main='Columb and Lyons 95: Bupivacaine') 
+# Lidocaine (note that spacing was halved after observation 5):
+lidox = 0.05 * c(seq(20,12,-2),11:9,10:7,8,7,8,7:9,8:6,7,8,7,8:5,6,7)
+lidoy = c( (1 - sign(diff(lidox)))/2, 0 )
+
+### Plots plots plots!
+
+layout(matrix(1:4, nrow=2, byrow=TRUE), widths=3:2)
+par(mar=c(4,4,4,1), mgp=c(2.5,0.8,0), cex.axis = 0.7, las = 1)
+
+# The experimental trajectory / time-series / "trace" (pick your favorite name!)
+# Note the changed argument names for x and y axis titles
+udplot(bupix, bupiy, main='Columb and Lyons 95: Bupivacaine', 
+        xtitle = "Patient Number", ytitle = 'Bupivacaine (% w/v)') 
 # Compare with the article's Figure 1; the commented line below makes it look more similar
-# plot(cl95bupi,shape='square',connect=FALSE,cex=2)
+# udplot(bupix, bupiy, shape='square', connect=FALSE, cex=2)
 
-cl95bupiRates=doseResponse(cl95bupi)
-plot(cl95bupiRates,main='Bupivacaine Dose-Response')
-# Due to the adaptive design, these observed rates are actually biased. 
-# See the rates after an empirical bias correction:
-points(DRshrink(cl95bupiRates,target=0.5),col=2)
+# The dose-response plot, rarely encountered in U&D articles. 
+#   (Columb and Lyons do provide the info as a table, sort-of - see Table 2)
+# We can also add the CIR estimate right there:
+drplot(bupix, bupiy, main='Bupivacaine Dose-Response', percents = TRUE,
+       addest = TRUE, target = 0.5, addcurve = TRUE,
+       xtitle = 'Bupivacaine (% w/v)', ytitle = "Percent Effective")
 
-# The experimental trace for lidocaine 
-# doses and responses are in the order given
-# (doses are in multiples of 0.05%w/v)
-# Note the first few doses use double spacing
+# Same two plots for lidocaine
 
-cl95lido=DRtrace(x=0.05*c(seq(20,12,-2),11:9,10:7,8,7,8,7:9,8:6,7,8,7,8:5,6,7),
-	y=c(rep(1,7),0,rep(1,3),0,1,0,1,0,0,rep(1,3),0,0,1,0,rep(1,3),rep(0,3)))
-	
-plot(cl95lido,main='Columb and Lyons 95: lidocaine') 
-# Compare with the article's Figure 2; the commented line below makes it look more similar
-# plot(cl95lido,shape='square',connect=FALSE,cex=2)
+udplot(lidox, lidoy, main='Columb and Lyons 95: lidocaine',
+  xtitle = "Patient Number", ytitle = 'Lidocaine (% w/v)') 
 
-cl95lidoRates=doseResponse(cl95lido)
-plot(cl95lidoRates,main='Lidocaine Dose-Response')
-# Due to the adaptive design, these observed rates are actually biased. 
-# See the rates after an empirical bias correction:
-points(DRshrink(cl95lidoRates,target=.5),col=2)
+drplot(lidox, lidoy, main='Lidocaine Dose-Response', percents = TRUE,
+       addest = TRUE, target = 0.5, addcurve = TRUE,
+       xtitle = 'Bupivacaine (% w/v)', ytitle = "Percent Effective")
 
+#----------- Let us actually see the numbers of those Centered-Isotonic-Regression (CIR) estimates!
+# Note that our default confidence-interval is 90%. Change it via the 'conf' argument.
+
+udest(bupix, bupiy, target = 0.5)
+# Compare with the article: 0.065% (95% CI 0.045-0.085) via "Dixon-Massey" (presumably, Dixon-Mood), 
+#                       and 0.062% (95% CI 0.052-0.072) via logistic regression
+
+udest(lidox, lidoy, target = 0.5)
+# Compare with the article: 0.37% (95% CI 0.32-0.42) via "Dixon-Massey" (presumably, Dixon-Mood), 
+#                       and 0.36% (95% CI 0.31-0.41) via logistic regression
+
+# Our package does include the Dixon-Mood point estimate 
+#  (w/o the confidence, because we do not endorse this estimation approach)
+# Does it reproduce the article numbers?
+dixonmood(bupix, bupiy)
+dixonmood(lidox, lidoy)
+# Not quite. Perhaps indeed the Dixon-Massey textbook (published a few years after Dixon and Mood)
+#    included some tweak on the original. Or perhaps, the formula is a bit open to variations in
+#    translation when coding it (originally it was a pencil-and-paper affair).
