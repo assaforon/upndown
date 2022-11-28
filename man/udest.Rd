@@ -36,7 +36,7 @@ CIR and related methods are available in the \code{cir} package. The \code{udest
 ## Columb MO, Lyons, G. 1995. Determination of the Minimum Local Analgesic Concentrations of Epidural Bupivacaine and Lidocaine in Labor, Anesthesia & Analgesia 81, 833-837.
 ## open access: https://journals.lww.com/anesthesia-analgesia/Fulltext/1995/10000/Determination_of_the_Minimum_Local_Analgesic.30.aspx
 
-# This was a classical median-finding up-and-down study.
+# It was a classical median-finding up-and-down study.
 
 # Bupivacaine: 
 bupix = 0.01 * c(15:9,10:6,7,6,7:5,6,7:4,5,6,5:8,7,6)
@@ -68,7 +68,7 @@ drplot(bupix, bupiy, main='Bupivacaine Dose-Response', percents = TRUE,
 
 # Same two plots for lidocaine
 
-udplot(lidox, lidoy, main='Columb and Lyons 95: lidocaine',
+udplot(lidox, lidoy, main='Columb and Lyons 95: Lidocaine',
   xtitle = "Patient Number", ytitle = 'Lidocaine (\% w/v)') 
 
 drplot(lidox, lidoy, main='Lidocaine Dose-Response', percents = TRUE,
@@ -83,17 +83,19 @@ udest(bupix, bupiy, target = 0.5)
 #                       and 0.062\% (95\% CI 0.052-0.072) via logistic regression
 
 udest(lidox, lidoy, target = 0.5)
-# Compare with the article: 0.37\% (95\% CI 0.32-0.42) via "Dixon-Massey" (presumably, Dixon-Mood), 
+# Compare with the article: 0.37\% (95\% CI 0.32-0.42) via "Dixon-Massey"  
 #                       and 0.36\% (95\% CI 0.31-0.41) via logistic regression
 
-# Our package does include the Dixon-Mood point estimate 
-#  (w/o the confidence, because we do not endorse this estimation approach)
+# Our package does include the Dixon-Mood point estimate.
+#  (w/o the CIs, because we do not endorse this estimation approach)
 # Does it reproduce the article numbers?
 dixonmood(bupix, bupiy)
 dixonmood(lidox, lidoy)
 # Not quite. Perhaps indeed the Dixon-Massey textbook (published a few years after Dixon and Mood)
 #    included some tweak on the original. Or perhaps, the formula is a bit open to variations in
 #    translation when coding it (originally it was a pencil-and-paper affair).
+
+
 }
 \references{
 \itemize{
