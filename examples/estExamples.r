@@ -1,37 +1,35 @@
 
-## This example is from one of the earliest applications of up-and-down in anesthesiology:
-## Columb MO, Lyons, G. 1995. Determination of the Minimum Local Analgesic Concentrations of Epidural Bupivacaine and Lidocaine in Labor, Anesthesia & Analgesia 81, 833-837.
-## open access: https://journals.lww.com/anesthesia-analgesia/Fulltext/1995/10000/Determination_of_the_Minimum_Local_Analgesic.30.aspx
+#'  **An up-and-down experience that has generated some controversy**
+#'  
+#' Van Elstraete, AC et al. The Median Effective Dose of Preemptive Gabapentin on Postoperative Morphine Consumption After Posterior Lumbar Spinal Fusion. *Anesthesia & Analgesia* 2008, 106: 305-308.
+#' open access: https://journals.lww.com/anesthesia-analgesia/Fulltext/2008/01000/The_Median_Effective_Dose_of_Preemptive_Gabapentin.53.aspx
 
 # It was a classical median-finding up-and-down study.
 
-# Bupivacaine: 
-bupix = 0.01 * c(15:9,10:6,7,6,7:5,6,7:4,5,6,5:8,7,6)
-# With classical U&D, responses (except the last one) can be read off the doses:
-bupiy = c( (1 - sign(diff(bupix)))/2, 0 )
+doses = c(4:7, 6:13, 12:19, 18:21, 20, 19:23, 22, 21:23, 22:19, 20:23, 
+          22:24, 23, 22, 23, 22:25, 24:22, rep(23:24,2), 23, 22)
+# With U&D, responses (except the last one) can be read off the doses:
+responses = c( (1 - sign(diff(doses)))/2, 0 )
 
-# Lidocaine (note that spacing was halved after observation 5):
-lidox = 0.05 * c(seq(20,12,-2),11:9,10:7,8,7,8,7:9,8:6,7,8,7,8:5,6,7)
-lidoy = c( (1 - sign(diff(lidox)))/2, 0 )
 
 ### Plots plots plots!
 
-layout(matrix(1:4, nrow=2, byrow=TRUE), widths=3:2)
+layout(t(1:2), widths=3:2)
 par(mar=c(4,4,4,1), mgp=c(2.5,0.8,0), cex.axis = 0.7, las = 1)
 
 # The experimental trajectory / time-series / "trace" (pick your favorite name!)
 # Note the changed argument names for x and y axis titles
-udplot(bupix, bupiy, main='Columb and Lyons 95: Bupivacaine', 
-        xtitle = "Patient Number", ytitle = 'Bupivacaine (% w/v)') 
+udplot(doses, responses, main='', 
+        xtitle = "Patient Number", ytitle = 'Gabapentin (mg/kg)') 
 # Compare with the article's Figure 1; the commented line below makes it look more similar
 # udplot(bupix, bupiy, shape='square', connect=FALSE, cex=2)
 
 # The dose-response plot, rarely encountered in U&D articles. 
 #   (Columb and Lyons do provide the info as a table, sort-of - see Table 2)
 # We can also add the CIR estimate right there:
-drplot(bupix, bupiy, main='Bupivacaine Dose-Response', percents = TRUE,
+drplot(doses, responses, main=' Dose-Response', percents = TRUE,
        addest = TRUE, target = 0.5, addcurve = TRUE,
-       xtitle = 'Bupivacaine (% w/v)', ytitle = "Percent Effective")
+       xtitle = 'Gabapentin (mg/kg)', ytitle = "Percent Effective")
 
 # Same two plots for lidocaine
 
