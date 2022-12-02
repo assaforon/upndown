@@ -8,7 +8,7 @@
 #'
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	 
 #' 
-#' @example examples/estExamples.r
+#' @example examples/wrapExamples.r
 
 #' 
 #' @export
@@ -73,7 +73,7 @@ quickInverse(x=x, y=y, target=target, starget = balancePt,
 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
 #' 
-#' @example examples/estExamples.r
+#' @example examples/wrapExamples.r
 
 #' 
 #' @export
