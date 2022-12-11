@@ -57,10 +57,4 @@ For UDD target estimation we recommend using centered isotonic regression, avail
 }
 
 @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
-
-@seealso
-\itemize{
-\item \code{\link{udest}}, the recommended estimation method for up-and-down targets.
-\item \code{\link{adaptmean}}, an unpublished but arguably better approach to dose-averaging (this is \emph{not} the recommended method though; that would be \code{\link{udest}} referenced above).
-}
 }

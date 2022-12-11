@@ -1,5 +1,5 @@
 
-#'  **An up-and-down experience that has generated some controversy**
+#'  **An up-and-down experiment that has generated some controversy**
 #'  
 #' Van Elstraete, AC et al. The Median Effective Dose of Preemptive Gabapentin on Postoperative Morphine Consumption After Posterior Lumbar Spinal Fusion. *Anesthesia & Analgesia* 2008, 106: 305-308.
 #' open access: https://journals.lww.com/anesthesia-analgesia/Fulltext/2008/01000/The_Median_Effective_Dose_of_Preemptive_Gabapentin.53.aspx
@@ -37,5 +37,6 @@ drplot(doses, responses, main=' Dose-Response', percents = TRUE,
 
 udest(doses, responses, target = 0.5)
 #' Compare with the article: 21.7 mg/kg (95% CI 19.9–23.5). 
-#' They cite a little-known 1991 article by Dixon as the method source. 
+#' They cite a little-known 1991 article by Dixon as the method source.
+#' However, in their author rejoinder they claim to have used the Dixon-Mood estimate.
 
