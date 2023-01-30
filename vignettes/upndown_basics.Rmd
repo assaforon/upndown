@@ -4,7 +4,7 @@ author: "Assaf Oron"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette for 'cir' Package}
+  %\VignetteIndexEntry{Up-and-Down Basics and the 'upndown' Package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,9 +18,11 @@ knitr::opts_chunk$set(
 
 ## Background
 
-Up-and-Down designs (UDDs) have the unique distinction of being, with all likelihood, the most popular experimental design that most statisticians have never heard of. Having been originally developed by statisticians and successfully introduced by them in the mid-20th Century to a wide array of application fields, in subsequent decades academic statistical interest has wandered elsewhere.
+Up-and-Down designs (UDDs) have the unique distinction of being, in all likelihood, the most popular experimental design that present-day statisticians have <u>never</u> heard of. Originally developed by statisticians and successfully introduced by them in the mid-20th Century to a staggering array of application fields, in subsequent decades academic statistical interest has wandered elsewhere.
 
-Nevertheless, UDDs have persisted. Studies using UDDs are routinely published in anesthesiology, toxicology, materials science, dentistry, electrical engineering, as well as the fields in which it was originally developed: sensory studies and explosive testing. Thus, UDDs are far from being an *"endangered"* designs; rather, they are *statistically underserved.*
+Nevertheless, UDDs have persisted. Studies using UDDs are routinely published in anesthesiology, toxicology, materials science, dentistry, electrical engineering, and other fields -- as well as the fields in which it was originally developed: sensory studies and explosive testing. Thus, UDDs are far from being an *"endangered"* design; rather, they are **statistically underserved.**
 
-The `upndown` package presents basic computational tools and shortcuts to help modernize and standardize UDD usage and insights about the design. It incorporates results by those statisticians who have happened to wander *into* UDD methodology. For estimation, we rely heavily upon the `cir` package which codifies Centered Isotonic Regression, an improvement of isotonic regression motivated by the needs of UDDs. The `upndown` utilities using `cir` functions emphasize ease of use, and do not necessitates in-depth familiarity with the latter package.
+The `upndown` package presents basic computational tools and shortcuts to help modernize and standardize UDD usage, and make insights about the design more accessible to practitioners and statisticians. It incorporates results by the handful statisticians who have happened to wander *into* UDD methodology (or stay with it) in recent decades. For estimation, we rely heavily upon the [`cir`](https://cran.r-project.org/web/packages/cir/) package which codifies Centered Isotonic Regression,^[Oron AP, Flournoy N. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. Stat Biopharm Res. 2017;9(3):258-267.] an improvement of isotonic regression motivated by the needs of UDDs. The `upndown` utilities using `cir` functions emphasize ease of use, and do not necessitate in-depth familiarity with the latter package.
+
+## What Makes a Design "Up-and-Down"?
 
