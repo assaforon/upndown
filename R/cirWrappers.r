@@ -27,7 +27,7 @@
 #'  - Flournoy N, Oron AP. Bias Induced by Adaptive Dose-Finding Designs. *Journal of Applied Statistics* 2020; 47, 2431-2442.  
 #'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. [See in particular the open-access Supplement.](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf)
 #'  
-#'  @seealso 
+#' @seealso 
 #'  - \code{\link[cir]{quickInverse}}, `cir` package.
 #'  - `cir` package vignette.
 
