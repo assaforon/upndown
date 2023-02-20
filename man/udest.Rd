@@ -80,8 +80,8 @@ udest(doses, responses, target = 0.5)
 \item Flournoy N, Oron AP. Bias Induced by Adaptive Dose-Finding Designs. \emph{Journal of Applied Statistics} 2020; 47, 2431-2442.
 \item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50. \href{https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf}{See in particular the open-access Supplement.}
 }
-
-@seealso
+}
+\seealso{
 \itemize{
 \item \code{\link[cir]{quickInverse}}, \code{cir} package.
 \item \code{cir} package vignette.

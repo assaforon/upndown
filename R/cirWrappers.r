@@ -92,6 +92,7 @@ quickInverse(x=x, y=y, target=target, starget = balancePt,
 
 #' @inheritParams udest
 
+#' @param cohort for a group/cohort UD design, the cohort/group size (a single number). In case of variable cohort size, this can be a vector the same length as `x, y`, with each observation's cohort assignment.
 #' @param shape the plotting shape (DRtrace only): `'circle'` (default), `'square'`, or `'triangle'`.
 #' @param connect logical: whether to connect the symbols (generic plotting type `'b'`). Default \code{TRUE} for `udplot()` and \code{FALSE} for `drplot()`.
 #' @param symbcol The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there might be an error message.
@@ -100,7 +101,7 @@ quickInverse(x=x, y=y, target=target, starget = balancePt,
 #' @param ...	Other arguments passed on to \code{\link[graphics]{plot}} (e.g., `main` for the main title). 
 
 
-udplot <- function(x, y, shape='circle', connect=TRUE, symbcol=1, doselabels=NULL, 
+udplot <- function(x, y, cohort=NULL, shape='circle', connect=TRUE, symbcol=1, doselabels=NULL, 
                    xtitle = "Observation Order", ytitle = "Dose / Stimulus",...)
 {
 require(cir)
@@ -108,9 +109,9 @@ require(cir)
 # val
 checkDose(x)
 checkResponse(y)
-
+checkNatural(cohort, parname = 'cohort')
   
-plot(DRtrace(x=x, y=y), shape=shape, connect=connect, mcol=symbcol, dosevals=doselabels,
+plot(DRtrace(x=x, y=y, cohort=cohort), shape=shape, connect=connect, mcol=symbcol, dosevals=doselabels,
              xlab=xtitle, ylab=ytitle, ...)
   
 }

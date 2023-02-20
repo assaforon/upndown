@@ -7,6 +7,7 @@
 udplot(
   x,
   y,
+  cohort = NULL,
   shape = "circle",
   connect = TRUE,
   symbcol = 1,
@@ -20,6 +21,8 @@ udplot(
 \item{x}{numeric vector: sequence of administered doses, treatments, stimuli, etc.}
 
 \item{y}{numeric vector: sequence of observed responses. Must be same length as \code{x}, and must be coded \code{TRUE/FALSE} or 0/1.}
+
+\item{cohort}{for a group/cohort UD design, the cohort/group size (a single number). In case of variable cohort size, this can be a vector the same length as \verb{x, y}, with each observation's cohort assignment.}
 
 \item{shape}{the plotting shape (DRtrace only): \code{'circle'} (default), \code{'square'}, or \code{'triangle'}.}
 

@@ -39,4 +39,17 @@ udest(doses, responses, target = 0.5)
 #' Compare with the article: 21.7 mg/kg (95% CI 19.9–23.5). 
 #' They cite a little-known 1991 article by Dixon as the method source.
 #' However, in their author rejoinder they claim to have used the Dixon-Mood estimate.
+#' 
+#' ## Toy example of plotting a group UD dataset
+#' 
+#' Also showing off some udplot() options
+#' 
+#' Not an actual experiment (made-up data)
+#' The design is purportedly GUD (3,0,1), targeting the 20th percentile
+#' 
 
+gsize = 3
+x = rep(c(1:3, 2:4), each = gsize)
+y = c(rep(0, 8), 1, rep(0,7), 1, 1)
+
+udplot(x=x, y=y, cohort=gsize, connect=FALSE, shape='triangle')
