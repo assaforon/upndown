@@ -14,7 +14,7 @@ vignette: >
 # tools::buildVignettes(dir = '.',  tangle=TRUE)
 # dir.create("inst/doc")
 # file.copy(dir("vignettes", full.names=TRUE), "inst/doc", overwrite=TRUE)
-# (from SoF: https://stackoverflow.com/questions/10266963/moving-files-between-folders)
+# (from https://community.rstudio.com/t/browsevignettes-mypackage-saying-no-vignettes-found/68656/6)
 
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -24,25 +24,27 @@ knitr::opts_chunk$set(
 
 ## Background
 
-Up-and-Down designs (UDDs) have the unique distinction of being, in all likelihood, the most popular experimental design that present-day statisticians have <u>never</u> heard of. Originally developed by statisticians and successfully introduced by them in the mid-20th Century to a staggering array of application fields, in subsequent decades academic statistical interest has wandered elsewhere.
+Up-and-Down designs (UDDs) have the unique distinction of being, in all likelihood, the most popular experimental design that present-day statisticians have <u>never</u> heard of. Developed mostly by statisticians and successfully introduced by them in the mid-20th Century to a staggering array of application fields, in subsequent decades academic statistical interest has wandered elsewhere.
 
-Nevertheless, UDDs have persisted. Studies using UDDs are routinely published in anesthesiology, toxicology, materials science, dentistry, electrical engineering, and other fields -- as well as the fields in which it was originally developed: sensory studies and explosive testing. Thus, UDDs are far from being an *"endangered"* design; rather, they are **statistically underserved.**
+Nevertheless, UDDs have persisted. Studies using UDDs are routinely published in anesthesiology, toxicology, materials science, dentistry, electrical engineering, and other fields -- as well as the fields for which it was originally developed: sensory studies and explosive testing. Thus, UDDs are far from being an *"endangered"* design; rather, they are **statistically under-served.**
 
-The `upndown` package presents basic computational tools and shortcuts to help modernize and standardize UDD usage, and make insights about the design more accessible to practitioners and statisticians. It incorporates results by the handful statisticians who have happened to wander *into* UDD methodology (or stay with it) in recent decades. As a side effect, we provide methodological reference for statisticians and analysts wishing to learn more about UDDs. 
+The `upndown` package attempts close some of this service gap. It presents basic computational tools and shortcuts to help modernize and standardize UDD usage, and to make insights about the design more accessible to practitioners and statisticians. It incorporates results by the handful statisticians who have happened to wander *into* UDD methodology (or stay with it) in recent decades. We also provide methodological references for statisticians and analysts wishing to learn more about UDDs. 
 
 For UDD estimation and data visualization we rely heavily upon the [`cir`](https://cran.r-project.org/web/packages/cir/) package. That package codifies Centered Isotonic Regression (CIR),^[Oron AP, Flournoy N. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. *Stat Biopharm Res* 2017;9(3):258-267.] an improvement of isotonic regression motivated by the needs of UDDs and of dose-response studies in general. The `upndown` utilities using `cir` functions emphasize ease of use, and do not necessitate in-depth familiarity with the latter package.
 
 ## What Makes a Design "Up-and-Down"?
 
-The hallmark of a genuine UDD is the **target-centered random walk** it generates over the dose levels. To do that, it requires^[Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50.]
+UDDs belong to the field of **dose-finding.** In abstract statistical terms, this field attempts to find a specific percentile of an underlying response-threshold distribution to some dose/treatment/stimulus, by applying different levels of said dose to sequence of individuals (or in some fields, a sequence of doses to the same individual), and collecting their responses. Depending upon application, in different fields these **target** percentiles might be called the $ED_{p}$ or $LD_{p}$ ($p\in(0, 100)$), the sensory threshold, the Maximum Tolerated Dose (MTD), etc. 
+
+There is substantial confusion regarding the term UDD. From a ridiculously broad perspective, any dose-finding designs in which consecutive dose assignments might go *"up"* or *"down"* can be called a UDD, some articles came pretty close to claiming that. We prefer a narrower and far more useful definition: the hallmark of a genuine UDD is the **target-centered random walk** it generates over the dose levels. To do that, it requires^[Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50.]
 
   1. A binary response *(a ternary response might also be UDD-compatiable, but hasn't been attempted in practice to our knowledge)*.
   2. Treatments ordered as a discrete set of increasing doses of the same treatment or drug. Preferably, the allowed doses are uniformly spaced in an algebraic or geometric sequence.
-  3. The probability of positive response must maintain the same direction of change (increasing or decreasing) with increasing dose. For notational simplicity we assume that it is increasing, and denote the relationship between dose and positive-response probabilities by the function F(x); x being the dose-magnitude variable (Figure 1).
-  4. Doses are allocated to patients sequentially, and only allow for increasing the dose by one level, decreasing by one level, or repeating the same dose. Hence the design’s name “up-and-down”, or (in sensory studies and materials testing) *“the Staircase Method.”*^[Garcìa-Perez MA. Forced-Choice staircases with fixed step sizes: asymptotic and small-sample properties. *Vision Res* 1998;38:1861-1881.]
+  3. The probability of positive response must maintain the same direction of change (increasing or decreasing) with increasing dose. For notational simplicity, we assume here that it is increasing, and denote the relationship between dose and positive-response probabilities by the function $F(x)$, with $x$ being the dose-magnitude variable.
+  4. Doses are allocated to patients sequentially, and only allow for increasing the dose by one level, decreasing by one level, or repeating the same dose. Hence the design’s name *“up-and-down”*, or (in sensory studies and materials testing) *“the Staircase Method.”*^[Garcìa-Perez MA. Forced-Choice staircases with fixed step sizes: asymptotic and small-sample properties. *Vision Res* 1998;38:1861-1881.]
   5. Dose-transition rules based on the doses and responses of <u>the last patient or several patients</u>, rather than on all patient data going back to the beginning of the experiment. Furthermore, **the rules do not use any estimated quantity that changes during the study.**
   
-The fifth and last element might be responsible for UDDs falling out of statistical fashion. In Phase I trial design in particular, current statistical orthodoxy maintains that anything short of using the entire sample for each dosing decision, is an indefensible waste of precious information. 
+The fifth and last element might be partially responsible for UDDs falling out of statistical fashion. In Phase I trial design in particular, the focus of current dose-finding method development, current statistical orthodoxy maintains that anything short of using <u>the entire sample for each dosing decision</u>, is an indefensible waste of precious information. 
 
 In our humble opinion, this view 
 
@@ -53,6 +55,18 @@ In our humble opinion, this view
 But I digress.
 
 ## Experimental Examples
+
+In selecting examples, I sought relatively recent open-access publications, preferably from different fields. The publications also had to share clearly both the design and the raw data; otherwise there's little point in sharing them in this vignette. Being a health statistician I won't pretend to fully understand the in-field context of each study, despite my background in several sciences.
+
+We begin with a study testing the single-tooth bending failure (STBF) load of steel helicopter gears, published by an Italian team in 2017.^[Gorla C, Rosa F, Conrado E, Concli F.
+Bending Fatigue Strength of Case Carburized and Nitrided Gear Steels for Aeronautical Applications. *Int. J. Appl. Eng. Res.* 2017; 12 (21),11306–11322.] The article summarized a long-running series of STBF experiments and simulations, and can perhaps be seen as a meta-analysis. To our interest, the experimental part was 9 separate median-finding, or as we call them **"Classical" UDD** runs on gears made of 9 different types of steel. In each such run, the gear was subjected to up to 10 million high-frequency cycles at a specific load strength, presumably approximating an entire gear-lifespan worth of loads.
+
+ - If the gear survived these cycles without breaking a tooth, it was considered a success and the next gear was subject to a load $1kN$ higher. (*"up"*).
+ - If a tooth broke, it was a failure and the next gear received $1kN$ lower load (*"down"*).
+
+This design was first developed during World War II, to estimate the median effective dropping height of explosives. Independently, Nobel-Prize winning audiologist von Bekesy developed a near-identical design to estimate the hearing threshold.
+
+Gorla et al. visualize the raw data of their 9 experiments (Tables 4-12) in the very same manner that Dixon and Mood visualized an explosive-testing dataset in their 1948 article: as a text graph with **"x"** and **"o"** symbols. The raw data enables us to re-plot the data in the somewhat more modern fashion encountered in other fields. Here are two of the experiments:
 
 
 
