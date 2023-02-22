@@ -109,7 +109,7 @@ require(cir)
 # val
 checkDose(x)
 checkResponse(y)
-checkNatural(cohort, parname = 'cohort')
+if(!is.null(cohort)) checkNatural(cohort, parname = 'cohort')
   
 plot(DRtrace(x=x, y=y, cohort=cohort), shape=shape, connect=connect, mcol=symbcol, dosevals=doselabels,
              xlab=xtitle, ylab=ytitle, ...)
