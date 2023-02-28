@@ -56,6 +56,8 @@ But I digress.
 
 ## Experimental Examples
 
+### Material Strength Testing
+
 In selecting examples, I sought relatively recent open-access publications, preferably from different fields. The publications also had to share clearly both the design and the raw data; otherwise there's little point in sharing them in this vignette. Being a health statistician I won't pretend to fully understand the in-field context of each study, despite my background in several sciences.
 
 We begin with a study testing the single-tooth bending failure (STBF) load of steel helicopter gears, published by an Italian team in 2017.^[Gorla C, Rosa F, Conrado E, Concli F.
@@ -84,7 +86,7 @@ legend('bottomright', legend = c(expression('Survived 10'^7*' cycles'),
 
 ```
 
- - This run had $n=13,$ which for live-subject experiments is probably on the low side. Given these gears are industrial products which likely undergo tight process control, this $n$ might suffice.
+ - This run had $n=13,$ which for live-subject experiments would be on the low side. Given these gears are industrial products which likely undergo tight process control, such an $n$ might suffice.
  - That said, the random walk nature can be seen in how the first half of the run is a bit different from the second. After 6-7 observations, one might jump to conclude that the target ( = median failure threshold) is surely below 41 kN, probably around 40 kN. But the last 6 tell a rather different story, of the target tightly locked between 41 and 42 kN. 
  
 Who is right? We don't know. Each half provides a ridiculously small amount of information, and even combined they leave a lot of uncertainty (if the uncertainty is properly accounted for).
@@ -105,9 +107,13 @@ udest(gorla751x, gorla751y, target = 0.5)
 
 The `'X'` marks denote raw response frequencies, with symbol area proportional to sample size.
 
+**Note that indeed the confidence interval is fairly wide. **
+
 CIR stands for Centered Isotonic Regression, an adaptation of that longstanding nonparametric method to the dose-response and dose-finding realms. It implicitly assumes that the dose-response (in this particular case, load-failure) curve is **smooth and strictly monotone**, and therefore both interpolates between observations, and allows the characteristic flat stretches produced by isotonic regression, to be shrunk towards single points.
 
-Estimating the target becomes as simple as reading off the dose-response plot, and seeing where the CIR curve crosses $y=target.$
+### Side Note: Observation Bias and Empirical Correction
+
+Estimating the target with CIR is as simple as reading off the dose-response plot, and seeing where the CIR curve crosses $y=target.$
 
 There is one catch though: the up-and-down process induces dependence between consecutive doses and responses. Therefore, even though each response is independent conditional upon the dose it received, responses are not *marginally* independent and they do not behave according to Binomial assumptions - contrary to common misconceptions in the dose-finding field *(of which yours truly had also been guilty in the past)*. 
 
