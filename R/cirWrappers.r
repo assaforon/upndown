@@ -54,7 +54,7 @@ if(balancePt[1]!=target)
 
 quickInverse(x=x, y=y, target=target, starget = balancePt,
              conf=conf, adaptiveShrink=TRUE,
-              adaptiveCurve = (target != 0.5) )
+              adaptiveCurve = (target != 0.5), ... )
 
 }
 
@@ -173,7 +173,7 @@ if(addest)
 {
   if(is.null(target)) stop("To plot an estimate, please specify the target response rate.\n")
   checkTarget(target)
-  est = udest(x=x, y=y, target=target, balancePt=balancePt, conf=conf)
+  est = udest(x=x, y=y, target=target, balancePt=balancePt, conf=conf, ...)
   if(percents) est$target = 100 * est$target
   points(target ~ point, data=est, pch=estsymb, col=estcol, cex=estsize)
   lines(x = c(est[1,3], est[1,4]), y = rep(est$target, 2), col=estcol, lwd = esthick)

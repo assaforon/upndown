@@ -1,5 +1,5 @@
 ---
-title: "Up-and-Down Designs: the `upndown` Package"
+title: "`upndown` Package Vignette 1: Up-and-Down Basics"
 author: "Assaf Oron"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -24,51 +24,51 @@ knitr::opts_chunk$set(
 
 ## Background
 
-Up-and-Down designs (UDDs) have the unique distinction of being, in all likelihood, the most popular experimental design that present-day statisticians have <u>never</u> heard of. Developed mostly by statisticians and successfully introduced by them in the mid-20th Century to a staggering array of application fields, in subsequent decades academic statistical interest has wandered elsewhere.
+Up-and-Down designs (UDDs) have the unique distinction of being, in all likelihood, the most popular experimental design that <u>statisticians have never heard of</u>. Developed mostly by statisticians and successfully introduced by them in the mid-20th Century to a staggering array of application fields, in subsequent decades academic statistical interest has wandered elsewhere.
 
-Nevertheless, UDDs have persisted. Studies using UDDs are routinely published in anesthesiology, toxicology, materials science, dentistry, electrical engineering, and other fields -- as well as the fields for which it was originally developed: sensory studies and explosive testing. Thus, UDDs are far from being an *"endangered"* design; rather, they are **statistically under-served.**
+Nevertheless, UDDs have persisted. Studies using UDDs are routinely published in anesthesiology, toxicology, materials science, dentistry, electrical engineering, and other fields -- as well as the fields where UDD was originally developed: sensory studies and explosive testing. Thus, UDDs are far from being an *"endangered"* design; rather, they are **statistically under-served.**
 
-The `upndown` package attempts close some of this service gap. It presents basic computational tools and shortcuts to help modernize and standardize UDD usage, and to make insights about the design more accessible to practitioners and statisticians. It incorporates results by the handful statisticians who have happened to wander *into* UDD methodology (or stay with it) in recent decades. We also provide methodological references for statisticians and analysts wishing to learn more about UDDs. 
+The `upndown` package attempts close some of this service gap. It presents basic computational tools and shortcuts to help modernize and standardize UDD usage, and to make insights about the design more accessible to practitioners and statisticians. It incorporates the most up-to-date methodological improvements. We also provide methodological references for statisticians and analysts wishing to learn more about UDDs. 
 
-For UDD estimation and data visualization we rely heavily upon the [`cir`](https://cran.r-project.org/web/packages/cir/) package. That package codifies Centered Isotonic Regression (CIR),^[Oron AP, Flournoy N. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. *Stat Biopharm Res* 2017;9(3):258-267.] an improvement of isotonic regression motivated by the needs of UDDs and of dose-response studies in general. The `upndown` utilities using `cir` functions emphasize ease of use, and do not necessitate in-depth familiarity with the latter package.
+For UDD estimation and data visualization we rely heavily upon the [`cir`](https://cran.r-project.org/web/packages/cir/) package. That package codifies Centered Isotonic Regression (CIR),^[Oron AP, Flournoy N. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. *Stat Biopharm Res* 2017;9(3):258-267.] an improvement of isotonic regression motivated by the needs of UDDs and of dose-response studies in general. The `upndown` utilities using `cir` functions emphasize ease of use, and do not necessitate in-depth familiarity with `cir`.
 
 ## What Makes a Design "Up-and-Down"?
 
-UDDs belong to the field of **dose-finding.** In abstract statistical terms, this field attempts to find a specific percentile of an underlying response-threshold distribution to some dose/treatment/stimulus, by applying different levels of said dose to sequence of individuals (or in some fields, a sequence of doses to the same individual), and collecting their responses. Depending upon application, in different fields these **target** percentiles might be called the $ED_{p}$ or $LD_{p}$ ($p\in(0, 100)$), the sensory threshold, the Maximum Tolerated Dose (MTD), etc. 
+UDDs belong to the field of **dose-finding.** In abstract statistical terms, this field attempts to find a specific percentile of an underlying response-threshold distribution to some dose/treatment/stimulus, by applying different levels of said dose to sequence of individuals (or in some applications, a sequence of doses to the same individual), and collecting their responses. Depending upon application, these **target** percentiles might be called the $ED_{p}$ or $LD_{p}$ ($p\in(0, 100)$), the sensory threshold, the Maximum Tolerated Dose (MTD), etc. 
 
-There is substantial confusion regarding the term UDD. From a ridiculously broad perspective, any dose-finding designs in which consecutive dose assignments might go *"up"* or *"down"* can be called a UDD, some articles came pretty close to claiming that. We prefer a narrower and far more useful definition: the hallmark of a genuine UDD is the **target-centered random walk** it generates over the dose levels. To do that, it requires^[Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50.]
+There is substantial confusion regarding the term "Up-and-Down". From a uselessly broad perspective, any dose-finding designs in which consecutive dose assignments might go *"up"* or *"down"* can be called a UDD, and some articles come pretty close to claiming that. We prefer a narrower and far more useful definition: the hallmark of a genuine UDD is the **target-centered random walk** it generates over the dose levels. To do that, it requires^[Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50.]
 
   1. A binary response *(a ternary response might also be UDD-compatiable, but hasn't been attempted in practice to our knowledge)*.
-  2. Treatments ordered as a discrete set of increasing doses of the same treatment or drug. Preferably, the allowed doses are uniformly spaced in an algebraic or geometric sequence.
-  3. The probability of positive response must maintain the same direction of change (increasing or decreasing) with increasing dose. For notational simplicity, we assume here that it is increasing, and denote the relationship between dose and positive-response probabilities by the function $F(x)$, with $x$ being the dose-magnitude variable.
-  4. Doses are allocated to patients sequentially, and only allow for increasing the dose by one level, decreasing by one level, or repeating the same dose. Hence the design’s name *“up-and-down”*, or (in sensory studies and materials testing) *“the Staircase Method.”*^[Garcìa-Perez MA. Forced-Choice staircases with fixed step sizes: asymptotic and small-sample properties. *Vision Res* 1998;38:1861-1881.]
-  5. Dose-transition rules based on the doses and responses of <u>the last patient or several patients</u>, rather than on all patient data going back to the beginning of the experiment. Furthermore, **the rules do not use any estimated quantity that changes during the study.**
+  2. Allowable treatments are a **discrete set of increasing dose levels** of the same "dose variable" $x.$ 
+  3. **Monotone dose-response relationship.** For simplicity we assume monotone increasing, and denote the relationship via the function $F(x)$, which can often be interpreted as the cumulative distribution function (CDF) of the underlying positive-response thresholds.
+  4. Doses are allocated to patients *(or groups of patients)* **sequentially**, and only allow for increasing the dose by one level, decreasing by one level, or repeating the same dose. Hence the design’s name *“up-and-down”*, or (in sensory studies and materials testing) *“the Staircase Method.”*^[Garcìa-Perez MA. Forced-Choice staircases with fixed step sizes: asymptotic and small-sample properties. *Vision Res* 1998;38:1861-1881.]
+  5. Dose-transition rules are based on the doses and responses of <u>the last patient or several patients</u>, rather than on all patient data going back to the beginning of the experiment. Furthermore, **the rules do not use any estimated quantity that changes during the study.**
   
-The fifth and last element might be partially responsible for UDDs falling out of statistical fashion. In Phase I trial design in particular, the focus of current dose-finding method development, current statistical orthodoxy maintains that anything short of using <u>the entire sample for each dosing decision</u>, is an indefensible waste of precious information. 
+The fifth and last element might be partially responsible for UDDs falling out of statistical fashion. In Phase I trial design in particular, a field currently enjoying the bulk of dose-finding method development resources, current statistical orthodoxy maintains that anything short of using <u>the entire sample and an estimation process for each dosing decision</u>, is an indefensible waste of precious information. 
 
-In our humble opinion, this view 
+In our humble opinion, this view -
 
  - confounds the task of data collection - which may not necessarily benefit from carrying the entire dataset *"on its back"* at each step^[Oron AP, Hoff PD. Small-Sample Behavior of Novel Phase I Cancer Trial Designs. *Clin Trials* 2013;10(1):63-80. With discussion on pp. 81-92.] - with the task of estimation, at which point UDDs <u>do</u> use the entire sample;
  - brushes aside some basic statistical realities of small-sample, binary-response uncertainty; 
- - and last but not least, ignores UDDs' proven properties and impressive track record.
+ - last but not least, ignores UDDs' proven properties and impressive track record.
  
 But I digress.
 
 ## Experimental Examples
 
+In selecting examples, I sought relatively recent open-access publications, preferably from different fields. The publications also had to share clearly both the design and the raw data. Being a health statistician I won't pretend to fully understand the in-field context of each study, despite my background in several sciences.
+
 ### Material Strength Testing
 
-In selecting examples, I sought relatively recent open-access publications, preferably from different fields. The publications also had to share clearly both the design and the raw data; otherwise there's little point in sharing them in this vignette. Being a health statistician I won't pretend to fully understand the in-field context of each study, despite my background in several sciences.
-
 We begin with a study testing the single-tooth bending failure (STBF) load of steel helicopter gears, published by an Italian team in 2017.^[Gorla C, Rosa F, Conrado E, Concli F.
-Bending Fatigue Strength of Case Carburized and Nitrided Gear Steels for Aeronautical Applications. *Int. J. Appl. Eng. Res.* 2017; 12 (21),11306–11322.] The article summarized a long-running series of STBF experiments and simulations, and can perhaps be seen as a meta-analysis. To our interest, the experimental part was 9 separate median-finding, or as we call them **"Classical" UDD** runs on gears made of 9 different types of steel. In each such run, the gear was subjected to up to 10 million high-frequency cycles at a specific load strength, presumably approximating an entire gear-lifespan worth of loads.
+Bending Fatigue Strength of Case Carburized and Nitrided Gear Steels for Aeronautical Applications. *Int. J. Appl. Eng. Res.* 2017; 12 (21),11306–11322.] The article summarized a long-running series of STBF experiments and simulations, and can perhaps be seen as a meta-analysis. To our interest, the experimental part was 9 separate median-finding, or as we call them **"Classical" UDD** runs on gears made of 9 different types of steel. In each such run, each tested gear was subjected to up to 10 million high-frequency cycles at a specific load strength, presumably approximating an entire gear-lifespan worth of loads.
 
  - If the gear survived these cycles without breaking a tooth, it was considered a success and the next gear was subject to a load $1kN$ higher. (*"up"*).
  - If a tooth broke, it was a failure and the next gear received $1kN$ lower load (*"down"*).
 
-This design was first developed during World War II, to estimate the median effective dropping height of explosives. Independently, Nobel-Prize winning audiologist von Bekesy developed a near-identical design to estimate the hearing threshold.
+Classical UDD was first developed during World War II, to estimate the median effective dropping height of explosives.^[Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. *J Am Stat Assoc.* 1948;43:109-126.] Independently, Nobel-Prize winning audiologist von Bekesy developed a near-identical design to estimate the hearing threshold.^[von Békésy G. A new audiometer. *Acta Otolaryngol.* 1947; 35:411–22.]
 
-Gorla et al. visualize the raw data of their 9 experiments (Tables 4-12) in the very same manner that Dixon and Mood visualized an explosive-testing dataset in their 1948 article: as a text graph with **"x"** and **"o"** symbols. The raw data enables us to re-plot the data in the somewhat more modern fashion encountered in other fields. Here are two of the experiments:
+Gorla et al. visualize the raw data of their 9 experiments (Tables 4-12) in the very same manner that Dixon and Mood visualized an explosive-testing dataset in their 1948 article: as a text graph with **"x"** and **"o"** symbols. We re-plot the data in the somewhat more modern fashion encountered in other fields. Here are two of the experiments:
 
 ```{r gorla6_1}
 library(upndown)
@@ -86,10 +86,10 @@ legend('bottomright', legend = c(expression('Survived 10'^7*' cycles'),
 
 ```
 
- - This run had $n=13,$ which for live-subject experiments would be on the low side. Given these gears are industrial products which likely undergo tight process control, such an $n$ might suffice.
+ - This run had $n=13,$ which for live-subject experiments would be on the low side. Given these gears are industrial products which likely undergo tight process control, such a small $n$ might suffice.
  - That said, the random walk nature can be seen in how the first half of the run is a bit different from the second. After 6-7 observations, one might jump to conclude that the target ( = median failure threshold) is surely below 41 kN, probably around 40 kN. But the last 6 tell a rather different story, of the target tightly locked between 41 and 42 kN. 
  
-Who is right? We don't know. Each half provides a ridiculously small amount of information, and even combined they leave a lot of uncertainty (if the uncertainty is properly accounted for).
+Which half is correct? We don't know. Each half provides a ridiculously small amount of information, and even combined they leave a lot of uncertainty (if the uncertainty is properly accounted for).
 
 Here's the dose-response plot, and below it the numerical target estimate:
 
@@ -107,9 +107,11 @@ udest(gorla751x, gorla751y, target = 0.5)
 
 The `'X'` marks denote raw response frequencies, with symbol area proportional to sample size.
 
-**Note that indeed the confidence interval is fairly wide. **
+**Note that indeed the confidence interval is fairly wide. ** It is also asymmetric, mostly because `cir` dose-finding functions (starting version 2.3.0) separately estimate the local slope of $F(x)$ to the right and left of target, 
 
-CIR stands for Centered Isotonic Regression, an adaptation of that longstanding nonparametric method to the dose-response and dose-finding realms. It implicitly assumes that the dose-response (in this particular case, load-failure) curve is **smooth and strictly monotone**, and therefore both interpolates between observations, and allows the characteristic flat stretches produced by isotonic regression, to be shrunk towards single points.
+CIR stands for Centered Isotonic Regression, an adaptation of that longstanding nonparametric method to the dose-response and dose-finding realms. It implicitly assumes that the dose-response (in this particular case, load-failure) curve is **smooth and strictly monotone**, and therefore both interpolates between observations, and shrinks the characteristic flat stretches produced by isotonic regression towards single points.
+
+Note by the way, that `upndown` default (and `cir` default too) is a $90\%$ CI rather than $95\%$. You hopefully agree that with 13 dependent binary observations, pretending to know $95\%$ of *anything* is a bit overly ambitious. 
 
 ### Side Note: Observation Bias and Empirical Correction
 
@@ -119,19 +121,18 @@ There is one catch though: the up-and-down process induces dependence between co
 
 In particular: **the dependence induces a bias upon observed response rates**, a bias that tends to "flare out" away from target.^[Flournoy N, Oron AP. Bias induced by adaptive dose-finding designs. J Appl Stat. 2020;47(13-15):2431-2442.] Near target the bias is minimal, and this is why up-and-down and other dose-finding designs still work - but using observed frequencies away from target at face value is not recommended.
 
-The blue curve does include an empirical bias fix, based on that "flaring out" property. The main motivation for putting that fix in is not to get the curve right - it's a bit of a fool's errand, dose-finding designs are really about **estimating a point, not an entire curve** - but to get the confidence intervals more realistic. The "flaring-out" bias makes $F(x)$'s apparent slope too steep. The bias correction mitigates that steepness and hence widens the CI.
+The blue curve does include an empirical bias fix, based on that "flaring out" property, which is why it doesn't cross the middle of the 'X' marks denoting observed frequencies. The main motivation for putting that fix in as default, is not to get the curve right - that would be a bit of a fool's errand, because dose-finding designs are really about **estimating a point, not an entire curve** - but to get the confidence intervals more realistic. The "flaring-out" bias makes $F(x)$'s apparent slope too steep. The bias correction mitigates that steepness and hence widens the CI.
 
-Note by the way, that `upndown` default (and `cir` default too) is a $90\%$ CI rather than $95\%$. You hopefully agree that with 13 dependent binary observations, pretending to know $95\%$ of anything is a bit overly ambitious. 
 
-What if we do try to estimate away from target? Here is the (relatively) proper way to do it. Assume we're interested in knowing a "safe" load, under which only $5\%$ of gears fail:
+What if we do try to estimate away from target? Here is the (relatively) proper way to do it. Assume we're interested in knowing a "safe" load, under which only $5\%$ of gears are expected to fail:
 
-```{r gorla6_3}
+```{r gorla6_3, width = 100}
 udest(x=gorla751x, y=gorla751y, target = 0.05, balancePt=.5)
 ```
 
-We change the `target` argument to the desired percentile. But we must also inform `udest()` that the experiment was actually designated to revolve around another percentile, which we call **the balance point.** Because the bias would flare out from there, not from where we want to estimate now. And as you note `udest()` kindly reminds us that it's a fool's errand. *(If `balancePt` is left empty, `udest()` assumes it is equal to `target`.)*
+We change the `target` argument to the desired percentile. But we must also inform `udest()` that the experiment was actually designated to revolve around another percentile, which we call **the balance point.**^[Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. *Stat Med.* 2009;28:1805-1820.] The bias would flare out from there, not from where we want to estimate now. And as you note `udest()` kindly reminds us that it's not quite recommended. *(If `balancePt` is left empty, `udest()` assumes it is equal to `target`.)*
 
-Want to find out that safe load? Design an experiment that targets a lower percentile (we'll discuss that soon). Or an experiment that estimates an entire stretch of the load-failure curve.
+Want to find out that safe load? Design an experiment that targets a lower percentile (we'll discuss that soon). Or an experiment that estimates an entire stretch of the load-failure curve. That would not be an UDD though.
 
 
 
