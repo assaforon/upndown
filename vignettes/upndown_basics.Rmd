@@ -107,11 +107,20 @@ udest(gorla751x, gorla751y, target = 0.5)
 
 The `'X'` marks denote raw response frequencies, with symbol area proportional to sample size.
 
-**Note that indeed the confidence interval is fairly wide. ** It is also asymmetric, mostly because `cir` dose-finding functions (starting version 2.3.0) separately estimate the local slope of $F(x)$ to the right and left of target, 
+**Note that indeed the confidence interval is fairly wide. ** It is also asymmetric, mostly because `cir` dose-finding functions (starting version 2.3.0) separately estimate the local slope of $F(x)$ to the right and left of target. Note also that `upndown` default (and `cir` default too) is a $90\%$ CI rather than $95\%$. You hopefully agree that with 13 dependent binary observations, pretending to know $95\%$ of *anything* is a bit overly ambitious. 
 
 CIR stands for Centered Isotonic Regression, an adaptation of that longstanding nonparametric method to the dose-response and dose-finding realms. It implicitly assumes that the dose-response (in this particular case, load-failure) curve is **smooth and strictly monotone**, and therefore both interpolates between observations, and shrinks the characteristic flat stretches produced by isotonic regression towards single points.
 
-Note by the way, that `upndown` default (and `cir` default too) is a $90\%$ CI rather than $95\%$. You hopefully agree that with 13 dependent binary observations, pretending to know $95\%$ of *anything* is a bit overly ambitious. 
+Gorla et al. used the original Dixon-Mood estimator, a weighted average of the sequence of 13 doses which yielded 40.91 kN. `upndown` does include an implementation of this estimate:
+
+
+```{r dm1}
+dixonmood(gorla751x, gorla751y)
+```
+
+The result is slightly different from Gorla et al.'s value, because there are a myriad slight variations on how Dixon-Mood *(often called Dixon-Massey)* is applied. We consider it an obsolete estimator, and provide it mostly for comparisons such as this.
+
+
 
 ### Side Note: Observation Bias and Empirical Correction
 
@@ -130,7 +139,7 @@ What if we do try to estimate away from target? Here is the (relatively) proper 
 udest(x=gorla751x, y=gorla751y, target = 0.05, balancePt=.5)
 ```
 
-We change the `target` argument to the desired percentile. But we must also inform `udest()` that the experiment was actually designated to revolve around another percentile, which we call **the balance point.**^[Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. *Stat Med.* 2009;28:1805-1820.] The bias would flare out from there, not from where we want to estimate now. And as you note `udest()` kindly reminds us that it's not quite recommended. *(If `balancePt` is left empty, `udest()` assumes it is equal to `target`.)*
+We change the `target` argument to the desired percentile. But we must also inform `udest()` that the experiment was actually designated to revolve around another percentile, which we call **the balance point.**^[Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. *Stat Med.* 2009;28:1805-1820.] The bias would flare out from there, not from where we want to estimate now. As you might note, `udest()` kindly reminds us that this is not recommended. *(If `balancePt` is left empty, `udest()` assumes it is equal to `target`.)*
 
 Want to find out that safe load? Design an experiment that targets a lower percentile (we'll discuss that soon). Or an experiment that estimates an entire stretch of the load-failure curve. That would not be an UDD though.
 
