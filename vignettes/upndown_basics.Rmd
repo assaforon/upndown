@@ -194,21 +194,11 @@ The anesthesiology study we chose was published in 2021 by an Egyptian team.^[El
 
 Generally, anesthesiologists have been very responsible in using more realistic sample sizes UDD studies. Unlike machined helicopter gears, people do not undergo industrial process control; we come in a broad diversity shapes, sizes, ages, and sensitivities. As seen in the previous examples, even with an industrially-controlled sample, $n$ of 13-15 seems very questionable for dose-finding. With a sample of humans or other animals, such a sample size is not advised. Instead, anesthesiologists use $n=30--40$ for median-finding, and larger samples for extreme percentiles. El Fawal et al., with some guidance from articles by the Durham-Flournoy led team, decided to run each arm until 45 positive responses are observed, ending with 61 patients in one arm and 58 in the other.
 
-```{r elfawal1, echo = -1, fig.width = 12, fig.height = 7, out.width=1300, out.height=700}
-par(mfrow=1:2, mar=c(4,4,4,1))
-elfawal_short_x = 7 - c(0:2, 2:4, 4:6, 6:8, 8, 8:10, 10, 10:13, 13:15, 14, 15:11, 12, 13, 13, 12, 12, 13, 13, 13, 12, 12:15, 14, 15, 14, 14, 13, 13, 14, 13:15, 14, 13, 13, 14, 13, 14:12) / 10
-# Note that we now need a more general formula
-elfawal_short_y = c(ifelse(diff(elfawal_short_x) > 0, 0, 1), 1)
-udplot(x=elfawal_short_x, y=elfawal_short_y, main = "El Fawal et al. 2021, Shorter Axial Length", 
-       ytitle = "Anesthetic volume (ml)", las = 1)
-
-legend('topright', legend = c('Effective', 'Ineffective'), pch=c(19, 1), bty = 'n')
-
-elfawal_long_x = 7 - c(0:1, 1:3, 3:6, 6:7, 7:8, 8:11, 10:13, 12, 13, 13, 12:15, 14:16, 16, 16, 15, rep(16, 3), 17,  rep(16, 4), 17, rep(16, 3), 17, 16, 16, 17, 16, 16, 17:14, 15, 14) / 10
-# Note that we now need a more general formula
-elfawal_long_y = c(ifelse(diff(elfawal_long_x) > 0, 0, 1), 1)
-udplot(x=elfawal_long_x, y=elfawal_long_y, main = "El Fawal et al. 2021, Longer Axial Length", 
-       ytitle = "Anesthetic volume (ml)", las = 1)
+```{r george1, echo = -1, fig.width = 10, fig.height = 6, out.width=1000, out.height=600}
+george10x = 80 + 20 * c(1, rep(2, 5), 1, 1, 0, 0, rep(1, 7), 0:2, 2, 2, rep(1, 4), 2, 1, 1, 2, 2, 
+                        rep(3, 5), 4, 5, 5, rep(4, 6))
+george10y = c(ifelse(diff(george10x) > 0, 0, 1), 1)
+udplot(x=george10x, y=george10y)
 
 ```
 
@@ -222,19 +212,8 @@ That said, this journey was still long, eating up at least 20 observations out o
  
 Anyway, let us look at dose-response and the estimates!
 
-```{r elfawal2, echo = -1, fig.width = 12, fig.height = 7, out.width=1300, out.height=700}
-par(mfrow=1:2, mar=c(4,4,4,1))
-
-drplot(x=elfawal_short_x, y=elfawal_short_y, main = "El Fawal et al. 2021, Shorter Axial Length", 
-       xtitle = "Anesthetic volume (ml)", percents = TRUE, las = 1,
-       addest = TRUE, target = 0.9, addcurve = TRUE)
-
-drplot(x=elfawal_long_x, y=elfawal_long_y, main = "El Fawal et al. 2021, Longer Axial Length", 
-       xtitle = "Anesthetic volume (ml)", percents = TRUE, las = 1,
-       addest = TRUE, target = 0.9, addcurve = TRUE)
-
-udest(x=elfawal_short_x, y=elfawal_short_y, target = 0.9)
-udest(x=elfawal_long_x, y=elfawal_long_y, target = 0.9)
+```{r george2, echo = -1, fig.width = 12, fig.height = 7, out.width=1300, out.height=700}
+drplot(x=george10x, y=george10y, addest = TRUE, target = 0.9, addcurve = TRUE, balancePt = 10/11)
 ```
 
 

@@ -45,7 +45,7 @@ checkDose(x)
 checkResponse(y)
 if(balancePt[1]!=target)
 {
-  if(length(balancePt) > 1) stop("Experiment can only have a   single balance point.\n")
+  if(length(balancePt) > 1) stop("Experiment can only have a single balance point.\n")
   checkTarget(balancePt, tname='balancePt')
   if(abs(balancePt - target) > 0.1) warning("We strongly advise against estimating targets this far from the design's balance point.\n")
 }
@@ -53,8 +53,7 @@ if(balancePt[1]!=target)
 # And after all this.... it's a one-liner :)
 
 quickInverse(x=x, y=y, target=target, starget = balancePt,
-             conf=conf, adaptiveShrink=TRUE,
-              adaptiveCurve = (target != 0.5), ... )
+             conf=conf, adaptiveShrink=TRUE, ... )
 
 }
 
