@@ -78,7 +78,7 @@ mean(track) + spacing * (0.5-chosen)
 #'  
 #'  @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 #'
-#' @example examples/avgExamples.r
+#' @examples examples/avgExamples.r
 
 #'  @seealso 
 #'  - \code{\link{udest}}, the recommended estimation method for up-and-down targets.

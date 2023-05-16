@@ -147,9 +147,9 @@ plot(DRtrace(x=x, y=y, cohort=cohort), shape=shape, connect=connect, mcol=symbco
 #' @inheritParams udplot
 #' @inheritParams udest
 #' 
-#' @param addest logical: should we add the CIR target-dose estimate and its confidence interval? If `FALSE` (default), then arguments `addcurve, target, balancePt, conf, estcol, estsize, estsymb, estthick, curvecol` - are all ignored.
+#' @param addest logical: should we add the CIR target-dose estimate and its confidence interval? If `FALSE` (default), then arguments `addcurve, target, balancePt, conf, estcol, estsize, estsymb, esthick, curvecol` - are all ignored.
 #' @param addcurve logical: should we add the complete estimated CIR dose-response curve? Default `FALSE`, and only relevant when `addest = TRUE`.
-#' @param estcol,estsize,estsymb,estthick,curvecol graphical parameters controlling the colors, symbol choice, size, thickness, of the target-dose and CIR-curve visuals.
+#' @param estcol,estsize,estsymb,esthick,curvecol graphical parameters controlling the colors, symbol choice, size, thickness, of the target-dose and CIR-curve visuals.
 
 drplot <- function(x, y, shape='X', connect=FALSE, symbcol=1, percents = FALSE,
                    addest=FALSE, addcurve=FALSE, target=NULL, balancePt=target, conf=0.9,
