@@ -247,6 +247,7 @@ checkCDF <- function(cdf)
 
 ## Natural number verification
 
+#' @export
 checkNatural <- function(k, parname, toolarge = 1000)
 if (any(k != round(k) | k < 1 | k >= toolarge)) 
   stop(parname, "must be a natural number smaller than ", toolarge, ".\n")
