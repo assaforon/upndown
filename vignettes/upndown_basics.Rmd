@@ -10,7 +10,7 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-#### Note to self: Use this whenever editing the vignette for resubmission/rebuild
+#### Note to self: Use this before committing to GitHub, after a stable version
 # tools::buildVignettes(dir = '.',  tangle=TRUE)
 # dir.create("inst/doc")
 # file.copy(dir("vignettes", full.names=TRUE), "inst/doc", overwrite=TRUE)
@@ -175,7 +175,7 @@ dixonmood(x=gorla951x, y=gorla951y)
 
 The value is a bit different from Gorla et al.'s, because there's a myriad variations on how that estimator is implemented. Our package uses the formula as provided in the original article. However, we consider that estimator rather obsolete, and provide it only for comparisons like this.
 
-### Anesthetic $MEV_{90}$
+### $ED_{90}$ of Vasopressor during Caesarean Section
 
 Whew! We move from the "Wild West" of engineering UDD applications, to a field where the design is used with substantially more recent methodology. Anesthesiology is probably where one finds nowadays the richest and best-informed variety of UDD application articles, with much thanks to an influential outreach/tutorial article published in 2007 by Pace and Stylianou.^[Pace NL, Stylianou MP: Advances in and limitations of up-and-down methodology: A précis of clinical use, study design, and dose estimation in anesthesia research.
 *Anesthesiology* 2007; 107:144–52.]
@@ -186,28 +186,41 @@ Pace and Stylianou have successfully nudged anesthesiologists towards using isot
 
  - After a negative response, move up
  - After a positive response, **"toss a biased coin"** and with probability $(1-p)/p$ move down.
- - If the toss *"fails"*, the next patient/specimen/etc. will be receive the same dose.
+ - If the toss *"fails"*, the next patient/specimen/etc. will receive the same dose.
  
-For a target below the median, flip the coin-tossing to apply after a negative response, and invert the toss probability to $p/(1-p).$ 
+For a target below the median, flip the coin-tossing to be carried out after a *negative* response, and invert the toss probability to $p/(1-p).$ 
  
+
 The anesthesiology study we chose was run by an international team, including a leading popularizer of UDDs in Anesthesiology, Malachy Columb.^[George RB, McKeen D, Columb MO, Habib AS. Up-Down Determination of the 90% Effective Dose of Phenylephrine for the Treatment of Spinal Anesthesia-Induced Hypotension in Parturients Undergoing Cesarean Delivery. *Anesthesia & Analgesia* 2010, 110(1):p 154-158.] They sought to estimate the $ED_{90}$ of phenylephrine for treatment of hypotension during Cesarian birth.
 
-Unlike machined helicopter gears, people do not undergo industrial process control; we come in a broad diversity shapes, sizes, ages, and sensitivities. As seen in the previous examples, even with an industrially-controlled sample, $n$ of 13-15 seems very questionable for dose-finding. With a sample of humans or other animals, such a sample size is not advised. Generally, anesthesiologists have been very responsible in using more realistic sample sizes for UDD studies; typical samples encountered in that field are $n=30-40$ for median-finding, and larger samples for extreme percentiles. The George et al. study described here ended up with $n=45$.
+Unlike machined helicopter gears, people do not undergo industrial process control; we come in a broad diversity shapes, sizes, ages, and sensitivities. As seen in the previous examples, even with an industrially-controlled sample, $n$ of 13-15 seems very questionable for dose-finding. With a sample of humans or other animals, such a sample size is not advised. Generally, anesthesiologists have been rather responsible in using more realistic sample sizes for UDD studies; typical samples encountered in that field are $n=30-40$ for median-finding, and larger samples for extreme percentiles. The George et al. study described here ended up with $n=45$.
+
+The context was Cesarean delivery, during which many mothers experience hypotension. Phenylephrine is one of the recommended treatments, and the team wanted to estimate the $ED_{90}.$ Inspired by Pace and Stylianou's article, they chose BCD, albeit to simplify the "toss" probability they rounded it down from $1/9$ to $1/10.$ Since the treatment would be administered only to mothers experiencing hypotension, they initially enrolled 65 mothers, 45 of whom were treated for hypotension. The starting dose was the one most commonly used in practice: $100\ \mu g.$
+
 
 ```{r george1, echo = -1, fig.width = 10, fig.height = 6, out.width=1000, out.height=600}
+dlabel = 'Phenylephrine dose (micrograms)'
 george10x = 80 + 20 * c(1, rep(2, 5), 1, 1, 0, 0, rep(1, 7), 0:2, 2, 2, rep(1, 4), 2, 1, 1, 2, 2, 
                         rep(3, 5), 4, 5, 5, rep(4, 6))
 george10y = c(ifelse(diff(george10x) > 0, 0, 1), 1)
-udplot(x=george10x, y=george10y)
+udplot(x=george10x, y=george10y, ytitle = dlabel )
 
 ```
 
-With $p=0.9,$ the toss probability for coming down is $1/9$. However the authors chose to use $1/10$ for operational simplicity, meaning that the balance point was $p=10/11,$ even as the target - the percentile to be estimated - was still $0.9$. This is certainly close enough to not worry about that pesky adaptive-response bias, but we should know the balance point to get our numbers right. 
+
+The study's UDD balance point was $p=10/11,$ even as the experimental target - the percentile to be estimated - was still $0.9$. This is certainly close enough to not worry about that pesky adaptive-response bias, but we should use the actual balance point to get our numbers right. 
+
 
 On to the dose-response curve and the estimates!
 
 ```{r george2, echo = -1, fig.width = 12, fig.height = 7, out.width=1300, out.height=700}
-drplot(x=george10x, y=george10y, addest = TRUE, target = 0.9, addcurve = TRUE, balancePt = 10/11)
+drplot(x=george10x, y=george10y, addest = TRUE, target = 0.9, addcurve = TRUE, balancePt = 10/11, xtitle = dlabel)
 ```
 
+The CI veering off further to the right rather than to the left (which could seem plausible looking at the 'X' marks) might raise questions. Here are some insights:
 
+ - Remember $y$ cannot exceed 1. Therefore, there's a limit on how much $F(x)$ can move to the left while remaining reasonably close to the data *and* below 1. Equivalently, the dose of $100\ \mu g$ which remains outside the CI despite having a 13 of 17 ($76\%$) success rate is both "buffered" from the point estimates by the doses of 120 and 140 having even higher observed rates, and itself having relatively many observations increasing the confidence that indeed, the rate at that dose is below target.
+ - (aside: to avoid misleading the reader, our CI process does <u>not</u> simulate various curves; the limited ability of curves to *"move left"* is represented via the forward ($F(x)$) CIs having to remain below 1)
+ - Conversely, to the right of the point estimate, there's more "room" for the curve to move (i.e., the lower forward bounds are much further down from the point estimate), and the shallowness of the estimated CIR curve suggests the ED$_{90}$ estimate can indeed move quite a bit rightward (and/or become even shallower) while remaining close to the data.
+ 
+Generally with high/low targets, with our CI method one might expect the "external" confidence bound to be further away. We feel this does represent genuine uncertainty regarding how $F(x)$ levels off towards the $y=0$ or $y=1$ boundary. In many cases, only a much larger sample size can probably narrow that down considerably.
