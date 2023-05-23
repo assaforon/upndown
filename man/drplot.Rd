@@ -37,7 +37,9 @@ drplot(
 
 \item{symbcol}{The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there might be an error message.}
 
-\item{addest}{logical: should we add the CIR target-dose estimate and its confidence interval? If \code{FALSE} (default), then arguments \verb{addcurve, target, balancePt, conf, estcol, estsize, estsymb, estthick, curvecol} - are all ignored.}
+\item{percents}{logical, whether to represent the y-axis as percents rather than a fraction.}
+
+\item{addest}{logical: should we add the CIR target-dose estimate and its confidence interval? If \code{FALSE} (default), then arguments \verb{addcurve, target, balancePt, conf, estcol, estsize, estsymb, esthick, curvecol} - are all ignored.}
 
 \item{addcurve}{logical: should we add the complete estimated CIR dose-response curve? Default \code{FALSE}, and only relevant when \code{addest = TRUE}.}
 
@@ -47,7 +49,7 @@ drplot(
 
 \item{conf}{The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations.}
 
-\item{estcol, estsize, estsymb, estthick, curvecol}{graphical parameters controlling the colors, symbol choice, size, thickness, of the target-dose and CIR-curve visuals.}
+\item{estcol, estsize, estsymb, esthick, curvecol}{graphical parameters controlling the colors, symbol choice, size, thickness, of the target-dose and CIR-curve visuals.}
 
 \item{xtitle, ytitle}{x-axis and y-axis titles. Some reasonable defaults are provided, to avoid an annoying error message.}
 

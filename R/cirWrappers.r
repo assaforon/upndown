@@ -8,7 +8,7 @@
 #'
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	 
 #' 
-#' @example examples/wrapExamples.r
+#' @examples inst/examples/wrapExamples.r
 
 #' 
 #' @export
@@ -35,7 +35,7 @@
 
 udest <- function(x, y, target, balancePt = target, conf = 0.9, ...)
 {
-  require(cir)
+  requireNamespace('cir')
   
 if(length(target) > 1) stop("Experiment should have a single target.\n")
 checkTarget(target)
@@ -52,7 +52,7 @@ if(balancePt[1]!=target)
 
 # And after all this.... it's a one-liner :)
 
-quickInverse(x=x, y=y, target=target, starget = balancePt,
+cir::quickInverse(x=x, y=y, target=target, starget = balancePt,
              conf=conf, adaptiveShrink=TRUE, ... )
 
 }
@@ -72,7 +72,7 @@ quickInverse(x=x, y=y, target=target, starget = balancePt,
 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
 #' 
-#' @example examples/wrapExamples.r
+#' @examples inst/examples/wrapExamples.r
 
 #' 
 #' @export
@@ -103,14 +103,13 @@ quickInverse(x=x, y=y, target=target, starget = balancePt,
 udplot <- function(x, y, cohort=NULL, shape='circle', connect=TRUE, symbcol=1, doselabels=NULL, 
                    xtitle = "Observation Order", ytitle = "Dose / Stimulus",...)
 {
-require(cir)
 
 # val
 checkDose(x)
 checkResponse(y)
 if(!is.null(cohort)) checkNatural(cohort, parname = 'cohort')
   
-plot(DRtrace(x=x, y=y, cohort=cohort), shape=shape, connect=connect, mcol=symbcol, dosevals=doselabels,
+plot(cir::DRtrace(x=x, y=y, cohort=cohort), shape=shape, connect=connect, mcol=symbcol, dosevals=doselabels,
              xlab=xtitle, ylab=ytitle, ...)
   
 }
@@ -150,19 +149,20 @@ plot(DRtrace(x=x, y=y, cohort=cohort), shape=shape, connect=connect, mcol=symbco
 #' @param addest logical: should we add the CIR target-dose estimate and its confidence interval? If `FALSE` (default), then arguments `addcurve, target, balancePt, conf, estcol, estsize, estsymb, esthick, curvecol` - are all ignored.
 #' @param addcurve logical: should we add the complete estimated CIR dose-response curve? Default `FALSE`, and only relevant when `addest = TRUE`.
 #' @param estcol,estsize,estsymb,esthick,curvecol graphical parameters controlling the colors, symbol choice, size, thickness, of the target-dose and CIR-curve visuals.
+#' @param percents logical, whether to represent the y-axis as percents rather than a fraction.
 
 drplot <- function(x, y, shape='X', connect=FALSE, symbcol=1, percents = FALSE,
                    addest=FALSE, addcurve=FALSE, target=NULL, balancePt=target, conf=0.9,
                    estcol = 'purple', estsize=2, estsymb=19, esthick=2, curvecol = 'blue',
                    ytitle = "Frequency of Positive Response", xtitle = "Dose / Stimulus",...)
 {
-require(cir)
+requireNamespace('cir')
   
 # val
 checkDose(x)
 checkResponse(y)
   
-tmp = doseResponse(x=x, y=y)
+tmp = cir::doseResponse(x=x, y=y)
 if(percents) tmp$y = 100 * tmp$y
   
 plot(tmp, pch=shape, connect=connect, mcol=symbcol, 
@@ -179,7 +179,7 @@ if(addest)
   
   if(addcurve)
   {
-    fest = cirPAVA(x=x, y=y, target=balancePt, adaptiveShrink=TRUE, full=TRUE)
+    fest = cir::cirPAVA(x=x, y=y, target=balancePt, adaptiveShrink=TRUE, full=TRUE)
     if(percents) fest$shrinkage$y = 100 * fest$shrinkage$y
     lines(y ~ x, data = fest$shrinkage, col=curvecol, lwd = esthick)
     

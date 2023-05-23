@@ -165,7 +165,7 @@ return(dout)
 
 bcoin <- function(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
 {
-require(numbers)
+requireNamespace('numbers')
   
 ## Validations
 checkTarget(target)
@@ -188,10 +188,10 @@ if(target >= 0.5 - tolerance && target <= 0.5 + tolerance)
   if(fraction) 
 # Find rational coin fraction, erring upwards b/c at <0.5 BCD biases a bit down
   {
-    coinFrac = ratFarey(coin, n = round(1/tolerance), upper = TRUE) 
+    coinFrac = numbers::ratFarey(coin, n = round(1/tolerance), upper = TRUE) 
     if(nameplate)
     {
-      frac2 = ratFarey(coin, n = round(1/tolerance), upper = FALSE) 
+      frac2 = numbers::ratFarey(coin, n = round(1/tolerance), upper = FALSE) 
       if(abs(coin - frac2[1]/frac2[2]) < abs(coin - coinFrac[1]/coinFrac[2]))
         coinFrac = frac2
     }
@@ -209,10 +209,10 @@ After negative response, 'toss a COIN':
   if(fraction) 
     # Find rational coin fraction, erring upwards b/c at <0.5 BCD biases a bit down
   {
-    coinFrac = ratFarey(coin, n = round(1/tolerance), upper = FALSE) 
+    coinFrac = numbers::ratFarey(coin, n = round(1/tolerance), upper = FALSE) 
     if(nameplate)
     {
-      frac2 = ratFarey(coin, n = round(1/tolerance), upper = TRUE) 
+      frac2 = numbers::ratFarey(coin, n = round(1/tolerance), upper = TRUE) 
       if(abs(coin - frac2[1]/frac2[2]) < abs(coin - coinFrac[1]/coinFrac[2]))
         coinFrac = frac2
     }
@@ -230,6 +230,21 @@ After positive response, 'toss a COIN':
 
 ############################### Auxiliary validation utilities
 
+#' Data Validation Utilities for `upndown`
+#' 
+#' Validation of input values
+#' 
+#' 
+#' @param cdf vector of values, should be nondecreasing between 0 and 1 (inclusive)
+#' @param target numeric value(s), should be between 0 and 1 (exclusive)
+#' @param parname,tname string, name of variable to plug in for reporting the error back
+#' @param k (`checkNatural()` only) input number to check whether it's a natural number 
+#' @param toolarge (`checkNatural()` only) what number would be considered too large to be realistic?
+#' @param x (`checkDose()` only) input object to be verified as valid dose values
+#' @param maxfrac (`checkDose()` only) maximum number of unique values (as fraction of sample size) considered realistic for up-and-down data. Default one-half.
+#' @param y (`checkResponse()` only) input object to be verified as valid response values (`TRUE/FALSE or 0/1)
+
+
 #' @export
 validUDinput<-function(cdf, target)
 {
@@ -238,15 +253,19 @@ validUDinput<-function(cdf, target)
   if(length(cdf) < 3) stop ("These designs don't work with <3 dose levels.\n")
 }
 
+#' @rdname validUDinput
 #' @export
 checkTarget <- function(target, tname = 'Target')
   if(target<=0 || target>=1) stop(paste(tname, "has to be in (0,1).\n"))
 
+#' @rdname validUDinput
+#' @export
 checkCDF <- function(cdf)
   if(min(cdf)<0 || max(cdf)>1 || any(diff(cdf) < 0) || var(cdf)==0) stop("cdf should be a CDF.\n")
 
 ## Natural number verification
 
+#' @rdname validUDinput
 #' @export
 checkNatural <- function(k, parname, toolarge = 1000)
 if (any(k != round(k) | k < 1 | k >= toolarge)) 
@@ -254,6 +273,7 @@ if (any(k != round(k) | k < 1 | k >= toolarge))
 
 ## Response coding
 
+#' @rdname validUDinput
 #' @export
 checkDose <- function(x, maxfrac = 0.5)
 {
@@ -261,6 +281,8 @@ checkDose <- function(x, maxfrac = 0.5)
   if( length(unique(x)) > maxfrac * length(x))
     stop("Too many unique dose values. Experiment not U&D, or was too short, or data-quality error.\n")
 }
+
+#' @rdname validUDinput
 #' @export
 checkResponse <- function(y)
 {

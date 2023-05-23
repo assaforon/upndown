@@ -38,7 +38,7 @@
 #'  - \code{\link{k2targ}} for target-finding design aids.
 #'
 #' 
-#' @example examples/vecExamples.r
+#' @examples examples/vecExamples.r
 
 
 
@@ -69,7 +69,7 @@ pivec <- function(cdf, matfun, ...)
 #' 
 currentvec <- function(cdf, matfun, n, startdose = NULL, ...)
 {
-  require(expm)
+  requireNamespace('expm')
   checkCDF(cdf)
   m=length(cdf)
 checkNatural(n, parname = 'n')
@@ -98,7 +98,7 @@ return(as.numeric(vec0 %*% (matfun(cdf = cdf,...) %^% (n-1)) ))
 
 cumulvec <- function(cdf, matfun, n, startdose = NULL, proportions = TRUE, exclude = 0, ...)
 {
-  require(expm)
+  requireNamespace('expm')
   checkCDF(cdf)
   m=length(cdf)
   checkNatural(n, parname = 'n')

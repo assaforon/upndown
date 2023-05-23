@@ -15,7 +15,7 @@
 #' 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
 #' 
-#' @example examples/avgExamples.r
+#' @examples inst/examples/avgExamples.r
 
 #' @seealso
 #'   - \code{\link{udest}}, the recommended estimation method for up-and-down targets. 
@@ -76,11 +76,11 @@ mean(track) + spacing * (0.5-chosen)
 #'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. [See in particular the open-access Supplement.](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf)
 #'  - Wetherill GB, Chen H, Vasudeva RB: Sequential estimation of quantal response curves: A new method of estimation. *Biometrika* 1966; 53:439–54
 #'  
-#'  @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
+#' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 #'
-#' @examples examples/avgExamples.r
+#' @example inst/examples/avgExamples.r
 
-#'  @seealso 
+#' @seealso 
 #'  - \code{\link{udest}}, the recommended estimation method for up-and-down targets.
 #'  - \code{\link{adaptmean}}, an unpublished but arguably better approach to dose-averaging (this is *not* the recommended method though; that would be \code{\link{udest}} referenced above).
 #' 
@@ -174,7 +174,7 @@ reversals <- function(y)
 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	
 #'
-#' @example examples/avgExamples.r
+#' @examples inst/examples/avgExamples.r
 #' 
 #' @seealso 
 #'   - \code{\link{udest}}, the recommended estimation method for up-and-down targets. 
