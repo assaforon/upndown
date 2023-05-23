@@ -8,7 +8,7 @@
 #'
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	 
 #' 
-#' @examples inst/examples/wrapExamples.r
+#' @example inst/examples/wrapExamples.r
 
 #' 
 #' @export
@@ -72,7 +72,7 @@ cir::quickInverse(x=x, y=y, target=target, starget = balancePt,
 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
 #' 
-#' @examples inst/examples/wrapExamples.r
+#' @example inst/examples/wrapExamples.r
 
 #' 
 #' @export

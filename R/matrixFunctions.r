@@ -45,7 +45,7 @@
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
 #' @export
 #' 
-#' @examples examples/matrixExamples.r
+#' @example examples/matrixExamples.r
 
 
 ### BCD matrix ##############################

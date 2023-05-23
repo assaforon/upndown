@@ -53,9 +53,6 @@ As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, k-in-a-row
 
 Also, in \code{kmatFull()} there are two matrix-size options. Near one of the boundaries (upper boundary with \code{lowTarget = TRUE}, and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable, so in some sense only one of them really exists. Using the \code{fluffup} argument, users can choose between having a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its effectivelly true size by removing \eqn{k-1} rows and columns.
 }
-\examples{
-examples/matrixExamples.r
-}
 \references{
 \itemize{
 \item Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. \emph{J Am Stat Assoc.} 1948;43:109-126.

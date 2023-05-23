@@ -1,0 +1,226 @@
+---
+title: "`upndown` Package Vignette 1: Up-and-Down Basics"
+author: "Assaf Oron"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Up-and-Down Basics and the 'upndown' Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+#### Note to self: Use this before committing to GitHub, after a stable version
+# tools::buildVignettes(dir = '.',  tangle=TRUE)
+# dir.create("inst/doc")
+# file.copy(dir("vignettes", full.names=TRUE), "inst/doc", overwrite=TRUE)
+# (from https://community.rstudio.com/t/browsevignettes-mypackage-saying-no-vignettes-found/68656/6)
+
+knitr::opts_chunk$set(
+  collapse = TRUE, fig.width = 9, fig.height = 7, out.width = 900, out.height = 700, 
+  comment = "#"
+)
+```
+
+## Background
+
+Up-and-Down designs (UDDs) have the unique distinction of being, in all likelihood, the most popular experimental design that <u>present-day statisticians have never heard of</u>. Developed mostly by statisticians and successfully introduced in the mid-20th Century to a staggering array of application fields, in subsequent decades academic statistical interest has wandered elsewhere.
+
+Nevertheless, UDDs have persisted. Studies using UDDs are routinely published in anesthesiology, toxicology, materials science, dentistry, electrical engineering, and other fields -- as well as the fields where the design was originally developed: sensory studies and explosive testing. Thus, UDDs are far from being an *"endangered"* design; rather, they are **statistically under-served.**
+
+The `upndown` package attempts to close some of this service gap. It presents basic computational tools and shortcuts to help modernize and standardize UDD usage, and to render insights about the design more accessible to practitioners and statisticians. It incorporates the most up-to-date methodological improvements. We also provide methodological references for statisticians and analysts wishing to learn more about UDDs. 
+
+For UDD estimation and data visualization we rely heavily upon the [`cir`](https://cran.r-project.org/web/packages/cir/) package. That package codifies Centered Isotonic Regression (CIR),^[Oron AP, Flournoy N. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. *Stat Biopharm Res* 2017;9(3):258-267.] an improvement of isotonic regression motivated by the needs of UDDs and of dose-response studies in general. The `upndown` utilities using `cir` functions emphasize ease of use, and do not necessitate in-depth familiarity with `cir`.
+
+This vignette presents a general overview of UDDs, as well as re-analysis of published experimental examples which demonstrate `upndown`'s data analysis and visualization utilities. A second vignette (still in planning) will go deeper into UDD design rules and statistical properties, demonstrating the package's design-aid utilities. 
+
+## What Makes a Design "Up-and-Down"?
+
+UDDs belong to the methodological field of **dose-finding.** This field aims to estimate a **target dose**, by applying different dose strengths of the same treatment (or stimulus) to a sequence of individuals (or in some applications, a sequence of doses to the same individual), and collecting their responses. Depending upon application, the target dose might be called the $ED_{100p}$, $MEV_{100p}$, or $LD_{100p}$ ($p\in(0, 1)$), the sensory threshold, the Maximum Tolerated Dose (MTD), etc. In abstract statistical terms, this field attempts to find a specific percentile of an underlying cumulative response-threshold distribution (CDF) $F(x),$ i.e., to estimate $F^{-1}(p).$
+
+There is substantial confusion regarding the term "Up-and-Down". From a uselessly broad perspective, any dose-finding designs in which consecutive dose assignments might go *"up"* or *"down"* can be called a UDD, and some articles come pretty close to claiming that. We prefer a narrower and far more useful definition: the hallmark of a genuine UDD is the **target-centered random walk** it generates over the dose levels. To do that, it requires^[Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50.]
+
+  1. A binary response *(an ordered ternary response might also be UDD-compatiable, but hasn't been attempted in practice to our knowledge)*.
+  2. Allowable treatments are a **discrete set of increasing dose levels** of the same "dose variable" $x.$ 
+  3. **Monotone dose-response relationship.** For simplicity we assume monotone increasing, and denote the relationship via the function $F(x)$, which as hinted above can often be interpreted as the cumulative distribution function (CDF) of the underlying positive-response thresholds.
+  4. Doses are allocated **sequentially**, and only allow for increasing the dose by one level, decreasing by one level, or repeating the same dose. Hence the design’s name *“up-and-down”*, or (in sensory studies and materials testing) *“the Staircase Method.”*^[Garcìa-Perez MA. Forced-Choice staircases with fixed step sizes: asymptotic and small-sample properties. *Vision Res* 1998;38:1861-1881.]
+  5. Dose-transition rules are based on the doses and responses of <u>the last patient or several patients</u>, rather than on all patient data going back to the beginning of the experiment. Furthermore, **the rules do not use any estimated quantity that changes during the study.**
+  
+The fifth and last element might be partially responsible for UDDs falling out of statistical fashion. In Phase I trial design in particular, a field enjoying the most dose-finding method development resources, current statistical orthodoxy maintains that anything short of using <u>the entire sample and an estimation process for each dosing decision</u>, is an indefensible waste of precious information. 
+
+In our humble opinion, this view -
+
+ - confounds the task of data collection - which may not necessarily benefit from carrying the entire dataset *"on its back"* at each step^[Oron AP, Hoff PD. Small-Sample Behavior of Novel Phase I Cancer Trial Designs. *Clin Trials* 2013;10(1):63-80. With discussion on pp. 81-92.] - with the task of estimation, at which point UDDs <u>do</u> use the entire sample;
+ - brushes aside some basic statistical realities regarding small-sample, binary-response uncertainty; 
+ - remains wilfully ignorant of some serious detrimental practical side-effects of the allocation-by-repeated-estimation paradigm, despite those side-effects having been demonstrated beyond doubt (see the reference cited above);
+ - last but not least, ignores UDDs' proven properties and impressive track record.
+ 
+But I digress.
+
+## Experimental Examples
+
+In selecting examples, I sought relatively recent open-access publications, preferably from different fields. The publications also had to share clearly both the design and the raw data. 
+
+### Material Strength Testing
+
+We begin with a study testing the single-tooth bending failure (STBF) load of steel helicopter gears, published by an Italian team in 2017.^[Gorla C, Rosa F, Conrado E, Concli F.
+Bending Fatigue Strength of Case Carburized and Nitrided Gear Steels for Aeronautical Applications. *Int. J. Appl. Eng. Res.* 2017; 12 (21),11306–11322.] The article summarized a long-running series of STBF experiments and simulations, and can perhaps be seen as a meta-analysis. The experiments were 9 separate median-finding, or as we call them **"Classical" UDD** runs on gears made of 9 different types of steel. In each such run, each tested gear was subjected to up to 10 million high-frequency cycles at a specific load strength, presumably approximating an entire gear-lifespan worth of loads.
+
+ - If the gear survived these cycles without breaking a tooth, it was considered a success and the next gear was subject to a load $1kN$ higher. (*"up"*).
+ - If a tooth broke, it was a failure and the next gear received $1kN$ lower load (*"down"*).
+
+Classical UDD was first developed during World War II, to estimate the median effective dropping height of explosives.^[Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. *J Am Stat Assoc.* 1948;43:109-126.] Independently, Nobel-Prize winning audiologist von Bekesy developed a near-identical design to estimate the hearing threshold.^[von Békésy G. A new audiometer. *Acta Otolaryngol.* 1947; 35:411–22.]
+
+Gorla et al. visualize the raw data of their 9 experiments (Tables 4-12) in the very same manner that Dixon and Mood visualized an explosive-testing dataset in their 1948 article: as a text graph with **"x"** and **"o"** symbols. We re-plot the data in the somewhat more modern fashion encountered in other fields. Here are two of the experiments:
+
+```{r gorla6_1}
+library(upndown)
+
+# From Gorla et al. (2017) Table 6
+gorla751x = 39 + c(3:0, 1, 2, 1:3, 2, 3, 2, 3)
+# With UD data, one can usually discern the y's (except the last one) from the x's:
+gorla751y =  c( (1 - diff(gorla751x) ) / 2, 1)
+
+udplot(x=gorla751x, y=gorla751y, main = "Gorla et al. 2017, Material 751", 
+       ytitle = "Load (kN)", las = 1)
+
+legend('bottomright', legend = c(expression('Survived 10'^7*' cycles'), 
+                              'Failed'), pch=c(1, 19), bty = 'n')
+
+```
+
+ - This run had $n=13,$ which for live-subject experiments would be on the low side. Given these gears are industrial products which likely undergo tight process control, such a small $n$ might suffice.
+ - That said, the random walk nature can be seen in how the first half of the run is a bit different from the second. After 6-7 observations, one might jump to conclude that the target ( = median failure threshold) is surely below 41 kN, probably around 40 kN. But the last 6 tell a rather different story, of the target tightly locked between 41 and 42 kN. 
+ 
+Which half is correct? We don't know. Each half provides a ridiculously small amount of information, and even combined they leave a lot of uncertainty (if the uncertainty is properly accounted for).
+
+Here's the dose-response plot, and below it the numerical target estimate:
+
+```{r gorla6_2}
+
+drplot(x=gorla751x, y=gorla751y, addest = TRUE, target = 0.5, addcurve = TRUE, 
+       percents = TRUE, main = "Gorla et al. 2017, Material 751", 
+       xtitle = "Load (kN)", ytitle = "Percent Failure", las = 1)
+legend('bottomright', legend = c('CIR target estimate and 90% CI',
+              'CIR load-failure curve estimate'), lty = 1, 
+              col = c('purple', 'blue'), bty = 'n')
+       
+udest(gorla751x, gorla751y, target = 0.5)
+```
+
+The `'X'` marks denote raw response frequencies, with symbol area proportional to sample size.
+
+**Note that indeed the confidence interval is fairly wide. ** It is also asymmetric, mostly because `cir` dose-finding functions (starting version 2.3.0) separately estimate the local slope of $F(x)$ to the right and left of target. Note also that `upndown` default (and `cir` default too) is a $90\%$ CI rather than $95\%$. You hopefully agree that with 13 dependent binary observations, pretending to know $95\%$ of *anything* is a bit overly ambitious. 
+
+CIR stands for Centered Isotonic Regression, an adaptation of that longstanding nonparametric method to the dose-response and dose-finding realms. It implicitly assumes that the dose-response (in this particular case, load-failure) curve is **smooth and strictly monotone**, and therefore both interpolates between observations, and shrinks the characteristic flat stretches produced by isotonic regression towards single points.
+
+Gorla et al. used the second-oldest UD estimator, suggested by Brownlee et al. in 1953.^[Brownlee KA, Hodges JL, Rosenblatt M. The Up-and-Down Method with Small Samples. *J Am Stat Assoc.* 1953, 48:262, 262-277.] Like most early UD estimators, it is some average of the sequence of doses, and the first one to deploy the trick of adding the $n+1$st dose, which is pre-determined by the $n$th dose and response. In addition, the estimator excludes the first sequence of doses with identical responses - in UD parlance, the doses before **the first reversal.** This yields 40.91 kN. `upndown` includes a generic implementation of reversal-driven estimates, so this number can be replicated by choosing the right arguments:
+
+
+```{r gorla6_3}
+# Note the manual addition of "dose n+1"
+reversmean(c(gorla751x, 41), gorla751y, rstart = 1, all = TRUE)
+```
+
+### Side Note: Observation Bias and Empirical Correction
+
+Estimating the target with CIR is as simple as reading off the dose-response plot, and seeing where the CIR curve crosses $y=target.$
+
+There is one catch though: the up-and-down process induces dependence between consecutive doses and responses. Therefore, even though each response is independent conditional upon the dose it received, responses are not *marginally* independent and they do not behave according to Binomial assumptions - contrary to common misconceptions in the dose-finding field *(of which yours truly had also been guilty in the past)*. 
+
+In particular: **the dependence induces a bias upon observed response rates**, a bias that tends to "flare out" away from target.^[Flournoy N, Oron AP. Bias induced by adaptive dose-finding designs. J Appl Stat. 2020;47(13-15):2431-2442.] Near target the bias is minimal, and this is why up-and-down and other dose-finding designs still work - but using observed frequencies away from target at face value is not recommended.
+
+The blue curve does include an empirical bias fix, based on that "flaring out" property, which is why it doesn't cross the middle of the 'X' marks denoting observed frequencies. The main motivation for putting that fix in as default, is not to get the curve right - that would be a bit of a fool's errand, because dose-finding designs are really about **estimating a point, not an entire curve** - but to get the confidence intervals more realistic. The "flaring-out" bias makes $F(x)$'s apparent slope too steep. The bias correction mitigates that steepness and hence widens the CI.
+
+
+What if we do try to estimate away from target? Here is the (relatively) proper way to do it. Assume we're interested in knowing a "safe" load, under which only $5\%$ of gears are expected to fail:
+
+```{r gorla6_4, width = 100}
+udest(x=gorla751x, y=gorla751y, target = 0.05, balancePt=.5)
+```
+
+We change the `target` argument to the desired percentile. But we must also inform `udest()` that the experiment was actually designated to revolve around another percentile, which we call **the balance point.**^[Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. *Stat Med.* 2009;28:1805-1820.] The bias would flare out from there, not from where we want to estimate now. As you might note, `udest()` kindly reminds us that this is not recommended. *(If `balancePt` is left empty, `udest()` assumes it is equal to `target`.)*
+
+Want to find out that safe load? Design an experiment that targets a lower percentile (we'll discuss that soon). Or an experiment that estimates an entire stretch of the load-failure curve. That would not be an UDD though.
+
+On to the second experiment, presented below in one fell swoop.
+
+
+```{r gorla9_1, fig.width=13, fig.height=7, out.width=1300, out.height=700, echo = -1}
+par(mfrow=1:2, mar=c(4,4,4,1))
+# From Gorla et al. (2017) Table 9
+gorla951x = 35 + c(1:0, 1:4, 3:2, 3:0, 1, 2, 1)
+gorla951y =  c( (1 - diff(gorla951x) ) / 2, 1)
+
+udplot(x=gorla951x, y=gorla951y, main = "Gorla et al. 2017, Material 951", 
+       ytitle = "Load (kN)", las = 1)
+
+drplot(x=gorla951x, y=gorla951y, addest = TRUE, target = 0.5, addcurve = TRUE, 
+       percents = TRUE, main = "Gorla et al. 2017, Material 951", 
+       xtitle = "Load (kN)", ytitle = "Percent Failure", las = 1)
+
+udest(gorla951x, gorla951y, target = 0.5)
+
+```
+
+This run was a bit less well-behaved than 751, and produced a monotonicity violation in observed response frequencies. CIR (and isotonic regression in general) was designed to deal with that, but as a result the confidence interval is even wider than the 751 estimate's CI, despite having 2 *(wow!)* additional data points.
+
+Curiously, Gorla et al. mixed and matched two estimators in their study. For this run, they used the original Dixon-Mood estimator (sometimes called "Dixon-Massey"), which also a weighted average of doses but in fact a more sophisticated than the Brownlee et al. one. Using that, they got 36.63 kN with a standard error of 0.62 kN, which translates to a $90\%$ CI width of 2.0 kN (since Dixon and Mood recommend using Normal tables rather than, e.g., $t$). Our CI is $\sim 1.7x$ wider. 
+
+We have a version of the Dixon-Mood in our package as well.
+
+```{r gorla9_2, width = 100}
+dixonmood(x=gorla951x, y=gorla951y)
+```
+
+The value is a bit different from Gorla et al.'s, because there's a myriad variations on how that estimator is implemented. Our package uses the formula as provided in the original article. However, we consider that estimator rather obsolete, and provide it only for comparisons like this.
+
+### $ED_{90}$ of Vasopressor during Caesarean Section
+
+Whew! We move from the "Wild West" of engineering UDD applications, to a field where the design is used with substantially more recent methodology. Anesthesiology is probably where one finds nowadays the richest and best-informed variety of UDD application articles, with much thanks to an influential outreach/tutorial article published in 2007 by Pace and Stylianou.^[Pace NL, Stylianou MP: Advances in and limitations of up-and-down methodology: A précis of clinical use, study design, and dose estimation in anesthesia research.
+*Anesthesiology* 2007; 107:144–52.]
+
+Pace and Stylianou have successfully nudged anesthesiologists towards using isotonic regression for estimation instead of mid-20th-Century improvisations, and also introduced to that field a UDD that can target percentiles other than the median. Anesthesiologists find much use for estimating a high percentile - the 80th, 90th or the 95th - to identify a dose that would work most of the time, but would not be excessive. 
+
+**The Up-and-Down Biased Coin Design (BCD)** *(not to be confused with BCDs in other applications)* is part of a 1990s body of work by Durham, Flournoy, and others, the first substantial modern revisitation of UDDs after a generation-long gap.^[Durham SD, Flournoy N. Random walks for quantile estimation. In: *Statistical Decision Theory and Related Topics V* (West Lafayette, IN, 1992). Springer; 1994:467-476.] BCD can target any percentile $p.$ For targets above the median -
+
+ - After a negative response, move up
+ - After a positive response, **"toss a biased coin"** and with probability $(1-p)/p$ move down.
+ - If the toss *"fails"*, the next patient/specimen/etc. will receive the same dose.
+ 
+For a target below the median, flip the coin-tossing to be carried out after a *negative* response, and invert the toss probability to $p/(1-p).$ 
+ 
+
+The anesthesiology study we chose was run by an international team, including a leading popularizer of UDDs in Anesthesiology, Malachy Columb.^[George RB, McKeen D, Columb MO, Habib AS. Up-Down Determination of the 90% Effective Dose of Phenylephrine for the Treatment of Spinal Anesthesia-Induced Hypotension in Parturients Undergoing Cesarean Delivery. *Anesthesia & Analgesia* 2010, 110(1):p 154-158.] They sought to estimate the $ED_{90}$ of phenylephrine for treatment of hypotension during Cesarian birth.
+
+Unlike machined helicopter gears, people do not undergo industrial process control; we come in a broad diversity shapes, sizes, ages, and sensitivities. As seen in the previous examples, even with an industrially-controlled sample, $n$ of 13-15 seems very questionable for dose-finding. With a sample of humans or other animals, such a sample size is not advised. Generally, anesthesiologists have been rather responsible in using more realistic sample sizes for UDD studies; typical samples encountered in that field are $n=30-40$ for median-finding, and larger samples for extreme percentiles. The George et al. study described here ended up with $n=45$.
+
+The context was Cesarean delivery, during which many mothers experience hypotension. Phenylephrine is one of the recommended treatments, and the team wanted to estimate the $ED_{90}.$ Inspired by Pace and Stylianou's article, they chose BCD, albeit to simplify the "toss" probability they rounded it down from $1/9$ to $1/10.$ Since the treatment would be administered only to mothers experiencing hypotension, they initially enrolled 65 mothers, 45 of whom were treated for hypotension. The starting dose was the one most commonly used in practice: $100\ \mu g.$
+
+
+```{r george1, echo = -1, fig.width = 10, fig.height = 6, out.width=1000, out.height=600}
+dlabel = 'Phenylephrine dose (micrograms)'
+george10x = 80 + 20 * c(1, rep(2, 5), 1, 1, 0, 0, rep(1, 7), 0:2, 2, 2, rep(1, 4), 2, 1, 1, 2, 2, 
+                        rep(3, 5), 4, 5, 5, rep(4, 6))
+george10y = c(ifelse(diff(george10x) > 0, 0, 1), 1)
+udplot(x=george10x, y=george10y, ytitle = dlabel )
+
+```
+
+
+The study's UDD balance point was $p=10/11,$ even as the experimental target - the percentile to be estimated - was still $0.9$. This is certainly close enough to not worry about that pesky adaptive-response bias, but we should use the actual balance point to get our numbers right. 
+
+
+On to the dose-response curve and the estimates!
+
+```{r george2, echo = -1, fig.width = 12, fig.height = 7, out.width=1300, out.height=700}
+drplot(x=george10x, y=george10y, addest = TRUE, target = 0.9, addcurve = TRUE, balancePt = 10/11, xtitle = dlabel)
+```
+
+The CI veering off further to the right rather than to the left (which could seem plausible looking at the 'X' marks) might raise questions. Here are some insights:
+
+ - Remember $y$ cannot exceed 1. Therefore, there's a limit on how much $F(x)$ can move to the left while remaining reasonably close to the data *and* below 1. Equivalently, the dose of $100\ \mu g$ which remains outside the CI despite having a 13 of 17 ($76\%$) success rate is both "buffered" from the point estimates by the doses of 120 and 140 having even higher observed rates, and itself having relatively many observations increasing the confidence that indeed, the rate at that dose is below target.
+ - (aside: to avoid misleading the reader, our CI process does <u>not</u> simulate various curves; the limited ability of curves to *"move left"* is represented via the forward ($F(x)$) CIs having to remain below 1)
+ - Conversely, to the right of the point estimate, there's more "room" for the curve to move (i.e., the lower forward bounds are much further down from the point estimate), and the shallowness of the estimated CIR curve suggests the ED$_{90}$ estimate can indeed move quite a bit rightward (and/or become even shallower) while remaining close to the data.
+ 
+Generally with high/low targets, with our CI method one might expect the "external" confidence bound to be further away. We feel this does represent genuine uncertainty regarding how $F(x)$ levels off towards the $y=0$ or $y=1$ boundary. In many cases, only a much larger sample size can probably narrow that down considerably.

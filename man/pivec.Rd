@@ -56,9 +56,6 @@ All functions first calculate the transition probability matrix (TPM), by callin
 \note{
 When using the k-in-a-row design, set \code{matfun = kmatMarg}, not \code{kmatFull}.
 }
-\examples{
-examples/vecExamples.r
-}
 \references{
 \itemize{
 \item Diaconis P, Stroock D. Geometric Bounds for Eigenvalues of Markov Chains. \emph{Ann. Appl. Probab.} 1991;1(1):36-61.

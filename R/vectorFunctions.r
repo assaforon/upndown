@@ -38,7 +38,7 @@
 #'  - \code{\link{k2targ}} for target-finding design aids.
 #'
 #' 
-#' @examples examples/vecExamples.r
+#' @example examples/vecExamples.r
 
 
 
@@ -76,8 +76,8 @@ checkNatural(n, parname = 'n')
   
 ### Starting vector
 # The NULL default sets a uniform starting vector
-if(is.null(startdose)) vec0=rep(1/m,m)
-if (startdose %in% 1:m) {
+if(is.null(startdose)) { vec0=rep(1/m,m)
+} else if (startdose %in% 1:m) {
     vec0=rep(0,m)
     vec0[startdose]=1
 }
@@ -88,7 +88,7 @@ if(any(vec0<0) || sum(vec0) != 1 || length(vec0)!=m)
 
 ### Then, the actual function is just a one-liner :) 
 #      We do need to de-matrix it though:
-return(as.numeric(vec0 %*% (matfun(cdf = cdf,...) %^% (n-1)) ))
+return(as.numeric(vec0 %*% expm::`%^%` (matfun(cdf = cdf,...), n-1) ))
 }
 
 ####### *Cumulative* allocation frequencies - perhaps the most practically useful
@@ -106,8 +106,8 @@ cumulvec <- function(cdf, matfun, n, startdose = NULL, proportions = TRUE, exclu
 
 ### Starting vector
   # The NULL default sets a uniform starting vector
-  if(is.null(startdose)) vec0 = rep(1/m, m)
-  if (startdose %in% 1:m) {
+  if(is.null(startdose)) { vec0 = rep(1/m, m)
+  } else if (startdose %in% 1:m) {
     vec0 = rep(0, m)
     vec0[startdose] = 1
   }
@@ -120,7 +120,7 @@ cumulvec <- function(cdf, matfun, n, startdose = NULL, proportions = TRUE, exclu
   
 # The output vector  
   ovec = rep(0, m)
-  for ( a in exclude:(n-1) ) ovec = ovec + vec0 %*% (progmat %^% a)
+  for ( a in exclude:(n-1) ) ovec = ovec + vec0 %*% expm::`%^%` (progmat, a)
 # Proportions or counts?
   if(proportions) ovec = ovec / (n - exclude)
 

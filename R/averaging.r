@@ -15,7 +15,7 @@
 #' 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
 #' 
-#' @examples inst/examples/avgExamples.r
+#' @example inst/examples/avgExamples.r
 
 #' @seealso
 #'   - \code{\link{udest}}, the recommended estimation method for up-and-down targets. 
@@ -174,7 +174,7 @@ reversals <- function(y)
 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	
 #'
-#' @examples inst/examples/avgExamples.r
+#' @example inst/examples/avgExamples.r
 #' 
 #' @seealso 
 #'   - \code{\link{udest}}, the recommended estimation method for up-and-down targets. 
