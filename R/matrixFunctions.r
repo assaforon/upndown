@@ -45,7 +45,7 @@
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
 #' @export
 #' 
-#' @example examples/matrixExamples.r
+#' @example inst/examples/matrixExamples.r
 
 
 ### BCD matrix ##############################
@@ -229,6 +229,7 @@ return(omat)
 ### GUD matrix ##############################
 
 #' @rdname bcdmat
+#' @import stats
 #' @export
 
 gudmat<-function(cdf, cohort, lower, upper)

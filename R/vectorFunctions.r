@@ -38,7 +38,7 @@
 #'  - \code{\link{k2targ}} for target-finding design aids.
 #'
 #' 
-#' @example examples/vecExamples.r
+#' @example inst/examples/vecExamples.r
 
 
 

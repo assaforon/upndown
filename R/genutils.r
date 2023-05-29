@@ -95,6 +95,7 @@ ktargOptions<-function(target, tolerance = 0.1, maxk = 20)
 ##--------------------- GUD functions
 
 #' @rdname k2targ
+#' @import stats
 #' @export
 
 
@@ -259,6 +260,7 @@ checkTarget <- function(target, tname = 'Target')
   if(target<=0 || target>=1) stop(paste(tname, "has to be in (0,1).\n"))
 
 #' @rdname validUDinput
+#' @import stats
 #' @export
 checkCDF <- function(cdf)
   if(min(cdf)<0 || max(cdf)>1 || any(diff(cdf) < 0) || var(cdf)==0) stop("cdf should be a CDF.\n")

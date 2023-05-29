@@ -12,6 +12,7 @@ vignette: >
 ```{r setup, include = FALSE}
 #### Note to self: Use this before committing to GitHub, after a stable version
 # tools::buildVignettes(dir = '.',  tangle=TRUE)
+# Then either manually copy the files into inst/doc, or use the below
 # dir.create("inst/doc")
 # file.copy(dir("vignettes", full.names=TRUE), "inst/doc", overwrite=TRUE)
 # (from https://community.rstudio.com/t/browsevignettes-mypackage-saying-no-vignettes-found/68656/6)
@@ -30,7 +31,7 @@ Nevertheless, UDDs have persisted. Studies using UDDs are routinely published in
 
 The `upndown` package attempts to close some of this service gap. It presents basic computational tools and shortcuts to help modernize and standardize UDD usage, and to render insights about the design more accessible to practitioners and statisticians. It incorporates the most up-to-date methodological improvements. We also provide methodological references for statisticians and analysts wishing to learn more about UDDs. 
 
-For UDD estimation and data visualization we rely heavily upon the [`cir`](https://cran.r-project.org/web/packages/cir/) package. That package codifies Centered Isotonic Regression (CIR),^[Oron AP, Flournoy N. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. *Stat Biopharm Res* 2017;9(3):258-267.] an improvement of isotonic regression motivated by the needs of UDDs and of dose-response studies in general. The `upndown` utilities using `cir` functions emphasize ease of use, and do not necessitate in-depth familiarity with `cir`.
+For UDD estimation and data visualization we rely heavily upon the [`cir`](https://CRAN.R-project.org/package=cir) package. That package codifies Centered Isotonic Regression (CIR),^[Oron AP, Flournoy N. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. *Stat Biopharm Res* 2017;9(3):258-267.] an improvement of isotonic regression motivated by the needs of UDDs and of dose-response studies in general. The `upndown` utilities using `cir` functions emphasize ease of use, and do not necessitate in-depth familiarity with `cir`.
 
 This vignette presents a general overview of UDDs, as well as re-analysis of published experimental examples which demonstrate `upndown`'s data analysis and visualization utilities. A second vignette (still in planning) will go deeper into UDD design rules and statistical properties, demonstrating the package's design-aid utilities. 
 

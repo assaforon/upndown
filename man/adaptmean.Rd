@@ -50,7 +50,7 @@ See Oron et al. 2022 (both article and supplement) for further information, as w
 #' Van Elstraete, AC et al. The Median Effective Dose of Preemptive Gabapentin 
 #'      on Postoperative Morphine Consumption After Posterior Lumbar Spinal Fusion. 
 #'      *Anesthesia & Analgesia* 2008, 106: 305-308.
-#' open access: https://journals.lww.com/anesthesia-analgesia/Fulltext/2008/01000/The_Median_Effective_Dose_of_Preemptive_Gabapentin.53.aspx
+
 
 # It was a classical median-finding up-and-down study.
 
@@ -72,7 +72,7 @@ abline(h = 21.7)
 
 #' The authors cite a little-known 1991 article by Dixon as the method source.
 #' However, in their author rejoinder they claim to have used the Dixon-Mood (1948) estimate.
-# (https://journals.lww.com/anesthesia-analgesia/fulltext/2009/01000/dixon_and_massey_s_method__the_starting_dose.63.aspx)
+
 
 # Our package does include the Dixon-Mood point estimate.
 #  (w/o the CIs, because we do not endorse this estimation approach)
@@ -121,7 +121,7 @@ abline(h = wetherill, col = 3)
 adaptmean(c(doses, dosePlus1))
 # Again a bit curiously, this relatively recent approach gives a result similar to what
 #   the authors reported (but not similar to the original Dixon-Mood).
-# This is not too surprising, since in this case `adaptmean()` excludes the first one-third of doses,
+# This is not too surprising, since here `adaptmean()` excludes the first one-third of doses,
 #   which is approximately what happened if indeed the authors excluded all those long dose-increase
 #   sequences at the start.
 

@@ -2,13 +2,16 @@
 
 # An example used in Oron et al. 2022, Fig. 2.
 # It is presented here via the original motivating story:
-# "Ketofol"  is a commonly-used anesthesia-inducing mix known to combine its 2 components' beneficial properties, while each one
-#     mitigates the other's harmful side-effects. In particular:
+# "Ketofol"  is a commonly-used anesthesia-inducing mix known to combine its 2 components' 
+# beneficial properties, while each component mitigates the other's harmful side-effects. 
+# In particular:
 #     Propofol reduces blood pressure while ketamine raises it.
-# What is *not* known at present, is which mix proportions produce 0 delta BP  on average among the population. 
+# What is *not* known at present, is which mix proportions produce 
+# 0 "delta-BP" on average among the population. 
 
 # The classical UD design below administers the mix 0-100% ketamine in 10% increments.
-#    The design will concentrate doses around the point where half the population experiences 0 delta BP. ('zeroPt')
+#    The design will concentrate doses around the point where half the population 
+#    experiences 0 "delta-BP". (the 'zeroPt' parameter in the code)
 
 doses = seq(0, 100, 10)
 m=length(doses) # 11 dose levels
@@ -35,11 +38,14 @@ round(currentvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 29), 3)
 #    with each other only via the dose boundaries.
 
 # Lastly, the asymptotic/stationary distribution. Notice there is no 'n' argument.
+
 round(pivec(cdf = equivF, matfun = classicmat), 3)
 
-# The cumulative vector at n=30 is not very far from it. The main difference is that at n=30 there's still a bit more
-# probability weight at the starting dose.
+# The cumulative vector at n=30 is not very far from the asymptotic vector. 
+# The main difference is that at n=30 there's still a bit more
+#    probability weight at the starting dose.
 # We can check how much of that extra weight is from the 1st patient, by excluding that data point:
+
 round(cumulvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 30, exclude = 1), 3)
 
 

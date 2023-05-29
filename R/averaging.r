@@ -213,50 +213,7 @@ minstart = floor(n * maxExclude)
 ifelse(hinge<minstart, tailmeans[hinge], tailmeans[minstart])
 }
 
-#------------------------------    Un-exported functions; dredge up at your own risk!
 
-### Choi (1971,1990) point+interval estimate 
-
-choiEst<-function(x,y,rstart=2,conf=0.9,full=FALSE)
-{
-n=length(x)
-if (!(length(y) %in% c(n-1,n))) stop('X vector must be equal-length or 1 longer than Y.\n')
-
-revpts=reversals(y)
-k=length(revpts)
-
-# The silly 'trough-peak' correction
-exes=x[ revpts[rstart:k] ] + 1/2 - y[ revpts[rstart:k] ]
-# the ubiquitous k-1:
-k1=length(exes)
-
-# Point estimate: these shifted reversals 
-pest = mean(exes)
-
-# rho: following Choi (90), we just use the lag-1 ACF to stay out of trouble.
-rho0 = acf(exes,lag=1,plot=FALSE)$acf[2]
-
-# Estimating single-obs rho and sigma FWIW (Choi 90 eq. 7-8)
-
-aa = exes[1]^2 + exes[k1]^2
-bb = sum(exes[-1]*exes[-k1])
-cc = sum(exes[-c(1,k1)]^2)
-rhoot = function(x,aa,bb,cc,k)  
-	(bb-cc*x)*(1-x^2) - x*(aa + cc*(1+x^2) - 2*bb*x)/k
-
-# eq. 7	
-rho = uniroot(rhoot, interval=c(-1,1), aa=aa,bb=bb,cc=cc,k=k1)$root
-# eq. 8
-sig2 = ( aa + cc*(1+rho^2) - 2*bb*rho ) / k1
-sig20 = ( aa + cc*(1+rho0^2) - 2*bb*rho0 ) / k1
-
-# Putting it together (Choi 90 eq. 6)!
-eyes = 1:(k1-1)
-se = sqrt ( (sig2 / (k1*(1-rho^2) ) ) * (1 + 2*sum( rho^eyes * (k1-eyes) )/k1 ) )
-se0 = sqrt ( (sig20 / (k1*(1-rho0^2) ) ) * (1 + 2*sum( rho0^eyes * (k1-eyes) )/k1 ) )
-
-return(c(pest,rho,rho0,k1,se,se0))
-}
 
 
 
