@@ -84,9 +84,9 @@ ktargOptions<-function(target, tolerance = 0.1, maxk = 20)
   krange = ceiling(klo):floor(khi)
   krange = sort( krange[krange > 0 & krange <= maxk] )
   
-  cat("For the following targets, k", ifelse(hi, "positive", "negative"),
-      "responses are needed for a move", ifelse(hi, "down.\n", "up.\n"),
-      "Only one", ifelse(hi, "negative", "positive"), "opposite response is needed for the opposite move.\n")
+  message("For the following targets, k ", ifelse(hi, "positive", "negative"),
+      " responses are needed for a move ", ifelse(hi, "down.\n", "up.\n"),
+      "Only one ", ifelse(hi, "negative", "positive"), " response is needed for the opposite move.\n")
   
   data.frame(k = krange, BalancePoint = k2targ(krange, lowTarget = !hi) )
 }
@@ -132,7 +132,7 @@ for(k in minsize:maxsize)
     dtmp = data.frame()
     ucand = 2 * refval - l
     if(ucand > k) next
-#    cat(k, l, ucand,'\n')
+#    message(k, l, ucand,'\n')
     u = ucand
    if(ucand > l) for(u in seq(ucand, l+1, -1))
     {
@@ -152,9 +152,9 @@ for(k in minsize:maxsize)
   }
 }
 
-cat("For each design, if positive responses <= Lower, move up\n")
-cat("                 if positive responses >= Upper, move down\n")
-cat("  otherwise repeat same dose (relevant only when Upper - Lower > 1).\n")
+message("For each design, if positive responses <= Lower, move up\n")
+message("                 if positive responses >= Upper, move down\n")
+message("  otherwise repeat same dose (relevant only when Upper - Lower > 1).\n")
 
 return(dout)
 }
@@ -178,7 +178,7 @@ if(tolerance < 1e-4) stop("'tolerance' is set unrealistically small. Change it t
 
 if(target >= 0.5 - tolerance && target <= 0.5 + tolerance) 
 {
-  cat("No need for coin with a target this close to 0.5. Just use Classical UD:
+  message("No need for coin with a target this close to 0.5. Just use Classical UD:
  - Move UP   after each negative response,                      
  - Move DOWN after each positive response.\n")
   
@@ -198,7 +198,7 @@ if(target >= 0.5 - tolerance && target <= 0.5 + tolerance)
     }
     cout = paste(coinFrac[1], '/', coinFrac[2])
   }
-  cat(paste("After positive response, move DOWN.
+  message(paste("After positive response, move DOWN.
 After negative response, 'toss a COIN':
    - with probability of approximately", cout, 'move UP
    - Otherwise REPEAT same dose.\n') )
@@ -219,7 +219,7 @@ After negative response, 'toss a COIN':
     }
     cout = paste(coinFrac[1], '/', coinFrac[2])
   }
-  cat(paste("After negative response, move UP.
+  message(paste("After negative response, move UP.
 After positive response, 'toss a COIN':
    - with probability of approximately", cout, 'move DOWN
    - Otherwise REPEAT same dose.\n') )
@@ -245,6 +245,7 @@ After positive response, 'toss a COIN':
 #' @param maxfrac (`checkDose()` only) maximum number of unique values (as fraction of sample size) considered realistic for up-and-down data. Default one-half.
 #' @param y (`checkResponse()` only) input object to be verified as valid response values (`TRUE/FALSE or 0/1)
 
+#' @return If a validation issue is found, these functions stop with a relevant error message. If no issue is found, they run through without returning a value.
 
 #' @export
 validUDinput<-function(cdf, target)

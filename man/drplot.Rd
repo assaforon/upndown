@@ -55,6 +55,9 @@ drplot(
 
 \item{...}{Other arguments passed on to \code{\link[graphics]{plot}} (e.g., \code{main} for the main title).}
 }
+\value{
+Returns invisibly after plotting. If you would like to save the plot to a file, embed the plotting code in a standard R graphics export code sequence, (e.g., \code{pdf(...)} before the plotting function, and \code{dev.off()} after it).
+}
 \description{
 Dose-response plotting function for up-and-down data, with doses/stimuli on the x-axis, and the proportion of positive responses on the y-axis. Includes an option to plot the target-dose estimate. Uses utilities from the \code{cir} package.
 }

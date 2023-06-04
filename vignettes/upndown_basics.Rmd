@@ -4,7 +4,7 @@ author: "Assaf Oron"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Up-and-Down Basics and the 'upndown' Package}
+  %\VignetteIndexEntry{`upndown` Package Vignette 1: Up-and-Down Basics}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

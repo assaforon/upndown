@@ -48,6 +48,9 @@ responses = c( (1 - sign(diff(doses)))/2, 0 )
 
 #' ### Plots plots plots!
 
+# Saving current settings as now required by the CRAN powers-that-be :0
+op <- par(no.readonly = TRUE)
+
 layout(t(1:2), widths=3:2)
 par(mar=c(4,4,4,1), mgp=c(2.5,0.8,0), cex.axis = 0.7, las = 1)
 
@@ -55,8 +58,8 @@ par(mar=c(4,4,4,1), mgp=c(2.5,0.8,0), cex.axis = 0.7, las = 1)
 #' Note the changed argument names for x and y axis titles
 udplot(doses, responses, main='', 
         xtitle = "Patient Number", ytitle = 'Gabapentin (mg/kg)') 
-#' Compare with the article's Figure 1; the commented line below makes it look more similar
-# udplot(doses, responses, shape='square', connect=TRUE)
+#' Compare with the article's Figure 1; the line below makes it look more similar
+udplot(doses, responses, shape='square', connect=TRUE)
 
 # The dose-response plot, rarely encountered in U&D articles. 
 # We can also add the CIR estimate right there:
@@ -87,6 +90,8 @@ x = rep(c(1:3, 2:4), each = gsize)
 y = c(rep(0, 8), 1, rep(0,7), 1, 1)
 
 udplot(x=x, y=y, cohort=gsize, connect=FALSE, shape='triangle')
+
+par(op) # Back to business as usual ;)
 }
 \references{
 \itemize{

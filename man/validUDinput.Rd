@@ -38,6 +38,9 @@ checkResponse(y)
 
 \item{y}{(\code{checkResponse()} only) input object to be verified as valid response values (`TRUE/FALSE or 0/1)}
 }
+\value{
+If a validation issue is found, these functions stop with a relevant error message. If no issue is found, they run through without returning a value.
+}
 \description{
 Validation of input values
 }

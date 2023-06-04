@@ -74,6 +74,7 @@ cir::quickInverse(x=x, y=y, target=target, starget = balancePt,
 #' 
 #' @example inst/examples/wrapExamples.r
 
+#' @return Returns invisibly after plotting. If you would like to save the plot to a file, embed the plotting code in a standard R graphics export code sequence, (e.g., `pdf(...)` before the plotting function, and `dev.off()` after it).
 #' 
 #' @export
 #' @import graphics
@@ -133,6 +134,9 @@ plot(cir::DRtrace(x=x, y=y, cohort=cohort), shape=shape, connect=connect, mcol=s
 #' 
 #' @export
 #' @import graphics
+#' 
+#' @return Returns invisibly after plotting. If you would like to save the plot to a file, embed the plotting code in a standard R graphics export code sequence, (e.g., `pdf(...)` before the plotting function, and `dev.off()` after it).
+
 #' 
 #' @seealso 
 #'  - \code{\link[cir]{plot.doseResponse}}, `cir` package.

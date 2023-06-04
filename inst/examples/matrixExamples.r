@@ -37,8 +37,10 @@ round(kmatMarg(exampleF, k = 6, lowTarget = FALSE), 2)
 # Lastly, if you want to see a 43 x 43 matrix - the full state matrix for k-in-a-row, 
 #      run the following line:
 
-# round(kmatFull(exampleF, k = 6, lowTarget = FALSE), 2)
 
+\donttest{
+  round(kmatFull(exampleF, k = 6, lowTarget = FALSE), 2)
+}
 
 
 
