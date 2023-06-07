@@ -13,7 +13,10 @@ doses = c(4:7, 6:13, 12:19, 18:21, 20, 19:23, 22, 21:23, 22:19, 20:23,
 responses = c( (1 - sign(diff(doses)))/2, 0 )
 
 
-# Let us plot the dose-allocation time series.
+### Let us plot the dose-allocation time series.
+
+# Saving current settings as now required by the CRAN powers-that-be :0
+op <- par(no.readonly = TRUE)
 
 par(mar=c(4,4,4,1), mgp=c(2.5,0.8,0), cex.axis = 0.7, las = 1)
 udplot(doses, responses, main='Van Elstraete et al. 2008 Study', 
@@ -91,3 +94,5 @@ abline(h = defest$point, col = 'purple')
 legend('bottomright', col = c(1:3, 'purple'), 
        legend = c("Article's estimate", 'Dixon-Mood', 'Reversals (Wetherill)', 'Standard (CIR)'), 
        lty = 1, bty='n', cex = 0.8)
+
+par(op) # Back to business as usual ;)
