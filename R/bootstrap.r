@@ -31,14 +31,23 @@ avgboot <- function(x, y, doses =  NULL, estfun = adaptmean, target = 0.5,
     
 ### F estimate for the bootstrapping
     cirF = cir::cirPAVA(x = x[1:n], y = y, adaptiveShrink = TRUE, nmin = 1, 
-                     target = target, full = TRUE)$output
+                     target = target)
     bootF = rep(NA, m)
     bootF[indices] = cirF
+#    return(bootF)
     if(minused > 1) bootF[(minused-1)] = bootF[minused] / 2
     if(minused > 2) bootF[1:(minused-2)] = 0
     if(maxused < m) bootF[(maxused+1)] = (1 + bootF[maxused]) / 2
     if(maxused < m-1) bootF[(maxused+2):m] = 1
     
+    if(any(is.na(bootF))) bootF[is.na(bootF)] = 
+        approx(doses[!is.na(bootF)], bootF[!is.na(bootF)], xout = doses[is.na(bootF)] )$y
+    
     return(bootF)
-  
+
+#### Calling dfsim() to generate ensemble
+    
+
+#### Estimation    
+      
 }
