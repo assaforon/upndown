@@ -85,15 +85,15 @@ mean(track) + spacing * (0.5-chosen)
 #'  - \code{\link{adaptmean}}, an unpublished but arguably better approach to dose-averaging (this is *not* the recommended method though; that would be \code{\link{udest}} referenced above).
 #' 
 #' @param x numeric vector: sequence of administered doses, treatments, stimuli, etc.
-#' @param y numeric vector: sequence of observed responses. Must be same length as `x` or shorter by 1, and must be coded `TRUE/FALSE` or 0/1.
+#' @param y numeric vector: sequence of observed responses. Must be same length as `x` or shorter by 1, and must be coded `TRUE/FALSE` or 0/1. Not really used by `adaptmean()`.
 #' @param rstart the reversal point from which the averaging begins. Default 3, considered a good compromise between performance and robustness. See Details.
-#' @param all logical: from the starting point onwards, should all values of `x` be used (`TRUE`, default), or only reversal points as in the Wetherill et al. approach?
-#' @param before logical: whether to start the averaging one step earlier than the starting reversal point. Default `FALSE`, and ignored when `all=FALSE`.
+#' @param all logical: from the starting point onwards, should all values of `x` be used (`TRUE`, default), or only reversal points as in the Wetherill et al. approach? If set to `FALSE`, then the `before` flag also defaults to `FALSE` regardless of user choice.
+#' @param before logical: whether to start the averaging one step earlier than the starting reversal point. Default `FALSE`.
 #' @param maxExclude a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector `x` to exclude from averaging, in case the algorithm-identified starting point occurs too late in the experiment. Default 1/3.
 #' @param full logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})
 
 #' 
-#' @return For `reversals()`, the indices of reversal points. For `reversmean()`, if `full=FALSE` returns the point estimate and otherwise returns a data frame with the estimate as well, as the index of the cutoff point used to start the averaging.
+#' @return For `reversals()`, the indices of reversal points. For `reversmean()`, if `full=FALSE` returns the point estimate and otherwise returns a data frame with the estimate, as well as the index of the cutoff point used to start the averaging.
 
 #'  
 #' @export
@@ -170,7 +170,7 @@ reversals <- function(y)
 
 #' @export
 #' 
-#' @return The point estimate
+#' @return If `full=FALSE` returns the point estimate. Otherwise returns a list with the index of the cutoff point used to start the averaging, and a 2-row matrix with full sequence of estimates and the tail vs. starting point indicator signs.
 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	
 #'
@@ -187,7 +187,7 @@ reversals <- function(y)
 #'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. [See in particular the open-access Supplement.](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf)
 
 
-adaptmean <- function(x, maxExclude=1/3, before=FALSE, full=FALSE)
+adaptmean <- function(x, y = NULL, maxExclude=1/3, before=FALSE, full=FALSE)
 {
 # Degenerate case
 if(length(unique(x))==1) return(x[1])
@@ -203,7 +203,7 @@ signvec=sign(x[-n]-tailmeans[-1])
 hinge=min(which(signvec!=signvec[1]))
 # Rolling one step backwards, to *before the crossing
 if(before) hinge = hinge-1
-if(signvec[1]==0) hinge = 2 # perfect storm
+if(signvec[1]==0) hinge = 2 # perfect conditions
 
 ### Return
 if(full) return(list(startpt=hinge,signsmeans=rbind(tailmeans,c(signvec,NA))))
