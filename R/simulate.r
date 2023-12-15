@@ -1,5 +1,7 @@
 ############### Generalized Master Dose-Finding Function
 
+#' @export
+
 dfsim <- function(n, starting=NULL, cohort=1, Fvals, progress = krow, progArgs = list(k=1), thresholds=NULL,
               nlev=dim(Fvals)[1],ensemble=dim(Fvals)[2], quiet=FALSE, ...)
 {
@@ -75,6 +77,8 @@ dfsim <- function(n, starting=NULL, cohort=1, Fvals, progress = krow, progArgs =
 
 #------------------------- Implemented designs for dfsim()
 
+#' @export
+
 ### k-in-a-row
 krow <- function(doses, responses, k, hitarg=TRUE, cohort=1,fastStart=FALSE,...)
   ## firstpass: how many non-DLTs to require in the first pass? (i.e., the value of k for the first escalation) Ignored if 0.
@@ -93,26 +97,44 @@ krow <- function(doses, responses, k, hitarg=TRUE, cohort=1,fastStart=FALSE,...)
     
     if(fastStart && sum(responses)==0) return(dout+1)
     if(sum(responses[(n-cohort+1):n])>=1) return(dout-1)  # toxicity in current observation/cohort: down
-    
-    if (firstpass>0) # A different (usually harsher) first-pass condition
-    {
-      if(n<firstpass) return(dout) # not enuff data
-      if(sum(responses[(n-firstpass+1):n])==0 && var(doses[(n-firstpass+1):n])==0) return(dout+1) # immediate clear
-      
-      #	cleared=FALSE
-      #	for (d in unique(doses[doses>=doses[n]]))
-      if(doses[n]==max(doses)) return(dout) # clearly not cleared yet
-      prevruns=rle(doses) # Now the harder cases...
-      
-      if (max(prevruns$lengths)<firstpass) return(dout)
-      cleared=which(diff(prevruns$values)>0)
-      if (length(cleared)==0) return(dout)
-      if (max(prevruns$values[cleared])<doses[n]) return(dout)
-    }
     if(n<k) return(dout)
     if(sum(responses[(n-k+1):n])==0 && (k==1 || var(doses[(n-k+1):n])==0)) return(dout+1)
     return(dout)
   }
+}
+
+#' @export
+
+### BCD
+bcd <- function(doses, responses, coin, hitarg=TRUE, fastStart=FALSE,...)
+{
+  n=length(doses)
+  curr=doses[n]
+  if(hitarg) {
+    dout=ifelse(responses[n]==0,curr+1,ifelse(runif(1)<=coin,curr-1,curr))
+    if(fastStart && sum(responses)==n) dout=curr-1
+  } else {
+    dout=ifelse(responses[n]==1,curr-1,ifelse(runif(1)<=coin,curr+1,curr))
+    if(fastStart && sum(responses)==0) dout=curr+1
+  }
+  return(dout)
+}
+
+#' @export
+
+### Group UD
+groupUD=function(doses,responses,s,ll,ul,...)
+{
+  if(ll>s || ul>s) stop('Group up-down boundaries cannot be greater than group size.\n')
+  if (ll>=ul) stop('Lower bound cannot be greater than upper bound.\n')
+  
+  n=length(doses)
+  curr=doses[n]
+  if(n%%s>0) return(curr) # only evaluating when group is full
+  if(n<s) return(curr)
+  dlt=sum(responses[(n-s+1):n])
+  dout=ifelse(dlt<=ll, curr+1, ifelse(dlt>=ul, curr-1, curr))
+  return(dout)
 }
 
 

@@ -20,20 +20,20 @@ reversals(y)
 \arguments{
 \item{x}{numeric vector: sequence of administered doses, treatments, stimuli, etc.}
 
-\item{y}{numeric vector: sequence of observed responses. Must be same length as \code{x} or shorter by 1, and must be coded \code{TRUE/FALSE} or 0/1.}
+\item{y}{numeric vector: sequence of observed responses. Must be same length as \code{x} or shorter by 1, and must be coded \code{TRUE/FALSE} or 0/1. Not really used by \code{adaptmean()}.}
 
 \item{rstart}{the reversal point from which the averaging begins. Default 3, considered a good compromise between performance and robustness. See Details.}
 
-\item{all}{logical: from the starting point onwards, should all values of \code{x} be used (\code{TRUE}, default), or only reversal points as in the Wetherill et al. approach?}
+\item{all}{logical: from the starting point onwards, should all values of \code{x} be used (\code{TRUE}, default), or only reversal points as in the Wetherill et al. approach? If set to \code{FALSE}, then the \code{before} flag also defaults to \code{FALSE} regardless of user choice.}
 
-\item{before}{logical: whether to start the averaging one step earlier than the starting reversal point. Default \code{FALSE}, and ignored when \code{all=FALSE}.}
+\item{before}{logical: whether to start the averaging one step earlier than the starting reversal point. Default \code{FALSE}.}
 
 \item{maxExclude}{a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector \code{x} to exclude from averaging, in case the algorithm-identified starting point occurs too late in the experiment. Default 1/3.}
 
 \item{full}{logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})}
 }
 \value{
-For \code{reversals()}, the indices of reversal points. For \code{reversmean()}, if \code{full=FALSE} returns the point estimate and otherwise returns a data frame with the estimate as well, as the index of the cutoff point used to start the averaging.
+For \code{reversals()}, the indices of reversal points. For \code{reversmean()}, if \code{full=FALSE} returns the point estimate and otherwise returns a data frame with the estimate, as well as the index of the cutoff point used to start the averaging.
 }
 \description{
 Dose-averaging target estimation for Up-and-Down experiments, historically the most popular approach, but not recommended as primary nowadays. Provided for completeness.

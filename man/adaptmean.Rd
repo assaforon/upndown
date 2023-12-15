@@ -4,19 +4,21 @@
 \alias{adaptmean}
 \title{Up-and-Down averaging estimate with adaptive starting-point}
 \usage{
-adaptmean(x, maxExclude = 1/3, before = FALSE, full = FALSE)
+adaptmean(x, y = NULL, maxExclude = 1/3, before = FALSE, full = FALSE)
 }
 \arguments{
 \item{x}{numeric vector: sequence of administered doses, treatments, stimuli, etc.}
 
+\item{y}{numeric vector: sequence of observed responses. Must be same length as \code{x} or shorter by 1, and must be coded \code{TRUE/FALSE} or 0/1. Not really used by \code{adaptmean()}.}
+
 \item{maxExclude}{a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector \code{x} to exclude from averaging, in case the algorithm-identified starting point occurs too late in the experiment. Default 1/3.}
 
-\item{before}{logical: whether to start the averaging one step earlier than the starting reversal point. Default \code{FALSE}, and ignored when \code{all=FALSE}.}
+\item{before}{logical: whether to start the averaging one step earlier than the starting reversal point. Default \code{FALSE}.}
 
 \item{full}{logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})}
 }
 \value{
-The point estimate
+If \code{full=FALSE} returns the point estimate. Otherwise returns a list with the index of the cutoff point used to start the averaging, and a 2-row matrix with full sequence of estimates and the tail vs. starting point indicator signs.
 }
 \description{
 A dose-averaging estimate based on a concept from Oron (2007). Provides an alternative to reversal-based averaging.

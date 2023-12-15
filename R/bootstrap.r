@@ -4,6 +4,7 @@
 avgboot <- function(x, y, doses =  NULL, estfun = adaptmean, target = 0.5, 
                         conf = 0.9, B = 500, dotsout = TRUE, ...)
 {
+  require(cir)
 ### validation
   
     if( !is.null(doses) & !all(x %in% doses) ) stop("'doses' must include all x values in the experiment.\n")
@@ -25,15 +26,19 @@ avgboot <- function(x, y, doses =  NULL, estfun = adaptmean, target = 0.5,
 # Getting full-set indices of used doses  
     m = length(doses)
     indices = match(dose0, doses)
+    minused = min(indices)
+    maxused = max(indices)
     
-# F estimate
-    cirF = cirPAVA(x = x[1:n], y = y, adaptiveShrink = TRUE, nmin = 1, 
+### F estimate for the bootstrapping
+    cirF = cir::cirPAVA(x = x[1:n], y = y, adaptiveShrink = TRUE, nmin = 1, 
                      target = target, full = TRUE)$output
     bootF = rep(NA, m)
+    bootF[indices] = cirF
+    if(minused > 1) bootF[(minused-1)] = bootF[minused] / 2
+    if(minused > 2) bootF[1:(minused-2)] = 0
+    if(maxused < m) bootF[(maxused+1)] = (1 + bootF[maxused]) / 2
+    if(maxused < m-1) bootF[(maxused+2):m] = 1
     
-    
-  
-  
-  
+    return(bootF)
   
 }
