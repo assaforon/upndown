@@ -4,7 +4,15 @@
 \alias{adaptmean}
 \title{Up-and-Down averaging estimate with adaptive starting-point}
 \usage{
-adaptmean(x, y = NULL, maxExclude = 1/3, before = FALSE, full = FALSE)
+adaptmean(
+  x,
+  y = NULL,
+  maxExclude = 1/3,
+  before = FALSE,
+  full = FALSE,
+  conf = 0.9,
+  ...
+)
 }
 \arguments{
 \item{x}{numeric vector: sequence of administered doses, treatments, stimuli, etc.}

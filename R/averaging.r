@@ -187,7 +187,7 @@ reversals <- function(y)
 #'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. [See in particular the open-access Supplement.](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf)
 
 
-adaptmean <- function(x, y = NULL, maxExclude=1/3, before=FALSE, full=FALSE)
+adaptmean <- function(x, y=NULL, maxExclude=1/3, before=FALSE, full=FALSE, conf = 0.9, ...)
 {
 # Degenerate case
 if(length(unique(x))==1) return(x[1])
@@ -199,18 +199,26 @@ spacing=mean(diff(sort(unique(x))))
 # If you're near where you started, quick exit using the entire sample:
 if(abs(tailmeans[2]-x[1])<=spacing) return (tailmeans[1])
 
-signvec=sign(x[-n]-tailmeans[-1])
-hinge=min(which(signvec!=signvec[1]))
+signvec = sign(x[-n] - tailmeans[-1])
+hinge = suppressWarnings( min( which(signvec != signvec[1]) ) )
 # Rolling one step backwards, to *before the crossing
 if(before) hinge = hinge-1
 if(signvec[1]==0) hinge = 2 # perfect conditions
 
+### NEW to 0.2! Bootstrap CI
+
+if(!is.null(conf)) confidence = avgboot(x=x, y=y, conf = conf, full = full, ...)
+
 ### Return
-if(full) return(list(startpt=hinge,signsmeans=rbind(tailmeans,c(signvec,NA))))
+if(full) return(list(startpt=hinge, signsmeans=rbind(tailmeans,c(signvec,NA)), bootstrap = confidence) )
+
 # Applying minimum fraction
 minstart = floor(n * maxExclude)
+pest = ifelse(hinge<minstart, tailmeans[hinge], tailmeans[minstart])
+if(is.null(conf)) return(pest)
 
-ifelse(hinge<minstart, tailmeans[hinge], tailmeans[minstart])
+return(c(pest, confidence) )
+
 }
 
 

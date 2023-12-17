@@ -1,8 +1,8 @@
-
-
-
-avgboot <- function(x, y, doses =  NULL, estfun = adaptmean, target = 0.5, 
-                        conf = 0.9, B = 500, dotsout = TRUE, ...)
+#' @export
+#' 
+avgboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desArgs = list(k=1), 
+                        target = 0.5, conf = 0.9, B = 1000, seed = NULL, 
+                        showdots = TRUE, full = FALSE, ...)
 {
   require(cir)
 ### validation
@@ -34,7 +34,7 @@ avgboot <- function(x, y, doses =  NULL, estfun = adaptmean, target = 0.5,
                      target = target)
     bootF = rep(NA, m)
     bootF[indices] = cirF
-#    return(bootF)
+
     if(minused > 1) bootF[(minused-1)] = bootF[minused] / 2
     if(minused > 2) bootF[1:(minused-2)] = 0
     if(maxused < m) bootF[(maxused+1)] = (1 + bootF[maxused]) / 2
@@ -43,11 +43,22 @@ avgboot <- function(x, y, doses =  NULL, estfun = adaptmean, target = 0.5,
     if(any(is.na(bootF))) bootF[is.na(bootF)] = 
         approx(doses[!is.na(bootF)], bootF[!is.na(bootF)], xout = doses[is.na(bootF)] )$y
     
-    return(bootF)
+#    return(bootF)
 
 #### Calling dfsim() to generate ensemble
-    
+
+    bootdat = dfsim(n, starting = match(x[1], doses), xvals = doses, Fvals = bootF, 
+                    progress = design, progArgs = desArgs, 
+               nlev = length(bootF), ensemble = B, quiet = !showdots, ...)
 
 #### Estimation    
-      
+    
+    if(identical(estfun, adaptmean)) bootests = apply(bootdat$dose, 2, adaptmean, full=FALSE, conf=NULL, ...)
+    
+    if(full) return(list(xvals = doses, F = bootF, x = bootdat$dose, ests = bootests) )
+    
+    tailz = (1-conf)/2
+    candout = quantile(bootests, c(tailz, 1-tailz), type = 6)
+    names(candout) = paste(c('lower', 'upper'), round(100*conf), 'conf', sep='')
+    return(candout)
 }

@@ -1,29 +1,39 @@
 ############### Generalized Master Dose-Finding Function
+# This function simulates sequential dose-finding experiments on a fixed dose grid			
+# The response function is (implicitly) assumed monotone in [0,1]
+
+# n: sample size
+# target: target toxicity rate
+# starting: the starting dose level
+# cohort: the cohort size
+# Fvals (vector or matrix): the true values of the response function on the dose grid
+# progress: the function used to determine the next dose
+# estimates: the function used to estimate/select the MTD
+# progArgs: arguments needed for 'progress'. Need to be compatible for use in 'mapply'.
+# thresholds (matrix): the response thresholds of participants, presented as percentiles rather than physical values. 
+# nlev: the number of dose levels in the grid
+# ensemble: the number of runs to be simulated
+
 
 #' @export
 
-dfsim <- function(n, starting=NULL, cohort=1, Fvals, progress = krow, progArgs = list(k=1), thresholds=NULL,
+dfsim <- function(n, starting=NULL, cohort=1, xvals, Fvals, progress = krow, progArgs = list(k=1), 
+                  thresholds=NULL, seed = NULL,
               nlev=dim(Fvals)[1],ensemble=dim(Fvals)[2], quiet=FALSE, ...)
 {
-  # This function simulates sequential dose-finding experiments on a fixed dose grid			
-  # The response function is (implicitly) assumed monotone in [0,1]
-  
-  # n: sample size
-  # target: target toxicity rate
-  # starting: the starting dose level
-  # cohort: the cohort size
-  # Fvals (vector or matrix): the true values of the response function on the dose grid
-  # progress: the function used to determine the next dose
-  # estimates: the function used to estimate/select the MTD
-  # progArgs: arguments needed for 'progress'. Need to be compatible for use in 'mapply'.
-  # thresholds (matrix): the response thresholds of participants, presented as percentiles rather than physical values. 
-  # nlev: the number of dose levels in the grid
-  # ensemble: the number of runs to be simulated
+  require(plyr)
+
+### Validation  
+  if(nlev != length(xvals)) stop("Length mismatch (x values vs. F values).\n")
+  if(var(sign(diff(xvals))) != 0) stop('Non-monotone x value set.\n')
+
   
   if(!quiet) cat(date(),'\n')		
+
+  if(!is.null(seed)) set.seed(seed)
   est=NULL
   
-  ## dynamic programming
+  ## F values
   
   if (is.vector(Fvals)) {
     nlev=length(Fvals)
@@ -57,7 +67,8 @@ dfsim <- function(n, starting=NULL, cohort=1, Fvals, progress = krow, progArgs =
     if(sum(alive)==0) break ### No more live runs; all have stopped
     #	cat(doses[a-1,alive],'\n')
   
-    doses[a,alive]=mapply(FUN=progress,split(doses[1:(a-1),alive],col(matrix(doses[1:(a-1),alive],ncol=sum(alive)))),split(responses[1:(a-1),alive],col(matrix(responses[1:(a-1),alive],ncol=sum(alive)))),MoreArgs=progArgs)
+    doses[a,alive]=mapply(FUN=progress,split(doses[1:(a-1),alive], col(matrix(doses[1:(a-1),alive], ncol=sum(alive))) ),
+                split(responses[1:(a-1),alive], col(matrix(responses[1:(a-1),alive], ncol=sum(alive)))), MoreArgs=progArgs)
     # boundary conditions imposed by the Master
     doses[a,alive & doses[a,]>nlev]=nlev
     doses[a,alive & doses[a,]<1]=1
@@ -68,7 +79,11 @@ dfsim <- function(n, starting=NULL, cohort=1, Fvals, progress = krow, progArgs =
     gc(verbose = FALSE)
   }
   
-  #close(progArgs$fout)
+### Endgame
+
+# "Dressing up" the dose levels (which are 1:m in the progress loop above) with real values
+  doses = mapvalues(doses, 1:nlev, xvals)
+
   if(!quiet) cat('\n',date(),'\n')
   
   lout=list(scenarios=Fvals,sample=thresholds,dose=doses,response=responses,cohort=cohort,details=progArgs)
