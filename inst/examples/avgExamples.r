@@ -74,7 +74,10 @@ abline(h = wetherill, col = 3)
 # It does not require the y values at all. The underlying assumption is that the dose 
 #   sequence has done enough meandering around the true balance point, to provide information
 #   about where (approximately) the starting-dose effect is neutralized.
-adaptmean(c(doses, dosePlus1))
+# This function now also provides bootstrap CIs, so we need to give it the y values. 
+# The default forces the final 2/3 of observations to be included; here in view of the long run-in
+#     we are relaxing this
+adaptmean(c(doses, dosePlus1), responses, maxExclude = 0.5)
 # Again a bit curiously, this relatively recent approach gives a result similar to what
 #   the authors reported (but not similar to the original Dixon-Mood).
 # This is not too surprising, since here `adaptmean()` excludes the first one-third of doses,

@@ -85,7 +85,7 @@ mean(track) + spacing * (0.5-chosen)
 #'  - \code{\link{adaptmean}}, an unpublished but arguably better approach to dose-averaging (this is *not* the recommended method though; that would be \code{\link{udest}} referenced above).
 #' 
 #' @param x numeric vector: sequence of administered doses, treatments, stimuli, etc.
-#' @param y numeric vector: sequence of observed responses. Must be same length as `x` or shorter by 1, and must be coded `TRUE/FALSE` or 0/1. Not really used by `adaptmean()`.
+#' @param y numeric vector: sequence of observed responses. Must be same length as `x` or shorter by 1, and must be coded `TRUE/FALSE` or 0/1. `adaptmean()` only uses `y` for bootstrap confidence intervals.
 #' @param rstart the reversal point from which the averaging begins. Default 3, considered a good compromise between performance and robustness. See Details.
 #' @param all logical: from the starting point onwards, should all values of `x` be used (`TRUE`, default), or only reversal points as in the Wetherill et al. approach? If set to `FALSE`, then the `before` flag also defaults to `FALSE` regardless of user choice.
 #' @param before logical: whether to start the averaging one step earlier than the starting reversal point. Default `FALSE`.
@@ -207,7 +207,8 @@ if(signvec[1]==0) hinge = 2 # perfect conditions
 
 ### NEW to 0.2! Bootstrap CI
 
-if(!is.null(conf)) confidence = avgboot(x=x, y=y, conf = conf, full = full, ...)
+if(!is.null(conf)) confidence = avgboot(x=x, y=y, conf = conf, full = full, 
+                      before = before, maxExclude = maxExclude, ...)
 
 ### Return
 if(full) return(list(startpt=hinge, signsmeans=rbind(tailmeans,c(signvec,NA)), bootstrap = confidence) )
@@ -217,7 +218,10 @@ minstart = floor(n * maxExclude)
 pest = ifelse(hinge<minstart, tailmeans[hinge], tailmeans[minstart])
 if(is.null(conf)) return(pest)
 
-return(c(pest, confidence) )
+
+tmp = c(pest, min(confidence[1], pest), max(confidence[2], pest) ) 
+names(tmp) = c('point', names(confidence) )
+tmp
 
 }
 
