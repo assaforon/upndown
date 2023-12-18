@@ -17,7 +17,7 @@
 
 #' @export
 
-dfsim <- function(n, starting=NULL, cohort=1, xvals, Fvals, progress = krow, progArgs = list(k=1), 
+dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, xvals, Fvals, progress = krow, progArgs = list(k=1), 
                   thresholds=NULL, seed = NULL,
               nlev=dim(Fvals)[1],ensemble=dim(Fvals)[2], quiet=FALSE, ...)
 {
@@ -48,8 +48,10 @@ dfsim <- function(n, starting=NULL, cohort=1, xvals, Fvals, progress = krow, pro
   responses=matrix(NA,nrow=n,ncol=ensemble)
   runid=1:ensemble
   
-  if (is.null(starting)) {  	
-    doses[1,]=sample(1:nlev,size=ensemble,replace=TRUE)
+## Randomized starting dose (in case startdose not given)
+  if (is.null(starting)) {  
+    if(is.null(sprobs)) sprobs = rep(1/nlev, nlev)
+    doses[1,]=sample(1:nlev,size=ensemble,replace=TRUE, prob = sprobs)
   } else doses[1,]=starting
   if (cohort>1) for (b in 2:cohort) doses[b,]=doses[1,]
   alive=1:ensemble

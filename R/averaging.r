@@ -207,7 +207,7 @@ if(signvec[1]==0) hinge = 2 # perfect conditions
 
 ### NEW to 0.2! Bootstrap CI
 
-if(!is.null(conf)) confidence = avgboot(x=x, y=y, conf = conf, full = full, 
+if(!is.null(conf)) confidence = udboot(x=x, y=y, conf = conf, full = full, 
                       before = before, maxExclude = maxExclude, ...)
 
 ### Return

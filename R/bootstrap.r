@@ -1,6 +1,6 @@
 #' @export
 #' 
-avgboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desArgs = list(k=1), 
+udboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desArgs = list(k=1), 
                         target = 0.5, conf = 0.9, B = 1000, seed = NULL, randstart = TRUE,
                         showdots = TRUE, full = FALSE, ...)
 {
@@ -47,8 +47,14 @@ avgboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desA
 
 #### Calling dfsim() to generate ensemble
     startdose = NULL
-    if(!randstart) startdose =  match(x[1], doses)
-    bootdat = dfsim(n, starting = startdose, xvals = doses, Fvals = bootF, 
+    if(!randstart) {
+      startdose =  match(x[1], doses)
+    } else {
+      tmp = table(x)
+      startp = rep(0, length(doses))
+      startp[match(names(tmp), doses)] = tmp/sum(tmp)
+    }
+    bootdat = dfsim(n, starting = startdose, xvals = doses, sprobs = startp, Fvals = bootF, 
                     progress = design, progArgs = desArgs, 
                nlev = length(bootF), ensemble = B, quiet = !showdots, ...)
 
