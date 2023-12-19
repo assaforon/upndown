@@ -54,9 +54,9 @@ udboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desAr
       startp = rep(0, length(doses))
       startp[match(names(tmp), doses)] = tmp/sum(tmp)
     }
-    bootdat = dfsim(n, starting = startdose, xvals = doses, sprobs = startp, Fvals = bootF, 
+    bootdat = suppressMessages( dfsim(n, starting = startdose, xvals = doses, sprobs = startp, Fvals = bootF, 
                     progress = design, progArgs = desArgs, 
-               nlev = length(bootF), ensemble = B, quiet = !showdots, ...)
+               nlev = length(bootF), ensemble = B, quiet = !showdots, ...) )
 
 #### Estimation    
     
@@ -65,8 +65,9 @@ udboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desAr
       bootests = apply(bootdat$dose, 2, adaptmean, full=FALSE, conf=NULL, ...)
     } else {
       
-      
-      
+      bootests = rep(NA, B)
+      for (a in 1:B) bootests[a] = estfun(x = bootdat$dose[,a], y = bootdat$response[,a], 
+                        full=FALSE, conf=NULL, ...)
     }
     if(full) return(list(xvals = doses, F = bootF, x = bootdat$dose, ests = bootests) )
     

@@ -2,12 +2,12 @@
 % Please edit documentation in R/averaging.r
 \name{adaptmean}
 \alias{adaptmean}
-\title{Up-and-Down averaging estimate with adaptive starting-point}
+\title{Up-and-Down averaging estimate with adaptive cutoff-point}
 \usage{
 adaptmean(
   x,
   y = NULL,
-  maxExclude = 1/3,
+  maxExclude = 1/2,
   before = FALSE,
   full = FALSE,
   conf = 0.9,
@@ -19,9 +19,9 @@ adaptmean(
 
 \item{y}{numeric vector: sequence of observed responses. Must be same length as \code{x} or shorter by 1, and must be coded \code{TRUE/FALSE} or 0/1. \code{adaptmean()} only uses \code{y} for bootstrap confidence intervals.}
 
-\item{maxExclude}{a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector \code{x} to exclude from averaging, in case the algorithm-identified starting point occurs too late in the experiment. Default 1/3.}
+\item{maxExclude}{a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector \code{x} to exclude from averaging, in case the algorithm-identified transition point occurs late in the experiment. Default 1/2.}
 
-\item{before}{logical: whether to start the averaging one step earlier than the starting reversal point. Default \code{FALSE}.}
+\item{before}{logical: whether to start the averaging one observation earlier than the cutoff point. Default \code{FALSE}.}
 
 \item{full}{logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})}
 }

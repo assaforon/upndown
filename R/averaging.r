@@ -63,9 +63,9 @@ mean(track) + spacing * (0.5-chosen)
 #' 
 #' Up-and-Down designs (UDDs) allocate doses in a random walk centered nearly symmetrically around a balance point. Therefore, a modified average of allocated doses could be a plausible estimate of the balance point's location.
 #' 
-#' During UDDs' first generation, a variety of dose-averaging estimators was developed, with the one proposed by Wetherill et al. (1966) eventually becoming the most popular. This estimator uses only doses observed at *reversal* points: points with a negative response following a positive one, or vice versa. More recent research (Kershaw 1985, 1987; Oron et al. 2022, supplement) strongly indicates that in fact it is better to use all doses starting from some cut-point, rather than skip most of them and choose only reversals. 
+#' During UDDs' first generation, a variety of dose-averaging estimators was developed, with the one proposed by Wetherill et al. (1966) eventually becoming the most popular. This estimator uses only doses observed at *reversal* points: points with a negative response following a positive one, or vice versa. More recent research (Kershaw 1985, 1987; Oron et al. 2022, supplement) strongly indicates that in fact it is better to use all doses beginning from some cutoff point, rather than skip most of them and choose only reversals. 
 #' 
-#' The `reversals()` utility identifies reversal points, whereas `reversmean()` produces a dose-averaging estimate whose starting cut-point is determined by a reversal. User can choose whether to use all doses from that cut-point onwards, or only the reversals as in the older approaches. A few additional options make the estimate even more flexible.
+#' The `reversals()` utility identifies reversal points, whereas `reversmean()` produces a dose-averaging estimate whose cutoff point (which should perhaps be called the *'cut-on'* point) is determined by a reversal. User can choose whether to use all doses from that cut-point onwards, or only the reversals as in the older approaches. A few additional options make the estimate even more flexible.
 #' 
 #' More broadly, dose-averaging despite some advantages is not very robust, and also **lacks an interval estimate with reliable coverage.** Therefore, `reversmean()` provides neither a confidence interval nor a standard error. 
 #' 
@@ -87,9 +87,9 @@ mean(track) + spacing * (0.5-chosen)
 #' @param x numeric vector: sequence of administered doses, treatments, stimuli, etc.
 #' @param y numeric vector: sequence of observed responses. Must be same length as `x` or shorter by 1, and must be coded `TRUE/FALSE` or 0/1. `adaptmean()` only uses `y` for bootstrap confidence intervals.
 #' @param rstart the reversal point from which the averaging begins. Default 3, considered a good compromise between performance and robustness. See Details.
-#' @param all logical: from the starting point onwards, should all values of `x` be used (`TRUE`, default), or only reversal points as in the Wetherill et al. approach? If set to `FALSE`, then the `before` flag also defaults to `FALSE` regardless of user choice.
-#' @param before logical: whether to start the averaging one step earlier than the starting reversal point. Default `FALSE`.
-#' @param maxExclude a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector `x` to exclude from averaging, in case the algorithm-identified starting point occurs too late in the experiment. Default 1/3.
+#' @param all logical: from the cutoff point onwards, should all values of `x` be used (`TRUE`, default), or only reversal points as in the Wetherill et al. approach? If set to `FALSE`, then the `before` flag also defaults to `FALSE` regardless of user choice.
+#' @param before logical: whether to start the averaging one observation earlier than the cutoff point. Default `FALSE`.
+#' @param maxExclude a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector `x` to exclude from averaging, in case the algorithm-identified transition point occurs late in the experiment. Default 1/2.
 #' @param full logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})
 
 #' 
@@ -98,8 +98,8 @@ mean(track) + spacing * (0.5-chosen)
 #'  
 #' @export
 #'  
-reversmean <- function(x, y, rstart=3, all=TRUE, before=FALSE,
-                       maxExclude=1/3,  full=FALSE)
+reversmean <- function(x, y, rstart=3, all=TRUE, before=FALSE, conf = 0.9,
+                       maxExclude=1/2,  full=FALSE, ...)
 {
 # vals
 checkDose(x)
@@ -123,8 +123,21 @@ if(revpts[rstart] > n*maxExclude) revpts[rstart] = floor(n*maxExclude)
 
 # The estimate is anti-climactic:
 est=ifelse(all,mean(x[(revpts[rstart] - as.integer(before)):n]),mean(x[revpts[rstart:length(revpts)]]))
-if(!full) return(est)
-data.frame(est = est, cutoff = revpts[rstart] - as.integer(before) )
+
+### NEW to 0.2! Bootstrap CI
+if(!is.null(conf)) confidence = udboot(x=x, y=y, conf = conf, full = full, estfun = reversmean,
+                              rstart = rstart, all = all, before = before, maxExclude = maxExclude,
+                              ...) else confidence = NULL
+
+### Returning
+if(full) return(list(est = est, cutoff = revpts[rstart] - as.integer(before), 
+                     bootstrap = confidence) )
+
+if(is.null(conf)) return(est)
+
+tmp = c(est, min(confidence[1], est), max(confidence[2], est) ) 
+names(tmp) = c('point', names(confidence) )
+tmp
 }
 
 
@@ -138,7 +151,7 @@ reversals <- function(y)
 
 #------------------------
 
-#' Up-and-Down averaging estimate with adaptive starting-point
+#' Up-and-Down averaging estimate with adaptive cutoff-point
 #'
 #' A dose-averaging estimate based on a concept from Oron (2007). Provides an alternative to reversal-based averaging.
 #'
@@ -187,7 +200,7 @@ reversals <- function(y)
 #'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. [See in particular the open-access Supplement.](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf)
 
 
-adaptmean <- function(x, y=NULL, maxExclude=1/3, before=FALSE, full=FALSE, conf = 0.9, ...)
+adaptmean <- function(x, y=NULL, maxExclude=1/2, before=FALSE, full=FALSE, conf = 0.9, ...)
 {
 # Degenerate case
 if(length(unique(x))==1) return(x[1])
@@ -206,9 +219,8 @@ if(before) hinge = hinge-1
 if(signvec[1]==0) hinge = 2 # perfect conditions
 
 ### NEW to 0.2! Bootstrap CI
-
-if(!is.null(conf)) confidence = udboot(x=x, y=y, conf = conf, full = full, 
-                      before = before, maxExclude = maxExclude, ...)
+if(!is.null(conf)) confidence = udboot(x=x, y=y, conf = conf, full = full, estfun = adaptmean, 
+                      before = before, maxExclude = maxExclude, ...) else confidence = NULL
 
 ### Return
 if(full) return(list(startpt=hinge, signsmeans=rbind(tailmeans,c(signvec,NA)), bootstrap = confidence) )

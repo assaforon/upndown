@@ -11,8 +11,10 @@ reversmean(
   rstart = 3,
   all = TRUE,
   before = FALSE,
-  maxExclude = 1/3,
-  full = FALSE
+  conf = 0.9,
+  maxExclude = 1/2,
+  full = FALSE,
+  ...
 )
 
 reversals(y)
@@ -24,11 +26,11 @@ reversals(y)
 
 \item{rstart}{the reversal point from which the averaging begins. Default 3, considered a good compromise between performance and robustness. See Details.}
 
-\item{all}{logical: from the starting point onwards, should all values of \code{x} be used (\code{TRUE}, default), or only reversal points as in the Wetherill et al. approach? If set to \code{FALSE}, then the \code{before} flag also defaults to \code{FALSE} regardless of user choice.}
+\item{all}{logical: from the cutoff point onwards, should all values of \code{x} be used (\code{TRUE}, default), or only reversal points as in the Wetherill et al. approach? If set to \code{FALSE}, then the \code{before} flag also defaults to \code{FALSE} regardless of user choice.}
 
-\item{before}{logical: whether to start the averaging one step earlier than the starting reversal point. Default \code{FALSE}.}
+\item{before}{logical: whether to start the averaging one observation earlier than the cutoff point. Default \code{FALSE}.}
 
-\item{maxExclude}{a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector \code{x} to exclude from averaging, in case the algorithm-identified starting point occurs too late in the experiment. Default 1/3.}
+\item{maxExclude}{a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector \code{x} to exclude from averaging, in case the algorithm-identified transition point occurs late in the experiment. Default 1/2.}
 
 \item{full}{logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})}
 }
@@ -41,9 +43,9 @@ Dose-averaging target estimation for Up-and-Down experiments, historically the m
 \details{
 Up-and-Down designs (UDDs) allocate doses in a random walk centered nearly symmetrically around a balance point. Therefore, a modified average of allocated doses could be a plausible estimate of the balance point's location.
 
-During UDDs' first generation, a variety of dose-averaging estimators was developed, with the one proposed by Wetherill et al. (1966) eventually becoming the most popular. This estimator uses only doses observed at \emph{reversal} points: points with a negative response following a positive one, or vice versa. More recent research (Kershaw 1985, 1987; Oron et al. 2022, supplement) strongly indicates that in fact it is better to use all doses starting from some cut-point, rather than skip most of them and choose only reversals.
+During UDDs' first generation, a variety of dose-averaging estimators was developed, with the one proposed by Wetherill et al. (1966) eventually becoming the most popular. This estimator uses only doses observed at \emph{reversal} points: points with a negative response following a positive one, or vice versa. More recent research (Kershaw 1985, 1987; Oron et al. 2022, supplement) strongly indicates that in fact it is better to use all doses beginning from some cutoff point, rather than skip most of them and choose only reversals.
 
-The \code{reversals()} utility identifies reversal points, whereas \code{reversmean()} produces a dose-averaging estimate whose starting cut-point is determined by a reversal. User can choose whether to use all doses from that cut-point onwards, or only the reversals as in the older approaches. A few additional options make the estimate even more flexible.
+The \code{reversals()} utility identifies reversal points, whereas \code{reversmean()} produces a dose-averaging estimate whose cutoff point (which should perhaps be called the \emph{'cut-on'} point) is determined by a reversal. User can choose whether to use all doses from that cut-point onwards, or only the reversals as in the older approaches. A few additional options make the estimate even more flexible.
 
 More broadly, dose-averaging despite some advantages is not very robust, and also \strong{lacks an interval estimate with reliable coverage.} Therefore, \code{reversmean()} provides neither a confidence interval nor a standard error.
 

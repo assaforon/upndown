@@ -69,7 +69,7 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, xvals, Fvals, progr
     if(sum(alive)==0) break ### No more live runs; all have stopped
     #	cat(doses[a-1,alive],'\n')
   
-    doses[a,alive]=mapply(FUN=progress,split(doses[1:(a-1),alive], col(matrix(doses[1:(a-1),alive], ncol=sum(alive))) ),
+    doses[a,alive]=mapply(FUN=progress, split(doses[1:(a-1),alive], col(matrix(doses[1:(a-1),alive], ncol=sum(alive))) ),
                 split(responses[1:(a-1),alive], col(matrix(responses[1:(a-1),alive], ncol=sum(alive)))), MoreArgs=progArgs)
     # boundary conditions imposed by the Master
     doses[a,alive & doses[a,]>nlev]=nlev
