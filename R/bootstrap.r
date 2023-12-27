@@ -54,10 +54,14 @@ udboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desAr
       startp = rep(0, length(doses))
       startp[match(names(tmp), doses)] = tmp/sum(tmp)
     }
-    bootdat = suppressMessages( dfsim(n, starting = startdose, xvals = doses, sprobs = startp, Fvals = bootF, 
+    bootdat = suppressMessages( dfsim(n, starting = startdose, sprobs = startp, Fvals = bootF, 
                     progress = design, progArgs = desArgs, 
-               nlev = length(bootF), ensemble = B, quiet = !showdots, ...) )
+               nlev = length(bootF), ensemble = B, quiet = !showdots) )
 
+    # "Dressing up" the dose levels (which are 1:m in the progress loop above) with real values
+    bootdoses = mapvalues(bootdat$dose, 1:length(bootF), doses)
+    
+    
 #### Estimation    
     
     if(identical(estfun, adaptmean)) 
@@ -66,10 +70,10 @@ udboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desAr
     } else {
       
       bootests = rep(NA, B)
-      for (a in 1:B) bootests[a] = estfun(x = bootdat$dose[,a], y = bootdat$response[,a], 
+      for (a in 1:B) bootests[a] = estfun(x = bootdoses[,a], y = bootdat$response[,a], 
                         full=FALSE, conf=NULL, ...)
     }
-    if(full) return(list(xvals = doses, F = bootF, x = bootdat$dose, ests = bootests) )
+    if(full) return(list(xvals = doses, F = bootF, x = bootdoses, ests = bootests) )
     
     tailz = (1-conf)/2
     candout = quantile(bootests, c(tailz, 1-tailz), type = 6)
