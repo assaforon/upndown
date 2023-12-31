@@ -43,7 +43,6 @@
 dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, nlev=dim(Fvals)[1], ensemble = dim(Fvals)[2], 
                   progress = krow, progArgs = list(k=1), thresholds=NULL, seed = NULL, quiet = FALSE)
 {
-  require(plyr)
 
 ### Validation  
 

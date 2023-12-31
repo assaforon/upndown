@@ -13,13 +13,15 @@
 #' 
 #' @export
 #'
-#' @return A one-row data frame with 4 variables: `target`, `point` (the point estimate), `lowerXYconf, upperXYconf` (the confidence bounds, with `XY` standing for the percents, default `90`).
+#' @return Geneally, a one-row data frame with 4 variables: `target`, `point` (the point estimate), `lowerXYconf, upperXYconf` (the confidence bounds, with `XY` standing for the percents, default `90`).
+#' 
+#' However, if `conf = NULL` only the point estimate will be returned. This is for compatibility with bootstrap confidence intervals (which is not implemented as default for CIR), and with UD ensemble simulation in general.
 #'  
 #' @param x numeric vector: sequence of administered doses, treatments, stimuli, etc.
 #' @param y numeric vector: sequence of observed responses. Must be same length as `x`, and must be coded `TRUE/FALSE` or 0/1.
 #' @param target The target response rate for which target dose estimate is requested. Must be a single number in \eqn{(0,1).}
 #' @param balancePt In case the design's inherent balance point differs somewhat from `target`, specify it here to improve estimation accuracy. See Details for further explanation. Otherwise, this argument defaults to be equal to `target`.
-#' @param conf The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations. 
+#' @param conf The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations. Setting to `NULL` triggers special behavior; see under "Value".
 #' @param ... Pass-through argument added for flexible calling context.
 #' 
 #' @references 
@@ -33,14 +35,21 @@
 
 #### The function:
 
-udest <- function(x, y, target, balancePt = target, conf = 0.9, ...)
+udest <- function(x, y, target, balancePt = target, conf = 0.9, allow1extra = FALSE, full = NULL, ...)
 {
   requireNamespace('cir')
+
+# validation
   
 if(length(target) > 1) stop("Experiment should have a single target.\n")
 checkTarget(target)
-checkTarget(conf, tname = "'conf'")
-if(length(x) != length(y)) stop('x, y, must have same length.\n')
+if(!is.null(conf)) checkTarget(conf, tname = "'conf'")
+n = length(y)
+if(length(x) != n) 
+{
+  if (length(x) == n+1 && allow1extra) x = x[1:n] else
+  stop('x, y, must have same length.\n')
+}
 checkDose(x)
 checkResponse(y)
 if(balancePt[1]!=target)
@@ -50,10 +59,16 @@ if(balancePt[1]!=target)
   if(abs(balancePt - target) > 0.1) warning("We strongly advise against estimating targets this far from the design's balance point.\n")
 }
 
+if(is.null(conf)) confi = 0.9 else confi = conf
+
 # And after all this.... it's a one-liner :)
 
-cir::quickInverse(x=x, y=y, target=target, starget = balancePt,
-             conf=conf, adaptiveShrink=TRUE, ... )
+tmp = cir::quickInverse(x=x, y=y, target=target, starget = balancePt,
+          conf = confi, adaptiveShrink = TRUE, adaptiveCurve = !(target==0.5), ... )
+
+if(is.null(conf)) return(tmp$point)
+
+tmp
 
 }
 

@@ -4,8 +4,10 @@ udboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desAr
                         target = 0.5, conf = 0.9, B = 1000, seed = NULL, randstart = TRUE,
                         showdots = TRUE, full = FALSE, ...)
 {
-  require(cir)
-### validation
+  requireNamespace('cir')
+  requireNamespace('plyr')
+  
+    ### validation
   
     if( !is.null(doses) & !all(x %in% doses) ) stop("'doses' must include all x values in the experiment.\n")
     checkResponse(y)
@@ -59,7 +61,7 @@ udboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desAr
                nlev = length(bootF), ensemble = B, quiet = !showdots) )
 
     # "Dressing up" the dose levels (which are 1:m in the progress loop above) with real values
-    bootdoses = mapvalues(bootdat$dose, 1:length(bootF), doses)
+    bootdoses = suppressMessages(plyr::mapvalues(bootdat$dose, 1:length(bootF), doses) )
     
     
 #### Estimation    
@@ -71,12 +73,12 @@ udboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desAr
       
       bootests = rep(NA, B)
       for (a in 1:B) bootests[a] = estfun(x = bootdoses[,a], y = bootdat$response[,a], 
-                        full=FALSE, conf=NULL, ...)
+                        full=FALSE, conf=NULL, target = target, allow1extra = TRUE, ...)
     }
     if(full) return(list(xvals = doses, F = bootF, x = bootdoses, ests = bootests) )
     
     tailz = (1-conf)/2
-    candout = quantile(bootests, c(tailz, 1-tailz), type = 6)
+    candout = quantile(bootests, c(tailz, 1-tailz), type = 6, na.rm = TRUE)
     names(candout) = paste(c('lower', 'upper'), round(100*conf), 'conf', sep='')
     return(candout)
 }

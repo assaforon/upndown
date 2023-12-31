@@ -4,7 +4,16 @@
 \alias{udest}
 \title{Centered-Isotonic-Regression (CIR) Estimate for the Up-and-Down Target Dose}
 \usage{
-udest(x, y, target, balancePt = target, conf = 0.9, ...)
+udest(
+  x,
+  y,
+  target,
+  balancePt = target,
+  conf = 0.9,
+  allow1extra = FALSE,
+  full = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{numeric vector: sequence of administered doses, treatments, stimuli, etc.}
@@ -15,12 +24,14 @@ udest(x, y, target, balancePt = target, conf = 0.9, ...)
 
 \item{balancePt}{In case the design's inherent balance point differs somewhat from \code{target}, specify it here to improve estimation accuracy. See Details for further explanation. Otherwise, this argument defaults to be equal to \code{target}.}
 
-\item{conf}{The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations.}
+\item{conf}{The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations. Setting to \code{NULL} triggers special behavior; see under "Value".}
 
 \item{...}{Pass-through argument added for flexible calling context.}
 }
 \value{
-A one-row data frame with 4 variables: \code{target}, \code{point} (the point estimate), \verb{lowerXYconf, upperXYconf} (the confidence bounds, with \code{XY} standing for the percents, default \code{90}).
+Geneally, a one-row data frame with 4 variables: \code{target}, \code{point} (the point estimate), \verb{lowerXYconf, upperXYconf} (the confidence bounds, with \code{XY} standing for the percents, default \code{90}).
+
+However, if \code{conf = NULL} only the point estimate will be returned. This is for compatibility with bootstrap confidence intervals (which is not implemented as default for CIR), and with UD ensemble simulation in general.
 }
 \description{
 Centered Isotonic Regression (CIR) is an extension of isotonic regression (IR), substantially improving upon IR's estimation performance in the dose-response and dose-finding contexts (Oron and Flournoy 2017, Flournoy and Oron 2020). CIR is the recommended method for estimating up-and-down targets.
