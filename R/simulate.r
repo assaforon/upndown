@@ -8,9 +8,9 @@
 #' 
 #' The simulator's essential use within the `upndown` package is to estimate confidence intervals for dose-averaging target estimates. But it can be also used stand-alone as a study-design aid.
 #' 
-#' The particular dose-finding design simulated is determined by `progress` and its argument list `progArgs`. UDD design functions are provided, but other designs - CRM, CCD, etc. - are also compatible. CRM and CCD in particular are available from the author upon request.
-#' The `progress` functions need to accept `doses, responses` as input, and return the next dose allocation (as an index).
-#' The progression loop is run via `mapply`.
+#' The particular dose-finding design simulated is determined by `design` and its argument list `desArgs`. UDD design functions are provided, but other designs - CRM, CCD, etc. - are also compatible. CRM and CCD in particular are available from the author upon request.
+#' The `design` functions need to accept `doses, responses` as input, and return the next dose allocation (as an index).
+#' The main progression loop is run via `mapply`.
 
 #' @param n sample size
 #' @param starting the starting dose level. If `NULL` (default), will be randomized.
@@ -19,11 +19,11 @@
 #' @param Fvals (vector or matrix): the true values of the response function on the dose grid. These are the dose-response scenarios from which the experimental runs will be simulated. If running an ensemble with different scenarios, each scenarios is a column. If running an identical-scenario ensemble, provide a single vector as well as `nlev, ensemble`.
 #' @param nlev The number of dose levels in the grid. Will be determined automatically if `Fvals` is a matrix, as the number of rows. 
 #' @param ensemble the number of different runs/scenarios to be simulated. Will be determined automatically if `Fvals` is a matrix, as the number of columns.
-#' @param progress the dose-finding design function used to determine the next dose. Default `krow`; see \code{\link{krow}} for options.
-#' @param progArgs List of arguments passed on to `progress`. Need to be compatible for use in `mapply`. Default is `list(k=1)`, which together with `progress = krow` will generate a Clasical (median-finding) UDD simulation.
+#' @param design the dose-finding design function used to determine the next dose. Default `krow`; see \code{\link{krow}} for options.
+#' @param desArgs List of arguments passed on to `design`. Need to be compatible for use in `mapply`. Default is `list(k=1)`, which together with `design = krow` will generate a Clasical (median-finding) UDD simulation.
 #' @param thresholds Matrix of size (at least) `n` by `ensemble`, the response thresholds of participants, presented as percentiles (i.e., output of `runif()`) rather than physical values. If `NULL` (default), they will be simulated on the fly
 #' @param seed The random seed if simulating the thresholds. Can be kept *"floating"* (i.e., varying between calls) if left as `NULL` (default).
-#' @param quiet Logical: suppress printing out a dot (`.`) after each progression step in `1:n`, and the start/end time stamps? Default `FALSE`.
+#' @param quiet Logical: suppress printing out a dot (`.`) after each designion step in `1:n`, and the start/end time stamps? Default `FALSE`.
 #' 
 #' @author Assaf P. Oron
 #'
@@ -36,12 +36,12 @@
 #'  - `dose`: The matrix of simulated dose allocations for each run (`n+1` by `ensemble`)
 #'  - `response`: The matrix of simulated responses (0 or 1) for each run (`n` by `ensemble`)
 #'  - `cohort`: `cohort`
-#'  - `details`: `progArgs`
+#'  - `details`: `desArgs`
 
 #' @export
 
 dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, nlev=dim(Fvals)[1], ensemble = dim(Fvals)[2], 
-                  progress = krow, progArgs = list(k=1), thresholds=NULL, seed = NULL, quiet = FALSE)
+                  design = krow, desArgs = list(k=1), thresholds=NULL, seed = NULL, quiet = FALSE)
 {
 
 ### Validation  
@@ -54,7 +54,7 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, nlev=dim(Fva
     nlev=length(Fvals)
     Fvals=matrix(rep(Fvals,ensemble),nrow=nlev)
   } else apply(Fvals, 2, checkCDF)
- progArgs$maxlev=dim(Fvals)[1]
+ desArgs$maxlev=dim(Fvals)[1]
  
   if(!quiet) cat(date(),'\n')		
   if(!is.null(seed)) set.seed(seed)
@@ -82,7 +82,7 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, nlev=dim(Fva
   if (cohort>1) for (b in 2:cohort) doses[b,]=doses[1,]
   alive=1:ensemble
   
-###-------------------------- main progression loop -----------------------###
+###-------------------------- main designion loop -----------------------###
 
   for (a in seq(cohort+1,n+1,cohort))  
   {
@@ -97,8 +97,8 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, nlev=dim(Fva
     if(sum(alive)==0) break ### No more live runs; all have stopped
     #	cat(doses[a-1,alive],'\n')
   
-    doses[a,alive]=mapply(FUN=progress, split(doses[1:(a-1),alive], col(matrix(doses[1:(a-1),alive], ncol=sum(alive))) ),
-                split(responses[1:(a-1),alive], col(matrix(responses[1:(a-1),alive], ncol=sum(alive)))), MoreArgs=progArgs)
+    doses[a,alive]=mapply(FUN=design, split(doses[1:(a-1),alive], col(matrix(doses[1:(a-1),alive], ncol=sum(alive))) ),
+                split(responses[1:(a-1),alive], col(matrix(responses[1:(a-1),alive], ncol=sum(alive)))), MoreArgs=desArgs)
     # boundary conditions imposed by the Master
     doses[a,alive & doses[a,]>nlev]=nlev
     doses[a,alive & doses[a,]<1]=1
@@ -113,7 +113,7 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, nlev=dim(Fva
 
   if(!quiet) cat('\n',date(),'\n')
   
-  lout=list(scenarios=Fvals,sample=thresholds,dose=doses,response=responses,cohort=cohort,details=progArgs)
+  lout=list(scenarios=Fvals,sample=thresholds,dose=doses,response=responses,cohort=cohort,details=desArgs)
   return(lout)
 }  ########  /dfsim
 
