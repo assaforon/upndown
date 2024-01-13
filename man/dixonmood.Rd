@@ -9,7 +9,7 @@ dixonmood(x, y, full = FALSE, flip = FALSE)
 \arguments{
 \item{x}{numeric vector: sequence of administered doses, treatments, stimuli, etc.}
 
-\item{y}{numeric vector: sequence of observed responses. Must be same length as \code{x} or shorter by 1, and must be coded \code{TRUE/FALSE} or 0/1. \code{adaptmean()} only uses \code{y} for bootstrap confidence intervals.}
+\item{y}{numeric vector: sequence of observed responses. Must be same length as \code{x} or shorter by 1, and must be coded \code{TRUE/FALSE} or 0/1. \code{dynamean()} only uses \code{y} for bootstrap confidence intervals.}
 
 \item{full}{logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})}
 
@@ -110,10 +110,10 @@ abline(h = wetherill, col = 3)
 # This function now also provides bootstrap CIs, so we need to give it the y values. 
 # The default forces the final 2/3 of observations to be included; here in view of the long run-in
 #     we are relaxing this
-adaptmean(c(doses, dosePlus1), responses, maxExclude = 0.5)
+dynamean(c(doses, dosePlus1), responses, maxExclude = 0.5)
 # Again a bit curiously, this relatively recent approach gives a result similar to what
 #   the authors reported (but not similar to the original Dixon-Mood).
-# This is not too surprising, since here `adaptmean()` excludes the first one-third of doses,
+# This is not too surprising, since here `dynamean()` excludes the first one-third of doses,
 #   which is approximately what happened if indeed the authors excluded all those long dose-increase
 #   sequences at the start.
 

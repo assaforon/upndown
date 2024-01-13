@@ -10,10 +10,9 @@ dfsim(
   sprobs = NULL,
   cohort = 1,
   Fvals,
-  nlev = dim(Fvals)[1],
   ensemble = dim(Fvals)[2],
-  progress = krow,
-  progArgs = list(k = 1),
+  design = krow,
+  desArgs = list(k = 1),
   thresholds = NULL,
   seed = NULL,
   quiet = FALSE
@@ -28,31 +27,29 @@ dfsim(
 
 \item{cohort}{the cohort (group) size, default 1.}
 
-\item{Fvals}{(vector or matrix): the true values of the response function on the dose grid. These are the dose-response scenarios from which the experimental runs will be simulated. If running an ensemble with different scenarios, each scenarios is a column. If running an identical-scenario ensemble, provide a single vector as well as \verb{nlev, ensemble}.}
-
-\item{nlev}{The number of dose levels in the grid. Will be determined automatically if \code{Fvals} is a matrix, as the number of rows.}
+\item{Fvals}{(vector or matrix): the true values of the response function on the dose grid. These are the dose-response scenarios from which the experimental runs will be simulated. If running an ensemble with different scenarios, each scenarios is a column. If running an identical-scenario ensemble, provide a single vector as well as \code{ensemble}.}
 
 \item{ensemble}{the number of different runs/scenarios to be simulated. Will be determined automatically if \code{Fvals} is a matrix, as the number of columns.}
 
-\item{progress}{the dose-finding design function used to determine the next dose. Default \code{krow}; see \code{\link{krow}} for options.}
+\item{design}{the dose-finding design function used to determine the next dose. Default \code{krow}; see \code{\link{krow}} for options.}
 
-\item{progArgs}{List of arguments passed on to \code{progress}. Need to be compatible for use in \code{mapply}. Default is \code{list(k=1)}, which together with \code{progress = krow} will generate a Clasical (median-finding) UDD simulation.}
+\item{desArgs}{List of arguments passed on to \code{design}. Need to be compatible for use in \code{mapply}. Default is \code{list(k=1)}, which together with \code{design = krow} will generate a Clasical (median-finding) UDD simulation.}
 
 \item{thresholds}{Matrix of size (at least) \code{n} by \code{ensemble}, the response thresholds of participants, presented as percentiles (i.e., output of \code{runif()}) rather than physical values. If \code{NULL} (default), they will be simulated on the fly}
 
 \item{seed}{The random seed if simulating the thresholds. Can be kept \emph{"floating"} (i.e., varying between calls) if left as \code{NULL} (default).}
 
-\item{quiet}{Logical: suppress printing out a dot (\code{.}) after each progression step in \code{1:n}, and the start/end time stamps? Default \code{FALSE}.}
+\item{quiet}{Logical: suppress printing out a dot (\code{.}) after each designion step in \code{1:n}, and the start/end time stamps? Default \code{FALSE}.}
 }
 \value{
 A list with the following elements:
 \itemize{
 \item \code{scenarios}: \code{Fvals}
 \item \code{sample}: \code{thresholds}
-\item \code{dose}: The matrix of simulated dose allocations for each run (\code{n+1} by \code{ensemble})
-\item \code{response}: The matrix of simulated responses (0 or 1) for each run (\code{n} by \code{ensemble})
+\item \code{doses}: The matrix of simulated dose allocations for each run (\code{n+1} by \code{ensemble})
+\item \code{responses}: The matrix of simulated responses (0 or 1) for each run (\code{n} by \code{ensemble})
 \item \code{cohort}: \code{cohort}
-\item \code{details}: \code{progArgs}
+\item \code{details}: \code{desArgs}
 }
 }
 \description{
@@ -65,9 +62,9 @@ Upon output they can be optionally "dressed up" with physical values using the \
 
 The simulator's essential use within the \code{upndown} package is to estimate confidence intervals for dose-averaging target estimates. But it can be also used stand-alone as a study-design aid.
 
-The particular dose-finding design simulated is determined by \code{progress} and its argument list \code{progArgs}. UDD design functions are provided, but other designs - CRM, CCD, etc. - are also compatible. CRM and CCD in particular are available from the author upon request.
-The \code{progress} functions need to accept \verb{doses, responses} as input, and return the next dose allocation (as an index).
-The progression loop is run via \code{mapply}.
+The particular dose-finding design simulated is determined by \code{design} and its argument list \code{desArgs}. UDD design functions are provided, but other designs - CRM, CCD, etc. - are also compatible. CRM and CCD in particular are available from the author upon request.
+The \code{design} functions need to accept \verb{doses, responses} as input, and return the next dose allocation (as an index).
+The main progression loop is run via \code{mapply}.
 }
 \note{
 This is an adaptation of a non-package function used by the author for well over a decade before incorporating it into \code{upndown} in late 2023. If you encounter any funny behavior please let me know. Thank you!

@@ -1,6 +1,23 @@
+#' Generic percentile dose-response / dose-finding bootstrap routine
+#' 
+#' Bootstrap routine for resampling a dose-finding or dose-response experiment. The bootstrap replicates are generated from a centered-isotonic-regression estimate of the dose-response function, rather than resampled directly. 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' 
+#' @param x numeric vector: sequence of administered doses, treatments, stimuli, etc.
+#' @param y numeric vector: sequence of observed responses. Must be same length as `x` or shorter by 1, and must be coded `TRUE/FALSE` or 0/1. `dynamean()` only uses `y` for bootstrap confidence intervals.
+#' @param doses the complete set of dose values that *could* have been included in the experiment. Must include all unique values in `x`.
+
+#' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
+#' @seealso \code{\link{simulate}}
+
+
 #' @export
 #' 
-udboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desArgs = list(k=1), 
+udboot <- function(x, y, doses =  NULL, estfun = dynamean, design = krow, desArgs = list(k=1), 
                         target = 0.5, conf = 0.9, B = 1000, seed = NULL, randstart = TRUE,
                         showdots = TRUE, full = FALSE, ...)
 {
@@ -28,6 +45,7 @@ udboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desAr
 # Getting full-set indices of used doses  
     m = length(doses)
     indices = match(dose0, doses)
+    if(any(is.na(indices))) stop('"doses" does not include all dose values in x!\n')
     minused = min(indices)
     maxused = max(indices)
     
@@ -57,22 +75,22 @@ udboot <- function(x, y, doses =  NULL, estfun = adaptmean, design = krow, desAr
       startp[match(names(tmp), doses)] = tmp/sum(tmp)
     }
     bootdat = suppressMessages( dfsim(n, starting = startdose, sprobs = startp, Fvals = bootF, 
-                    progress = design, progArgs = desArgs, 
+                    design = design, desArgs = desArgs, 
                nlev = length(bootF), ensemble = B, quiet = !showdots) )
 
     # "Dressing up" the dose levels (which are 1:m in the progress loop above) with real values
-    bootdoses = suppressMessages(plyr::mapvalues(bootdat$dose, 1:length(bootF), doses) )
+    bootdoses = suppressMessages(plyr::mapvalues(bootdat$doses, 1:length(bootF), doses) )
     
     
 #### Estimation    
     
-    if(identical(estfun, adaptmean)) 
+    if(identical(estfun, dynamean)) 
     {
-      bootests = apply(bootdat$dose, 2, adaptmean, full=FALSE, conf=NULL, ...)
+      bootests = apply(bootdat$doses, 2, dynamean, full=FALSE, conf=NULL, ...)
     } else {
       
       bootests = rep(NA, B)
-      for (a in 1:B) bootests[a] = estfun(x = bootdoses[,a], y = bootdat$response[,a], 
+      for (a in 1:B) bootests[a] = estfun(x = bootdoses[,a], y = bootdat$responses[,a], 
                         full=FALSE, conf=NULL, target = target, allow1extra = TRUE, ...)
     }
     if(full) return(list(xvals = doses, F = bootF, x = bootdoses, ests = bootests) )

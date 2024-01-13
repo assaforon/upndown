@@ -16,8 +16,7 @@
 #' @param starting the starting dose level. If `NULL` (default), will be randomized.
 #' @param sprobs the probability weights if using a randomized starting dose. If `NULL` (default) will be discrete-uniform.
 #' @param cohort the cohort (group) size, default 1.
-#' @param Fvals (vector or matrix): the true values of the response function on the dose grid. These are the dose-response scenarios from which the experimental runs will be simulated. If running an ensemble with different scenarios, each scenarios is a column. If running an identical-scenario ensemble, provide a single vector as well as `nlev, ensemble`.
-#' @param nlev The number of dose levels in the grid. Will be determined automatically if `Fvals` is a matrix, as the number of rows. 
+#' @param Fvals (vector or matrix): the true values of the response function on the dose grid. These are the dose-response scenarios from which the experimental runs will be simulated. If running an ensemble with different scenarios, each scenarios is a column. If running an identical-scenario ensemble, provide a single vector as well as `ensemble`.
 #' @param ensemble the number of different runs/scenarios to be simulated. Will be determined automatically if `Fvals` is a matrix, as the number of columns.
 #' @param design the dose-finding design function used to determine the next dose. Default `krow`; see \code{\link{krow}} for options.
 #' @param desArgs List of arguments passed on to `design`. Need to be compatible for use in `mapply`. Default is `list(k=1)`, which together with `design = krow` will generate a Clasical (median-finding) UDD simulation.
@@ -33,14 +32,14 @@
 #' @return A list with the following elements:
 #'  - `scenarios`: `Fvals`
 #'  - `sample`: `thresholds`
-#'  - `dose`: The matrix of simulated dose allocations for each run (`n+1` by `ensemble`)
-#'  - `response`: The matrix of simulated responses (0 or 1) for each run (`n` by `ensemble`)
+#'  - `doses`: The matrix of simulated dose allocations for each run (`n+1` by `ensemble`)
+#'  - `responses`: The matrix of simulated responses (0 or 1) for each run (`n` by `ensemble`)
 #'  - `cohort`: `cohort`
 #'  - `details`: `desArgs`
 
 #' @export
 
-dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, nlev=dim(Fvals)[1], ensemble = dim(Fvals)[2], 
+dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = dim(Fvals)[2], 
                   design = krow, desArgs = list(k=1), thresholds=NULL, seed = NULL, quiet = FALSE)
 {
 
@@ -53,8 +52,11 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, nlev=dim(Fva
     checkCDF(Fvals)
     nlev=length(Fvals)
     Fvals=matrix(rep(Fvals,ensemble),nrow=nlev)
-  } else apply(Fvals, 2, checkCDF)
- desArgs$maxlev=dim(Fvals)[1]
+  } else {
+    apply(Fvals, 2, checkCDF)
+    nlev = dim(Fvals)[1]
+  }
+ desArgs$maxlev = nlev
  
   if(!quiet) cat(date(),'\n')		
   if(!is.null(seed)) set.seed(seed)
@@ -113,7 +115,7 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, nlev=dim(Fva
 
   if(!quiet) cat('\n',date(),'\n')
   
-  lout=list(scenarios=Fvals,sample=thresholds,dose=doses,response=responses,cohort=cohort,details=desArgs)
+  lout=list(scenarios=Fvals, sample=thresholds, doses=doses, responses=responses, cohort=cohort, details=desArgs)
   return(lout)
 }  ########  /dfsim
 
