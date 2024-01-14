@@ -22,7 +22,7 @@
 #' @param desArgs List of arguments passed on to `design`. Need to be compatible for use in `mapply`. Default is `list(k=1)`, which together with `design = krow` will generate a Clasical (median-finding) UDD simulation.
 #' @param thresholds Matrix of size (at least) `n` by `ensemble`, the response thresholds of participants, presented as percentiles (i.e., output of `runif()`) rather than physical values. If `NULL` (default), they will be simulated on the fly
 #' @param seed The random seed if simulating the thresholds. Can be kept *"floating"* (i.e., varying between calls) if left as `NULL` (default).
-#' @param quiet Logical: suppress printing out a dot (`.`) after each designion step in `1:n`, and the start/end time stamps? Default `FALSE`.
+#' @param showdots Logical: print out a dot (`.`) after each designion step in `1:n`, and the start/end time stamps? Default `TRUE`.
 #' 
 #' @author Assaf P. Oron
 #'
@@ -40,7 +40,7 @@
 #' @export
 
 dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = dim(Fvals)[2], 
-                  design = krow, desArgs = list(k=1), thresholds=NULL, seed = NULL, quiet = FALSE)
+                  design = krow, desArgs = list(k=1), thresholds=NULL, seed = NULL, showdots = TRUE)
 {
 
 ### Validation  
@@ -58,7 +58,7 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = d
   }
  desArgs$maxlev = nlev
  
-  if(!quiet) cat(date(),'\n')		
+  if(showdots) cat(date(),'\n')		
   if(!is.null(seed)) set.seed(seed)
 
   #print(Fvals)
@@ -91,7 +91,7 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = d
     ### We first obtain the current (number a-1) responses, then assign the next (a)
     ### Therefore, responses are only available up to a-1
     
-    if(!quiet) cat('.')
+    if(showdots) cat('.')
     for (b in 1:cohort) responses[(a-b),alive]=ifelse(Fvals[cbind(doses[(a-b),alive],(1:ensemble)[alive])]>thresholds[(a-b),alive],1,0)
     
     alive=(!is.na(doses[a-1,]))
@@ -113,7 +113,7 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = d
   
 ####### Endgame
 
-  if(!quiet) cat('\n',date(),'\n')
+  if(showdots) cat('\n',date(),'\n')
   
   lout=list(scenarios=Fvals, sample=thresholds, doses=doses, responses=responses, cohort=cohort, details=desArgs)
   return(lout)

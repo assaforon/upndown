@@ -2,7 +2,7 @@
 % Please edit documentation in R/averaging.r
 \name{dynamean}
 \alias{dynamean}
-\title{Up-and-Down averaging estimate dynamic cutoff-point}
+\title{Up-and-Down target-dose averaging estimate, with dynamic cutoff-point}
 \usage{
 dynamean(
   x,
@@ -47,7 +47,7 @@ The average of all remaining doses is used as a proxy to the (unobservable) bala
 This approach is far closer to capturing the dynamics described above, and indeed performs well
 in comparative simulations (Oron et al. 2022, Supplement).
 
-Starting version 0.2.0, a bootstrap confidence interval (CI) is also provided. See \code{\link{udboot}} for additional optional parameters to pass to the bootstrap routine, beyond the confidence level \code{conf}. To skip CI estimation, set \code{conf = NULL}.
+Starting version 0.2.0, a bootstrap confidence interval (CI) is also provided. See \code{\link{dfboot}} for additional optional parameters to pass to the bootstrap routine, beyond the confidence level \code{conf}. To skip CI estimation, set \code{conf = NULL}.
 The experiment's binary responses (\code{y}) are only needed as input for confidence interval calculations; otherwise, only the dose-allocation sequence (\code{x}) is required.
 
 \code{dynamean()} is recommended only for median-targeting UDDs, e.g., the "Classical" (traditional) design of Dixon and Mood. For off-median percentiles it might not work as well, and CI coverage will be lacking.

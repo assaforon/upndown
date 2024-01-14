@@ -15,7 +15,7 @@ dfsim(
   desArgs = list(k = 1),
   thresholds = NULL,
   seed = NULL,
-  quiet = FALSE
+  showdots = TRUE
 )
 }
 \arguments{
@@ -39,7 +39,7 @@ dfsim(
 
 \item{seed}{The random seed if simulating the thresholds. Can be kept \emph{"floating"} (i.e., varying between calls) if left as \code{NULL} (default).}
 
-\item{quiet}{Logical: suppress printing out a dot (\code{.}) after each designion step in \code{1:n}, and the start/end time stamps? Default \code{FALSE}.}
+\item{showdots}{Logical: print out a dot (\code{.}) after each designion step in \code{1:n}, and the start/end time stamps? Default \code{TRUE}.}
 }
 \value{
 A list with the following elements:
