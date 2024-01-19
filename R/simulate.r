@@ -6,7 +6,7 @@
 #' The simulated doses are indices `1:nlev` with `nlev` being the number of dose levels.
 #' Upon output they can be optionally "dressed up" with physical values using the `xvals` argument.
 #' 
-#' The simulator's essential use within the `upndown` package is to estimate confidence intervals for dose-averaging target estimates. But it can be also used stand-alone as a study-design aid.
+#' The simulator's essential use within the `upndown` package is to estimate bootstrap confidence intervals for dose-averaging target estimates. But it can be also used stand-alone as a study-design aid.
 #' 
 #' The particular dose-finding design simulated is determined by `design` and its argument list `desArgs`. UDD design functions are provided, but other designs - CRM, CCD, etc. - are also compatible. CRM and CCD in particular are available from the author upon request.
 #' The `design` functions need to accept `doses, responses` as input, and return the next dose allocation (as an index).
@@ -52,10 +52,11 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = d
     checkCDF(Fvals)
     nlev=length(Fvals)
     Fvals=matrix(rep(Fvals,ensemble),nrow=nlev)
-  } else {
+  } else if(length(dim(Fvals)) == 2) {
     apply(Fvals, 2, checkCDF)
     nlev = dim(Fvals)[1]
-  }
+  } else stop("'Fvals' must be a vector or matrix.\n")
+  
  desArgs$maxlev = nlev
  
   if(showdots) cat(date(),'\n')		

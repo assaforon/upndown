@@ -23,6 +23,7 @@ $RECYCLE.BIN/
 .Rbuild*
 *.RData
 .Rhistory
+*.Rhistory
 
 
 

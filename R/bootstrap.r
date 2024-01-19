@@ -85,7 +85,7 @@ dfboot <- function(x, y, doses =  NULL, estfun = dynamean, design = krow, desArg
     }
     bootdat = suppressMessages( dfsim(n, starting = startdose, sprobs = startp, Fvals = bootF, 
                     design = design, desArgs = desArgs, 
-               nlev = length(bootF), ensemble = B, quiet = !showdots) )
+                    ensemble = B, showdots = showdots) )
 
     # "Dressing up" the dose levels (which are 1:m in the progress loop above) with real values
     bootdoses = suppressMessages(plyr::mapvalues(bootdat$doses, 1:length(bootF), doses) )
@@ -95,14 +95,14 @@ dfboot <- function(x, y, doses =  NULL, estfun = dynamean, design = krow, desArg
     
     if(identical(estfun, dynamean)) 
     {
-      bootests = apply(bootdat$doses, 2, dynamean, full=FALSE, conf=NULL, ...)
+      bootests = apply(bootdoses, 2, dynamean, full=FALSE, conf=NULL, ...)
     } else {
       
       bootests = rep(NA, B)
       for (a in 1:B) bootests[a] = estfun(x = bootdoses[,a], y = bootdat$responses[,a], 
                         full=FALSE, conf=NULL, target = target, allow1extra = TRUE, ...)
     }
-    if(full) return(list(xvals = doses, F = bootF, x = bootdoses, y = bootdat$responses[,a], ests = bootests) )
+    if(full) return(list(xvals = doses, F = bootF, x = bootdoses, y = bootdat$responses, ests = bootests) )
     
     tailz = (1-conf)/2
     candout = quantile(bootests, c(tailz, 1-tailz), type = 6, na.rm = TRUE)
