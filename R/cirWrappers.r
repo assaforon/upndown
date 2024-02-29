@@ -35,7 +35,7 @@
 
 #### The function:
 
-udest <- function(x, y, target, balancePt = target, conf = 0.9, allow1extra = FALSE, full = NULL, ...)
+udest <- function(x, y, target, balancePt = target, conf = 0.9, allow1extra = FALSE, full = NULL, curvedCI = NULL, ...)
 {
   requireNamespace('cir')
 
@@ -62,9 +62,10 @@ if(balancePt[1]!=target)
 if(is.null(conf)) confi = 0.9 else confi = conf
 
 # And after all this.... it's a one-liner :)
+if(is.null(curvedCI)) curvedCI = (target >= 0.75 || target <= 0.25)
 
 tmp = cir::quickInverse(x=x, y=y, target=target, starget = balancePt,
-          conf = confi, adaptiveShrink = TRUE, adaptiveCurve = !(target==0.5), ... )
+          conf = confi, adaptiveShrink = TRUE, adaptiveCurve = curvedCI, ... )
 
 if(is.null(conf)) return(tmp$point)
 

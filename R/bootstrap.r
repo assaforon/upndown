@@ -1,8 +1,8 @@
 #' Generic percentile dose-response / dose-finding bootstrap routine
 #' 
-#' Bootstrap routine for resampling a dose-finding or dose-response experiment. The bootstrap replicates are generated from a centered-isotonic-regression estimate of the dose-response function, rather than resampled directly. 
+#' Bootstrap routine for resampling a dose-finding or dose-response experiment. The bootstrap replicates are generated from a centered-isotonic-regression (CIR) estimate of the dose-response function, rather than resampled directly. 
 #' 
-#' The function defaults will bootstrap a "Classical" up-and-down design, but it is really compatible with any dose-finding design, as long as `design, desArgs` are specified correctly (and `design` is provided if the designs are not coded in this package). See \code{\link{dfsim}} for the requirements from such a function.
+#' The function should be able to generates bootstrap resamples of any dose-finding design, as long as `design, desArgs` are specified correctly.  See \code{\link{dfsim}} for the requirements from such a function.
 #' 
 #' Like Chao and Fuh (2001) and Stylianou et al. (2003), the bootstrap samples are generated indirectly, by estimating a dose-response curve F from the data, then generating an ensemble of bootstrap experiments using the same design used in the original experiment. Unlike these two which used parametric or isotonic regression, respectively, with no bias-mitigation and no additional provisions to improve coverage, our implementation uses centered isotonic regression with bias-mitigation 
 #' 
@@ -11,7 +11,7 @@
 #' @param y numeric vector: sequence of observed responses. Must be same length as `x` or shorter by 1, and must be coded `TRUE/FALSE` or 0/1. 
 #' @param doses the complete set of dose values that *could* have been included in the experiment. Must include all unique values in `x`.
 #' @param estfun the estimation function to be bootstrapped. Default \code{\link{dynamean}}
-#' @param design,desArgs design details passed on to \code{\link{dfsim}}; the former is a function and the latter a list of its arguments and values. For self-consistent bootstrapping, this must specify the design used in the actual experiment. See \code{\link{dfsim}}. Default values specify the median-finding "Classical" UDD.
+#' @param design,desArgs design details passed on to \code{\link{dfsim}}; the former is a function and the latter a list of its arguments and values. For self-consistent bootstrapping, this must specify the design used in the actual experiment. See \code{\link{dfsim}}. 
 #' @param target The target percentile to be estimated (as a fraction). Again must be the same one estimated in the actual experiment. Default 0.5.
 #' @param balancePt In case the design's inherent balance point differs somewhat from `target`, specify it here to improve estimation accuracy. See Details for further explanation. Otherwise, this argument defaults to be equal to `target`.
 #' @param B Size of bootstrap ensemble, default 1000.
@@ -26,7 +26,7 @@
 
 #' @export
 #' 
-dfboot <- function(x, y, doses =  NULL, estfun = dynamean, design = krow, desArgs = list(k=1), 
+dfboot <- function(x, y, doses =  NULL, estfun = dynamean, design, desArgs, 
                         target = 0.5, balancePt = target, conf = 0.9, B = 1000, seed = NULL, randstart = TRUE,
                         showdots = TRUE, full = FALSE, ...)
 {

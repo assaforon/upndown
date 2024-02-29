@@ -12,6 +12,7 @@ udest(
   conf = 0.9,
   allow1extra = FALSE,
   full = NULL,
+  curvedCI = NULL,
   ...
 )
 }

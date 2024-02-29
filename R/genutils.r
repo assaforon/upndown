@@ -258,7 +258,7 @@ validUDinput<-function(cdf, target)
 #' @rdname validUDinput
 #' @export
 checkTarget <- function(target, tname = 'Target')
-  if(target<=0 || target>=1) stop(paste(tname, "has to be in (0,1).\n"))
+  if( any(target<=0 | target>=1) ) stop(paste(tname, "has to be in (0,1).\n"))
 
 #' @rdname validUDinput
 #' @import stats

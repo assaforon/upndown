@@ -85,7 +85,7 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = d
   if (cohort>1) for (b in 2:cohort) doses[b,]=doses[1,]
   alive=1:ensemble
   
-###-------------------------- main designion loop -----------------------###
+###-------------------------- main progression loop -----------------------###
 
   for (a in seq(cohort+1,n+1,cohort))  
   {
@@ -122,6 +122,25 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = d
 
 
 #------------------------- Implemented designs for dfsim()
+
+#' Up-and-Down Design Rules for use in Dose-Finding Simulator
+#' 
+#' Rules for k-in-a-row, Biased-Coin UD, and Group UD, coded as functions compatible with
+#'    the generic dose-finding simulator `dfsim()`
+#'    
+#' These functions work on each virtual experimental run individually. 
+#' 
+#' 
+#' Rules for some popular or well-studied non-up-and-down
+#'    
+#'  @return the next dose allocation
+#'   
+#'   
+#' @param doses,responses (mandatory arguments) vectors of the run's current sequence of doses (in ordinal/index scale) and responses
+#' @param lowTarget (`krow` and `bcd`) logical: is the target below 0.5 (median threshold)? 
+#' @param fastStart (`krow` and `bcd`) logical: should the experiment begin with a classical-UD-like stage until the first "minority" response is observed (i.e., a 1 for below-median targets and vice versa)? Even though `TRUE` delivers better experimental performance and is recommended when allowed, default is `FALSE` because toxicity/safety studies are unlikely to allow it. 
+#' 
+ 
 
 #' @export
 

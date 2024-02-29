@@ -116,8 +116,10 @@ if(!is.null(conf)) checkTarget(conf, tname = 'conf')
 revpts=reversals(y)
 
 #### exception handling: 
-# if zero reversals, we err out 
-if(length(revpts)==0) stop('No reversals. Experiment likely too short, or data-quality error.\n')
+# if zero reversals, we return NA (used to just err out) 
+if(length(revpts)==0) return(NA)
+# stop('No reversals. Experiment likely too short, or data-quality error.\n')
+
 # part-degenerate: fewer revs than expected
 if(rstart > length(revpts)) rstart=length(revpts) 
 # Late start: reverting to some minimal start point:
