@@ -12,4 +12,6 @@ Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
 Suggests: knitr, rmarkdown
 Imports: cir, expm, numbers, plyr
+URL: https://github.com/assaforon/upndown
+BugReports: https://github.com/assaforon/upndown/issues
 VignetteBuilder: knitr
