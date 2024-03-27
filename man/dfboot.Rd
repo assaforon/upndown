@@ -9,9 +9,9 @@ dfboot(
   y,
   doses = NULL,
   estfun = dynamean,
-  design = krow,
-  desArgs = list(k = 1),
-  target = 0.5,
+  design,
+  desArgs,
+  target,
   balancePt = target,
   conf = 0.9,
   B = 1000,
@@ -31,7 +31,7 @@ dfboot(
 
 \item{estfun}{the estimation function to be bootstrapped. Default \code{\link{dynamean}}}
 
-\item{design, desArgs}{design details passed on to \code{\link{dfsim}}; the former is a function and the latter a list of its arguments and values. For self-consistent bootstrapping, this must specify the design used in the actual experiment. See \code{\link{dfsim}}. Default values specify the median-finding "Classical" UDD.}
+\item{design, desArgs}{design details passed on to \code{\link{dfsim}}; the former is a function and the latter a list of its arguments and values. For self-consistent bootstrapping, this must specify the design used in the actual experiment. See \code{\link{dfsim}}.}
 
 \item{target}{The target percentile to be estimated (as a fraction). Again must be the same one estimated in the actual experiment. Default 0.5.}
 
@@ -48,10 +48,10 @@ dfboot(
 \item{full}{Logical: controls how detailed the output is. Default (\code{FALSE}) is only the resulting interval bounds, while \code{TRUE} returns a list with the full bootstrap ensemble of doses, responses and estimates, as well as the generating dose-response curve and the bootstrap's dose set.}
 }
 \description{
-Bootstrap routine for resampling a dose-finding or dose-response experiment. The bootstrap replicates are generated from a centered-isotonic-regression estimate of the dose-response function, rather than resampled directly.
+Bootstrap routine for resampling a dose-finding or dose-response experiment. The bootstrap replicates are generated from a centered-isotonic-regression (CIR) estimate of the dose-response function, rather than resampled directly.
 }
 \details{
-The function defaults will bootstrap a "Classical" up-and-down design, but it is really compatible with any dose-finding design, as long as \verb{design, desArgs} are specified correctly (and \code{design} is provided if the designs are not coded in this package). See \code{\link{dfsim}} for the requirements from such a function.
+The function should be able to generates bootstrap resamples of any dose-finding design, as long as \verb{design, desArgs} are specified correctly.  See \code{\link{dfsim}} for the requirements from such a function.
 
 Like Chao and Fuh (2001) and Stylianou et al. (2003), the bootstrap samples are generated indirectly, by estimating a dose-response curve F from the data, then generating an ensemble of bootstrap experiments using the same design used in the original experiment. Unlike these two which used parametric or isotonic regression, respectively, with no bias-mitigation and no additional provisions to improve coverage, our implementation uses centered isotonic regression with bias-mitigation
 }

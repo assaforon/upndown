@@ -27,7 +27,7 @@
 #' @export
 #' 
 dfboot <- function(x, y, doses =  NULL, estfun = dynamean, design, desArgs, 
-                        target = 0.5, balancePt = target, conf = 0.9, B = 1000, seed = NULL, randstart = TRUE,
+                        target, balancePt = target, conf = 0.9, B = 1000, seed = NULL, randstart = TRUE,
                         showdots = TRUE, full = FALSE, ...)
 {
   requireNamespace('cir')

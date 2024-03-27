@@ -244,7 +244,9 @@ After positive response, 'toss a COIN':
 #' @param x (`checkDose()` only) input object to be verified as valid dose values
 #' @param maxfrac (`checkDose()` only) maximum number of unique values (as fraction of sample size) considered realistic for up-and-down data. Default $0.9n.$ Function also gives a warning if number exceeds $n/2$, since typically this suggests the effective sample size around target is too small.
 #' @param y (`checkResponse()` only) input object to be verified as valid response values (`TRUE/FALSE or 0/1)
-
+#' @param flatOK logical (`checkCDF()` only) if the CDF is completely flat, should function issue a warning (`TRUE`, default) - or stop with an error (`FALSE`)?
+#' 
+#' 
 #' @return If a validation issue is found, these functions stop with a relevant error message. If no issue is found, they run through without returning a value.
 
 #' @export
@@ -263,8 +265,14 @@ checkTarget <- function(target, tname = 'Target')
 #' @rdname validUDinput
 #' @import stats
 #' @export
-checkCDF <- function(cdf)
-  if(min(cdf)<0 || max(cdf)>1 || any(diff(cdf) < 0) || var(cdf)==0) stop("cdf should be a CDF.\n")
+checkCDF <- function(cdf, flatOK = TRUE)
+{
+  if(length(cdf) < 1 || min(cdf)<0 || max(cdf)>1 || any(diff(cdf) < 0)) stop("cdf should be a CDF.\n")
+  if(var(cdf)==0) {
+    if(!flatOK) stop("cdf is compeletely flat.\n")
+    warning("cdf is compeletely flat.\n")
+  }
+}
 
 ## Natural number verification
 

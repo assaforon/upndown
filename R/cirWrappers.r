@@ -62,7 +62,7 @@ if(balancePt[1]!=target)
 if(is.null(conf)) confi = 0.9 else confi = conf
 
 # And after all this.... it's a one-liner :)
-if(is.null(curvedCI)) curvedCI = (target >= 0.75 || target <= 0.25)
+if(is.null(curvedCI)) curvedCI = (target > 0.6 || target < 0.4)
 
 tmp = cir::quickInverse(x=x, y=y, target=target, starget = balancePt,
           conf = confi, adaptiveShrink = TRUE, adaptiveCurve = curvedCI, ... )

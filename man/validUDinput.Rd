@@ -13,7 +13,7 @@ validUDinput(cdf, target)
 
 checkTarget(target, tname = "Target")
 
-checkCDF(cdf)
+checkCDF(cdf, flatOK = TRUE)
 
 checkNatural(k, parname, toolarge = 1000)
 
@@ -25,6 +25,8 @@ checkResponse(y)
 \item{cdf}{vector of values, should be nondecreasing between 0 and 1 (inclusive)}
 
 \item{target}{numeric value(s), should be between 0 and 1 (exclusive)}
+
+\item{flatOK}{logical (\code{checkCDF()} only) if the CDF is completely flat, should function issue a warning (\code{TRUE}, default) - or stop with an error (\code{FALSE})?}
 
 \item{k}{(\code{checkNatural()} only) input number to check whether it's a natural number}
 
