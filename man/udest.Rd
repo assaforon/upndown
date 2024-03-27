@@ -27,6 +27,8 @@ udest(
 
 \item{conf}{The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations. Setting to \code{NULL} triggers special behavior; see under "Value".}
 
+\item{curvedCI}{logical: should confidence-interval boundaries rely upon an outwardly-curving interpolation (\code{TRUE}) or linear? If \code{NULL} (default), it will be \code{TRUE} for targets outside the 40th-60th percentile range.}
+
 \item{...}{Pass-through argument added for flexible calling context.}
 }
 \value{

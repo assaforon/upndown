@@ -22,6 +22,7 @@
 #' @param target The target response rate for which target dose estimate is requested. Must be a single number in \eqn{(0,1).}
 #' @param balancePt In case the design's inherent balance point differs somewhat from `target`, specify it here to improve estimation accuracy. See Details for further explanation. Otherwise, this argument defaults to be equal to `target`.
 #' @param conf The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations. Setting to `NULL` triggers special behavior; see under "Value".
+#' @param curvedCI logical: should confidence-interval boundaries rely upon an outwardly-curving interpolation (`TRUE`) or linear? If `NULL` (default), it will be `TRUE` for targets outside the 40th-60th percentile range.
 #' @param ... Pass-through argument added for flexible calling context.
 #' 
 #' @references 
