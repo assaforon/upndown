@@ -100,7 +100,7 @@ mean(track) + spacing * (0.5-chosen)
 #' @export
 #'  
 reversmean <- function(x, y, rstart=3, all=TRUE, before=FALSE, conf = 0.9,
-                       maxExclude=1/2,  full=FALSE, ...)
+                       maxExclude=1/2,  full=FALSE, wetherill = TRUE, ...)
 {
 # vals
 checkDose(x)
@@ -113,7 +113,7 @@ checkTarget(maxExclude, tname = 'maxExclude')
 if(!is.null(conf)) checkTarget(conf, tname = 'conf')
 # /vals
 
-revpts=reversals(y)
+revpts=reversals(y=y, x=x, directional = wetherill)
 
 #### exception handling: 
 # if zero reversals, we return NA (used to just err out) 
@@ -148,9 +148,24 @@ tmp
 #' @rdname reversmean
 #' @export
 #' 
-reversals <- function(y) 
+reversals <- function(y, x = NULL, directional = TRUE, ycheck = FALSE) 
 {
-  which(diff(y)!=0)+1
+  if(directional && is.null(x[1])) stop("x must be provided.\n")
+  n = length(y)
+  if(directional && !(length(x) %in% c(n, n+1) ) ) stop('Mismatched x:y lengths.\n')
+     
+  if(directional)   
+  {
+    moves = which(diff(x) != 0)
+    hinges = diff(x)[moves]
+    tmp = moves[which(diff(hinges)!=0) + 1]
+#    cat(tmp,'\n')
+#    cat(diff(y[tmp]),'\n')
+    if(ycheck) if(any(diff(y[tmp]) == 0)) stop('Inconsistent x:y sequences.\n')
+    
+  } else tmp = which(diff(y)!=0)+1
+  
+  tmp
 }
 
 #------------------------

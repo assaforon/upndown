@@ -14,10 +14,11 @@ reversmean(
   conf = 0.9,
   maxExclude = 1/2,
   full = FALSE,
+  wetherill = TRUE,
   ...
 )
 
-reversals(y)
+reversals(y, x = NULL, directional = TRUE, ycheck = FALSE)
 }
 \arguments{
 \item{x}{numeric vector: sequence of administered doses, treatments, stimuli, etc.}
