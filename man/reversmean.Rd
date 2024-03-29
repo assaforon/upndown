@@ -14,11 +14,11 @@ reversmean(
   conf = 0.9,
   maxExclude = 1/2,
   full = FALSE,
-  wetherill = TRUE,
+  weth66revs = TRUE,
   ...
 )
 
-reversals(y, x = NULL, directional = TRUE, ycheck = FALSE)
+reversals(y, x = NULL, directional = TRUE, ycheck = TRUE)
 }
 \arguments{
 \item{x}{numeric vector: sequence of administered doses, treatments, stimuli, etc.}
@@ -36,6 +36,12 @@ reversals(y, x = NULL, directional = TRUE, ycheck = FALSE)
 \item{maxExclude}{a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector \code{x} to exclude from averaging, in case the algorithm-identified transition point occurs late in the experiment. Default 1/2.}
 
 \item{full}{logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})}
+
+\item{weth66revs}{(in \code{reversmean()}) logical: identical to \code{directional}. The argument name used in \code{reversmean()} stems from the fact this definition was introduced by Wetherill et al. (1966).}
+
+\item{directional}{(in \code{reversals()}) logical: should reversals be defined as change in direction (i.e., \code{x}; \code{TRUE} which is default), or in response (\code{y})?}
+
+\item{ycheck}{(in \code{reversals()}) logical: should the function make an explicit check that all changes in \code{x} direction are also \code{y} reversals? Default \code{TRUE}.}
 }
 \value{
 For \code{reversals()}, the indices of reversal points. For \code{reversmean()}, if \code{full=FALSE} returns the point estimate and otherwise returns a data frame with the estimate, as well as the index of the cutoff point used to start the averaging.
