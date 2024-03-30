@@ -15,10 +15,11 @@ reversmean(
   maxExclude = 1/2,
   full = FALSE,
   weth66revs = TRUE,
+  ycheck = FALSE,
   ...
 )
 
-reversals(y, x = NULL, directional = TRUE, ycheck = TRUE)
+reversals(y, x = NULL, directional = TRUE, ycheck = FALSE)
 }
 \arguments{
 \item{x}{numeric vector: sequence of administered doses, treatments, stimuli, etc.}
@@ -39,9 +40,9 @@ reversals(y, x = NULL, directional = TRUE, ycheck = TRUE)
 
 \item{weth66revs}{(in \code{reversmean()}) logical: identical to \code{directional}. The argument name used in \code{reversmean()} stems from the fact this definition was introduced by Wetherill et al. (1966).}
 
-\item{directional}{(in \code{reversals()}) logical: should reversals be defined as change in direction (i.e., \code{x}; \code{TRUE} which is default), or in response (\code{y})?}
+\item{ycheck}{logical: should the function make an explicit check that all \code{x} reversals are also \code{y} reversals? Default \code{FALSE}.}
 
-\item{ycheck}{(in \code{reversals()}) logical: should the function make an explicit check that all changes in \code{x} direction are also \code{y} reversals? Default \code{TRUE}.}
+\item{directional}{(in \code{reversals()}) logical: should reversals be defined as change in direction (i.e., \code{x}; \code{TRUE} which is default), or in response (\code{y})?}
 }
 \value{
 For \code{reversals()}, the indices of reversal points. For \code{reversmean()}, if \code{full=FALSE} returns the point estimate and otherwise returns a data frame with the estimate, as well as the index of the cutoff point used to start the averaging.
