@@ -88,8 +88,7 @@ mean(track) + spacing * (0.5-chosen)
 #' @param x numeric vector: sequence of administered doses, treatments, stimuli, etc.
 #' @param y numeric vector: sequence of observed responses. Must be same length as `x` or shorter by 1, and must be coded `TRUE/FALSE` or 0/1. `dynamean()` only uses `y` for bootstrap confidence intervals.
 #' @param directional (in `reversals()`) logical: should reversals be defined as change in direction (i.e., `x`; `TRUE` which is default), or in response (`y`)?
-#' @param weth66revs (in `reversmean()`) logical: identical to `directional`. The argument name used in `reversmean()` stems from the fact this definition was introduced by Wetherill et al. (1966).
-#' @param ycheck logical: should the function make an explicit check that all `x` reversals are also `y` reversals? Default `FALSE`.
+#' @param weth66revs (in `reversmean()`) logical: identical to `directional`. The argument name used in `reversmean()` stems from the #' @param evenrevs logical: should only an even number of reversals be used, meaning that if the total number is odd the last one is discarded? Default `TRUE` per common practice.
 #' @param rstart the reversal point from which the averaging begins. Default 3, considered a good compromise between performance and robustness. See Details.
 #' @param all logical: from the cutoff point onwards, should all values of `x` be used (`TRUE`, default), or only reversal points as in the Wetherill et al. approach? If set to `FALSE`, then the `before` flag also defaults to `FALSE` regardless of user choice.
 #' @param before logical: whether to start the averaging one observation earlier than the cutoff point. Default `FALSE`.
@@ -104,7 +103,7 @@ mean(track) + spacing * (0.5-chosen)
 #'  
 reversmean <- function(x, y, rstart=3, all=TRUE, before=FALSE, conf = 0.9,
                   maxExclude=1/2,  full=FALSE, 
-                  weth66revs = TRUE, ycheck = FALSE, ...)
+                  weth66revs = TRUE, evenrevs = TRUE, ...)
 {
 # vals
 checkDose(x)
@@ -117,7 +116,7 @@ checkTarget(maxExclude, tname = 'maxExclude')
 if(!is.null(conf)) checkTarget(conf, tname = 'conf')
 # /vals
 
-revpts=reversals(y=y, x=x, directional = weth66revs, ycheck = ycheck)
+revpts=reversals(y=y, x=x, directional = weth66revs, evenrevs = evenrevs)
 
 #### exception handling: 
 # if zero reversals, we return NA (used to just err out) 
@@ -152,7 +151,7 @@ tmp
 #' @rdname reversmean
 #' @export
 #' 
-reversals <- function(y, x = NULL, directional = TRUE, ycheck = FALSE) 
+reversals <- function(y, x = NULL, directional = TRUE, evenrevs = TRUE) 
 {
   if(directional && is.null(x[1])) stop("x must be provided.\n")
   n = length(y)
@@ -165,10 +164,14 @@ reversals <- function(y, x = NULL, directional = TRUE, ycheck = FALSE)
     tmp = moves[which(diff(hinges)!=0) + 1]
 #    cat(tmp,'\n')
 #    cat(diff(y[tmp]),'\n')
-    if(ycheck) if(any(diff(y[tmp]) == 0)) stop('Inconsistent x:y sequences.\n')
-    
-  } else tmp = which(diff(y)!=0)+1
   
+   } else tmp = which(diff(y)!=0)+1
+  
+  if(evenrevs)
+  {
+    npairs = length(tmp) %/% 2
+    tmp = tmp[ 1:(2*npairs) ]
+  }
   tmp
 }
 
