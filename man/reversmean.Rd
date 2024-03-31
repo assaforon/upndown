@@ -12,7 +12,7 @@ reversmean(
   all = TRUE,
   before = FALSE,
   conf = 0.9,
-  maxExclude = 1/2,
+  maxExclude = NULL,
   full = FALSE,
   weth66revs = TRUE,
   evenrevs = TRUE,

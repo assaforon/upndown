@@ -102,7 +102,7 @@ mean(track) + spacing * (0.5-chosen)
 #' @export
 #'  
 reversmean <- function(x, y, rstart=3, all=TRUE, before=FALSE, conf = 0.9,
-                  maxExclude=1/2,  full=FALSE, 
+                  maxExclude=NULL,  full=FALSE, 
                   weth66revs = TRUE, evenrevs = TRUE, ...)
 {
 # vals
@@ -119,14 +119,11 @@ if(!is.null(conf)) checkTarget(conf, tname = 'conf')
 revpts=reversals(y=y, x=x, directional = weth66revs, evenrevs = evenrevs)
 
 #### exception handling: 
-# if zero reversals, we return NA (used to just err out) 
-if(length(revpts)==0) return(NA)
-# stop('No reversals. Experiment likely too short, or data-quality error.\n')
 
-# part-degenerate: fewer revs than expected
-if(rstart > length(revpts)) rstart=length(revpts) 
+# if  fewer revs than minimally expected, return NA
+if(rstart > length(revpts)) return(NA)  # rstart=length(revpts) 
 # Late start: reverting to some minimal start point:
-if(revpts[rstart] > n*maxExclude) revpts[rstart] = floor(n*maxExclude)
+if(!is.null(maxExclude)) if(revpts[rstart] > n*maxExclude) revpts[rstart] = floor(n*maxExclude)
 
 # The estimate is anti-climactic:
 est=ifelse(all,mean(x[(revpts[rstart] - as.integer(before)):n]),mean(x[revpts[rstart:length(revpts)]]))
