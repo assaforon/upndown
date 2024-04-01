@@ -112,7 +112,7 @@ n=length(x)
 if (!(length(y) %in% c(n-1,n))) stop('X vector must be equal-length or 1 longer than Y.\n')
 
 checkNatural(rstart, toolarge = floor(n/2))
-checkTarget(maxExclude, tname = 'maxExclude')
+if(!is.null(maxExclude)) checkTarget(maxExclude, tname = 'maxExclude')
 if(!is.null(conf)) checkTarget(conf, tname = 'conf')
 # /vals
 
@@ -121,7 +121,7 @@ revpts=reversals(y=y, x=x, directional = weth66revs, evenrevs = evenrevs)
 #### exception handling: 
 
 # if  fewer revs than minimally expected, return NA
-if(rstart > length(revpts)) return(NA)  # rstart=length(revpts) 
+if(rstart > length(revpts) || is.na(revpts[1]) ) return(NA)  # rstart=length(revpts) 
 # Late start: reverting to some minimal start point:
 if(!is.null(maxExclude)) if(revpts[rstart] > n*maxExclude) revpts[rstart] = floor(n*maxExclude)
 
