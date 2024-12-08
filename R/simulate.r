@@ -135,7 +135,6 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = d
 #' 
 #' Rules for some popular or well-studied non-up-and-down
 #'    
-#'  @return the next dose allocation
 #'  
 #' @inheritParams bcdmat
 #'   
@@ -144,8 +143,9 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = d
 #' @param fastStart (`krow` and `bcd`) logical: should the experiment begin with a classical-UD-like stage until the first "minority" response is observed (i.e., a 1 for below-median targets and vice versa)? Even though `TRUE` delivers better experimental performance and is recommended when allowed, default is `FALSE` because toxicity/safety studies are unlikely to allow it. 
 #' @param coin (`bcd` only) the biased-coin probability. Note that unlike `bcdmat`, here the function does not figure out automatically the coin probability and upper/lower target location from the provided target. 
 #' @param s (`groupUD` only) the group/cohort size, analogous to `cohort` in `gudmat`. We use a different name here because `cohort` is already used in `dfsim` that calls these utilities.
-#' 
- 
+#' @param lower,upper (`groupUD` only) how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example `s=3, lower=0, upper=2` evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.
+
+#' @return the next dose allocation
 
 #' @export
 
@@ -173,6 +173,7 @@ krow <- function(doses, responses, k, lowTarget=NULL, fastStart=FALSE,...)
   }
 }
 
+#' @inheritParams bcdmat
 #' @rdname krow
 #' @export
 
