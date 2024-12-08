@@ -105,7 +105,7 @@ mean(track) + spacing * (0.5-chosen)
 #'  
 reversmean <- function(x, y, rstart=3, all=TRUE, before=FALSE, conf = 0.9,
                   maxExclude=NULL,  full=FALSE, 
-                  weth66revs = TRUE, evenrevs = TRUE, ...)
+                  weth66revs = TRUE, evenrevs = !all, ...)
 {
 # vals
 checkDose(x)
@@ -118,7 +118,7 @@ if(!is.null(maxExclude)) checkTarget(maxExclude, tname = 'maxExclude')
 if(!is.null(conf)) checkTarget(conf, tname = 'conf')
 # /vals
 
-if(all & evenrevs) warning('When averaging all observations rather than reversals only, it is advisable to set evenrevs = TRUE.\n')
+if(all & evenrevs) warning('When averaging all observations rather than reversals only, it is advisable to set evenrevs = FALSE.\n')
 
 revpts=reversals(y=y, x=x, directional = weth66revs, evenrevs = evenrevs)
 

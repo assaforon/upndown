@@ -91,7 +91,7 @@ dynamean(c(doses, dosePlus1), responses, maxExclude = 0.5, conf = NULL)
 
 # This is one reason why we strongly recommend using Centered Isotonic Regression as default. 
 # Figure soon to follow.
-# But first, have you noted how we kept writing "conf = NULL"? 
+# But first, have you noted how we keep specifying "conf = NULL"? 
 # This is because now at default, these averages calculate
 # A bootstrap confidence-interval. 
 # These intervals are generally deficient but are the best anyone can do at present.
@@ -101,7 +101,8 @@ dynamean(c(doses, dosePlus1), responses, maxExclude = 0.5, conf = NULL)
 # the bootstrap simulation (which should be the ones generating the original experiment).
 
 # Like this (not run, to avoid violating CRAN's very narrow limits on example runtime):
-# dynamean(c(doses, dosePlus1), responses, maxExclude = 0.5, target = 0.5, design = krow, desArgs = list(k=1) )
+# dynamean(c(doses, dosePlus1), responses, maxExclude = 0.5, target = 0.5, 
+#                  design = krow, desArgs = list(k=1) )
 
 
 defest = udest(doses, responses, target = 0.5)

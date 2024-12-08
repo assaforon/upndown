@@ -10,7 +10,7 @@ krow(doses, responses, k, lowTarget = NULL, fastStart = FALSE, ...)
 
 bcd(doses, responses, coin, lowTarget, fastStart = FALSE, ...)
 
-groupUD(doses, responses, s, lower, upper, ...)
+groupUD(doses, responses, s, ll, ul, ...)
 }
 \arguments{
 \item{doses, responses}{(mandatory arguments) vectors of the run's current sequence of doses (in ordinal/index scale) and responses}
@@ -21,9 +21,16 @@ groupUD(doses, responses, s, lower, upper, ...)
 
 \item{fastStart}{(\code{krow} and \code{bcd}) logical: should the experiment begin with a classical-UD-like stage until the first "minority" response is observed (i.e., a 1 for below-median targets and vice versa)? Even though \code{TRUE} delivers better experimental performance and is recommended when allowed, default is \code{FALSE} because toxicity/safety studies are unlikely to allow it.}
 
-\item{coin}{(\code{bcd} only) the biased-coin probability. Note that unlike \code{bcdmat}, here the function does not figure out automatically the coin probability and upper/lower target location from the provided target.}
+\item{...}{Technical pass-through argument, to allow for flexibility when constructing design-comparison simulation ensembles.}
 
-\item{s}{(\code{groupUD} only) the group/cohort size, analogous to \code{cohort} in \code{gudmat}. We use a different name here because \code{cohort} is already used in \code{dfsim} that calls these utilities.}
+\item{coin}{(\code{bcd} only) the biased-coin probability. Note that unlike \code{bcdmat()}, here the function does not figure out automatically the coin probability and upper/lower target location from the provided target.}
+
+\item{s}{(\code{groupUD} only) the group/cohort size, analogous to \code{cohort} in \code{gudmat()}. We use a different name here because \code{cohort} is already used in \code{dfsim} that calls these utilities.}
+
+\item{ll, ul}{(\code{groupUD} only) how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. Analogous to \verb{lower, upper} in \code{gudmat()}. For example \verb{s=3, ll=0, ul=2} evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.}
+}
+\value{
+the next dose allocation
 }
 \description{
 Rules for k-in-a-row, Biased-Coin UD, and Group UD, coded as functions compatible with
@@ -33,6 +40,4 @@ These functions work on each virtual experimental run individually.
 }
 \details{
 Rules for some popular or well-studied non-up-and-down
-
-@return the next dose allocation
 }

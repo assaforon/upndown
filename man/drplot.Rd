@@ -21,6 +21,7 @@ drplot(
   estsymb = 19,
   esthick = 2,
   curvecol = "blue",
+  allow1extra = FALSE,
   ytitle = "Frequency of Positive Response",
   xtitle = "Dose / Stimulus",
   ...
@@ -50,6 +51,8 @@ drplot(
 \item{conf}{The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations. Setting to \code{NULL} triggers special behavior; see under "Value".}
 
 \item{estcol, estsize, estsymb, esthick, curvecol}{graphical parameters controlling the colors, symbol choice, size, thickness, of the target-dose and CIR-curve visuals.}
+
+\item{allow1extra}{logical: allow \code{length(x)} to be either equal or 1 greater than \code{length(y)}? (default \code{FALSE}) The \emph{"n+1"} dose-allocation, determined from the last allocations and responses, might be tagged onto \code{x}. If this point is provided and \code{allow1extra=TRUE}, \code{udplot()} will show it as a grey diamond; the other functions will ignore it.}
 
 \item{xtitle, ytitle}{x-axis and y-axis titles. Some reasonable defaults are provided, to avoid an annoying error message.}
 

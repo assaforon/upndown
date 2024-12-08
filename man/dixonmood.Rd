@@ -134,7 +134,8 @@ dynamean(c(doses, dosePlus1), responses, maxExclude = 0.5, conf = NULL)
 # the bootstrap simulation (which should be the ones generating the original experiment).
 
 # Like this (not run, to avoid violating CRAN's very narrow limits on example runtime):
-# dynamean(c(doses, dosePlus1), responses, maxExclude = 0.5, target = 0.5, design = krow, desArgs = list(k=1) )
+# dynamean(c(doses, dosePlus1), responses, maxExclude = 0.5, target = 0.5, 
+#                  design = krow, desArgs = list(k=1) )
 
 
 defest = udest(doses, responses, target = 0.5)

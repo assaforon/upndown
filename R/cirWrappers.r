@@ -23,6 +23,7 @@
 #' @param balancePt In case the design's inherent balance point differs somewhat from `target`, specify it here to improve estimation accuracy. See Details for further explanation. Otherwise, this argument defaults to be equal to `target`.
 #' @param conf The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations. Setting to `NULL` triggers special behavior; see under "Value".
 #' @param curvedCI logical: should confidence-interval boundaries rely upon an outwardly-curving interpolation (`TRUE`) or linear? If `NULL` (default), it will be `TRUE` for targets outside the 40th-60th percentile range.
+#' @param allow1extra logical: allow `length(x)` to be either equal or 1 greater than `length(y)`? (default `FALSE`) The *"n+1"* dose-allocation, determined from the last allocations and responses, might be tagged onto `x`. If this point is provided and `allow1extra=TRUE`, `udplot()` will show it as a grey diamond; the other functions will ignore it.
 #' @param ... Pass-through argument added for flexible calling context.
 #' 
 #' @references 
@@ -36,7 +37,7 @@
 
 #### The function:
 
-udest <- function(x, y, target, balancePt = target, conf = 0.9, allow1extra = FALSE, full = NULL, curvedCI = NULL, ...)
+udest <- function(x, y, target, balancePt = target, conf = 0.9, allow1extra = FALSE, curvedCI = NULL, ...)
 {
   requireNamespace('cir')
 
@@ -57,7 +58,7 @@ if(balancePt[1]!=target)
 {
   if(length(balancePt) > 1) stop("Experiment can only have a single balance point.\n")
   checkTarget(balancePt, tname='balancePt')
-  if(abs(balancePt - target) > 0.1) warning("We strongly advise against estimating targets this far from the design's balance point.\n")
+  if(abs(balancePt - target) > 0.1) warning("\nWe strongly advise against estimating targets this far from the design's balance point.\n")
 }
 
 if(is.null(conf)) confi = 0.9 else confi = conf
@@ -101,7 +102,7 @@ tmp
 #'  - \code{\link{drplot}} for the up-and-down dose-response and estimate plotting.
 #'  - `cir` package vignette.
 #'  
-#'  #' @references 
+#' @references 
 #'  - Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. *J Am Stat Assoc.* 1948;43:109-126.
 #'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. 
 
@@ -118,17 +119,25 @@ tmp
 #' @param ...	Other arguments passed on to \code{\link[graphics]{plot}} (e.g., `main` for the main title). 
 
 
-udplot <- function(x, y, cohort=NULL, shape='circle', connect=TRUE, symbcol=1, doselabels=NULL, 
+udplot <- function(x, y, cohort=NULL, shape='circle', connect=TRUE, symbcol=1, doselabels=NULL, allow1extra = FALSE, 
                    xtitle = "Observation Order", ytitle = "Dose / Stimulus",...)
 {
 
 # val
 checkDose(x)
 checkResponse(y)
+n = length(y)
+if(length(x) != n) 
+{
+  if (length(x) != n+1 || !allow1extra) 
+    stop('x, y, must have same length.\n')
+}
+
 if(!is.null(cohort)) checkNatural(cohort, parname = 'cohort')
-  
-plot(cir::DRtrace(x=x, y=y, cohort=cohort), shape=shape, connect=connect, mcol=symbcol, dosevals=doselabels,
-             xlab=xtitle, ylab=ytitle, ...)
+xbounds = c(1, ifelse(allow1extra, length(x), n) )
+plot(cir::DRtrace(x=x[1:n], y=y, cohort=cohort), shape=shape, connect=connect, mcol=symbcol, dosevals=doselabels,
+             xlab=xtitle, ylab=ytitle, xlim = xbounds, ...)
+if(length(x)==n+1) points(n+1, x[n+1], pch = 23, bg = 'grey', col = 'grey')
   
 }
 
@@ -174,14 +183,29 @@ plot(cir::DRtrace(x=x, y=y, cohort=cohort), shape=shape, connect=connect, mcol=s
 
 drplot <- function(x, y, shape='X', connect=FALSE, symbcol=1, percents = FALSE,
                    addest=FALSE, addcurve=FALSE, target=NULL, balancePt=target, conf=0.9,
-                   estcol = 'purple', estsize=2, estsymb=19, esthick=2, curvecol = 'blue',
+                   estcol = 'purple', estsize=2, estsymb=19, esthick=2, curvecol = 'blue', allow1extra = FALSE,
                    ytitle = "Frequency of Positive Response", xtitle = "Dose / Stimulus",...)
 {
 requireNamespace('cir')
   
 # val
-checkDose(x)
-checkResponse(y)
+  if(length(target) > 1) stop("Experiment should have a single target.\n")
+  checkTarget(target)
+  if(!is.null(conf)) checkTarget(conf, tname = "'conf'")
+  n = length(y)
+  if(length(x) != n) 
+  {
+    if (length(x) == n+1 && allow1extra) x = x[1:n] else
+      stop('x, y, must have same length.\n')
+  }
+  checkDose(x)
+  checkResponse(y)
+  if(balancePt[1]!=target)
+  {
+    if(length(balancePt) > 1) stop("Experiment can only have a single balance point.\n")
+    checkTarget(balancePt, tname='balancePt')
+    if(abs(balancePt - target) > 0.1) warning("We strongly advise against estimating targets this far from the design's balance point.\n")
+  }
   
 tmp = cir::doseResponse(x=x, y=y)
 if(percents) tmp$y = 100 * tmp$y

@@ -141,9 +141,10 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = d
 #' @param doses,responses (mandatory arguments) vectors of the run's current sequence of doses (in ordinal/index scale) and responses
 #' @param lowTarget (`krow` and `bcd`) logical: is the target below 0.5 (median threshold)? 
 #' @param fastStart (`krow` and `bcd`) logical: should the experiment begin with a classical-UD-like stage until the first "minority" response is observed (i.e., a 1 for below-median targets and vice versa)? Even though `TRUE` delivers better experimental performance and is recommended when allowed, default is `FALSE` because toxicity/safety studies are unlikely to allow it. 
-#' @param coin (`bcd` only) the biased-coin probability. Note that unlike `bcdmat`, here the function does not figure out automatically the coin probability and upper/lower target location from the provided target. 
-#' @param s (`groupUD` only) the group/cohort size, analogous to `cohort` in `gudmat`. We use a different name here because `cohort` is already used in `dfsim` that calls these utilities.
-#' @param lower,upper (`groupUD` only) how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example `s=3, lower=0, upper=2` evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.
+#' @param coin (`bcd` only) the biased-coin probability. Note that unlike `bcdmat()`, here the function does not figure out automatically the coin probability and upper/lower target location from the provided target. 
+#' @param s (`groupUD` only) the group/cohort size, analogous to `cohort` in `gudmat()`. We use a different name here because `cohort` is already used in `dfsim` that calls these utilities.
+#' @param ll,ul (`groupUD` only) how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. Analogous to `lower, upper` in `gudmat()`. For example `s=3, ll=0, ul=2` evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.
+#' @param ... Technical pass-through argument, to allow for flexibility when constructing design-comparison simulation ensembles.
 
 #' @return the next dose allocation
 
@@ -196,17 +197,17 @@ bcd <- function(doses, responses, coin, lowTarget, fastStart=FALSE,...)
 #' @export
 
 ### Group UD
-groupUD=function(doses, responses, s, lower, upper,...)
+groupUD=function(doses, responses, s, ll, ul,...)
 {
-  if(lower>s || upper>s) stop('Group up-down boundaries cannot be greater than group size.\n')
-  if (lower>=upper) stop('Lower bound cannot be greater than upper bound.\n')
+  if(ll>s || ul>s) stop('Group up-down boundaries cannot be greater than group size.\n')
+  if (ll>=ul) stop('ll bound cannot be greater than ul bound.\n')
   
   n=length(doses)
   curr=doses[n]
   if(n%%s>0) return(curr) # only evaluating when group is full
   if(n<s) return(curr)
   dlt=sum(responses[(n-s+1):n])
-  dout=ifelse(dlt<=lower, curr+1, ifelse(dlt>=upper, curr-1, curr))
+  dout=ifelse(dlt<=ll, curr+1, ifelse(dlt>=ul, curr-1, curr))
   return(dout)
 }
 

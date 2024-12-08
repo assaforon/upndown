@@ -11,7 +11,6 @@ udest(
   balancePt = target,
   conf = 0.9,
   allow1extra = FALSE,
-  full = NULL,
   curvedCI = NULL,
   ...
 )
@@ -26,6 +25,8 @@ udest(
 \item{balancePt}{In case the design's inherent balance point differs somewhat from \code{target}, specify it here to improve estimation accuracy. See Details for further explanation. Otherwise, this argument defaults to be equal to \code{target}.}
 
 \item{conf}{The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations. Setting to \code{NULL} triggers special behavior; see under "Value".}
+
+\item{allow1extra}{logical: allow \code{length(x)} to be either equal or 1 greater than \code{length(y)}? (default \code{FALSE}) The \emph{"n+1"} dose-allocation, determined from the last allocations and responses, might be tagged onto \code{x}. If this point is provided and \code{allow1extra=TRUE}, \code{udplot()} will show it as a grey diamond; the other functions will ignore it.}
 
 \item{curvedCI}{logical: should confidence-interval boundaries rely upon an outwardly-curving interpolation (\code{TRUE}) or linear? If \code{NULL} (default), it will be \code{TRUE} for targets outside the 40th-60th percentile range.}
 

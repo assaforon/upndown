@@ -29,7 +29,9 @@ gudmat(cdf, cohort, lower, upper)
 
 \item{fluffup}{logical (\code{kmatFull} only): in the full k-in-a-row internal-state representation, should we \emph{"fluff"} the matrix up so that it has \eqn{Mk} rows and columns (\code{TRUE}), or exclude \eqn{k-1} "phantom" states near the less-likely-to-be-visited boundary (\code{FALSE}, default)?}
 
-\item{cohort, lower, upper}{\code{gudmat} only: the cohort (group) size, how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example \verb{cohort=3, lower=0, upper=2} evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.}
+\item{cohort}{\code{gudmat} only: the cohort (group) size}
+
+\item{lower, upper}{(\code{gudmat} only) how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example \verb{cohort=3, lower=0, upper=2} evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.}
 }
 \value{
 An \eqn{M\times M} transition probability matrix, except for \code{kmatFull()} with \eqn{k>1} which returns a larger square matrix.
