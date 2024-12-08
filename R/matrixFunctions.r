@@ -23,7 +23,7 @@
 #' @param target the design's target response rate (`bcdmat()` only).
 #' @param k the number of consecutive identical responses required for dose transitions (k-in-a-row functions only).
 #' @param lowTarget logical k-in-a-row functions only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa? Default `FALSE`. See "Details" for more information.
-#' @param fluffup logical (`kmatFull` only): in the full k-in-a-row internal-state representation, should we *"fluff"* the matrix up so that it has \eqn{Mk} rows and columns (`TRUE`, default), or exclude \eqn{k-1} "phantom" states near one of the boundaries?
+#' @param fluffup logical (`kmatFull` only): in the full k-in-a-row internal-state representation, should we *"fluff"* the matrix up so that it has \eqn{Mk} rows and columns (`TRUE`), or exclude \eqn{k-1} "phantom" states near the less-likely-to-be-visited boundary (`FALSE`, default)?
 #' @param cohort,lower,upper `gudmat` only: the cohort (group) size, how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example `cohort=3, lower=0, upper=2` evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.
 
 #' @return An \eqn{M\times M} transition probability matrix, except for `kmatFull()` with \eqn{k>1} which returns a larger square matrix. 

@@ -88,13 +88,15 @@ mean(track) + spacing * (0.5-chosen)
 #' @param x numeric vector: sequence of administered doses, treatments, stimuli, etc.
 #' @param y numeric vector: sequence of observed responses. Must be same length as `x` or shorter by 1, and must be coded `TRUE/FALSE` or 0/1. `dynamean()` only uses `y` for bootstrap confidence intervals.
 #' @param directional (in `reversals()`) logical: should reversals be defined as change in direction (i.e., `x`; `TRUE` which is default), or in response (`y`)?
-#' @param weth66revs (in `reversmean()`) logical: identical to `directional`. The argument name used in `reversmean()` stems from the #' @param evenrevs logical: should only an even number of reversals be used, meaning that if the total number is odd the last one is discarded? Default `TRUE` per common practice.
+#' @param weth66revs (in `reversmean()`) logical: identical to `directional`. The argument name used in `reversmean()` stems from the article that switched to this definition of reversals when introducing reversal-averaging. 
+#' @param evenrevs logical: should only an even number of reversals be used, meaning that if the total number is odd the last one is discarded? Default `TRUE` per common practice. However, when setting `all=TRUE` it makes sense to also set `evenrevs=FALSE`.
 #' @param rstart the reversal point from which the averaging begins. Default 3, considered a good compromise between performance and robustness. See Details.
 #' @param all logical: from the cutoff point onwards, should all values of `x` be used (`TRUE`, default), or only reversal points as in the Wetherill et al. approach? If set to `FALSE`, then the `before` flag also defaults to `FALSE` regardless of user choice.
 #' @param before logical: whether to start the averaging one observation earlier than the cutoff point. Default `FALSE`.
 #' @param maxExclude a fraction in \eqn{0,1} indicating the maximum initial fraction of the vector `x` to exclude from averaging, in case the algorithm-identified transition point occurs late in the experiment. Default 1/2.
 #' @param full logical: should more detailed information be returned, or only the estimate? (default \code{FALSE})
 #' @param conf the CI's confidence level, as a fraction in (0,1). To skip CI calculation set `conf = NULL`.
+#' @param ... Additional parameters, mostly ones passed on to `dfboot` if `conf` is not `NULL`. See that function's help for details.
 #' 
 #' @return For `reversals()`, the indices of reversal points. For `reversmean()`, if `full=FALSE` returns the point estimate and otherwise returns a data frame with the estimate, as well as the index of the cutoff point used to start the averaging.
 
@@ -115,6 +117,8 @@ checkNatural(rstart, toolarge = floor(n/2))
 if(!is.null(maxExclude)) checkTarget(maxExclude, tname = 'maxExclude')
 if(!is.null(conf)) checkTarget(conf, tname = 'conf')
 # /vals
+
+if(all & evenrevs) warning('When averaging all observations rather than reversals only, it is advisable to set evenrevs = TRUE.\n')
 
 revpts=reversals(y=y, x=x, directional = weth66revs, evenrevs = evenrevs)
 

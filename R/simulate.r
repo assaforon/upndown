@@ -6,9 +6,9 @@
 #' The simulated doses are indices `1:nlev` with `nlev` being the number of dose levels.
 #' Upon output they can be optionally "dressed up" with physical values using the `xvals` argument.
 #' 
-#' The simulator's essential use within the `upndown` package is to estimate bootstrap confidence intervals for dose-averaging target estimates. But it can be also used stand-alone as a study-design aid.
+#' The simulator's essential use within the `upndown` package is to estimate bootstrap confidence intervals for dose-averaging target estimates, via \code{\link{dfboot}}. But it can be also used stand-alone as a study-design aid.
 #' 
-#' The particular dose-finding design simulated is determined by `design` and its argument list `desArgs`. UDD design functions are provided, but other designs - CRM, CCD, etc. - are also compatible. CRM and CCD in particular are available from the author upon request.
+#' The particular dose-finding design simulated is determined by `design` and its argument list `desArgs`. UDD design functions are provided, but other designs - CRM, CCD, BOIN, etc. - are also compatible. Utilities to run those 3 in particular are available on GitHub, under `assaforon/UpndownBook/P3_Practical/OtherDesigns.r`
 #' The `design` functions need to accept `doses, responses` as input, and return the next dose allocation (as an index).
 #' The main progression loop is run via `mapply`.
 
@@ -25,7 +25,7 @@
 #' @param showdots Logical: print out a dot (`.`) after each designion step in `1:n`, and the start/end time stamps? Default `TRUE`.
 #' 
 #' @author Assaf P. Oron
-#'
+#' 
 #' @note This is an adaptation of a non-package function used by the author for well over a decade before incorporating it into `upndown` in late 2023. If you encounter any funny behavior please let me know. Thank you!
 
 
@@ -36,6 +36,8 @@
 #'  - `responses`: The matrix of simulated responses (0 or 1) for each run (`n` by `ensemble`)
 #'  - `cohort`: `cohort`
 #'  - `details`: `desArgs`
+#'  
+#'  @seealso \code{\link{dfboot}}
 
 #' @export
 
@@ -121,7 +123,7 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = d
 }  ########  /dfsim
 
 
-#------------------------- Implemented designs for dfsim()
+#------------------------- In-package implemented designs for dfsim()
 
 #' Up-and-Down Design Rules for use in Dose-Finding Simulator
 #' 
@@ -134,18 +136,21 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = d
 #' Rules for some popular or well-studied non-up-and-down
 #'    
 #'  @return the next dose allocation
-#'   
+#'  
+#' @inheritParams bcdmat
 #'   
 #' @param doses,responses (mandatory arguments) vectors of the run's current sequence of doses (in ordinal/index scale) and responses
 #' @param lowTarget (`krow` and `bcd`) logical: is the target below 0.5 (median threshold)? 
 #' @param fastStart (`krow` and `bcd`) logical: should the experiment begin with a classical-UD-like stage until the first "minority" response is observed (i.e., a 1 for below-median targets and vice versa)? Even though `TRUE` delivers better experimental performance and is recommended when allowed, default is `FALSE` because toxicity/safety studies are unlikely to allow it. 
+#' @param coin (`bcd` only) the biased-coin probability. Note that unlike `bcdmat`, here the function does not figure out automatically the coin probability and upper/lower target location from the provided target. 
+#' @param s (`groupUD` only) the group/cohort size, analogous to `cohort` in `gudmat`. We use a different name here because `cohort` is already used in `dfsim` that calls these utilities.
 #' 
  
 
 #' @export
 
 ### k-in-a-row
-krow <- function(doses, responses, k, lowTarget=NULL, cohort=1, fastStart=FALSE,...)
+krow <- function(doses, responses, k, lowTarget=NULL, fastStart=FALSE,...)
 {
   if(is.null(lowTarget)) if(k>1) stop('Must provide `lowTarget`!\n') else lowTarget = FALSE
   n=length(doses)
@@ -161,13 +166,14 @@ krow <- function(doses, responses, k, lowTarget=NULL, cohort=1, fastStart=FALSE,
   } else {
     
     if(fastStart && sum(responses)==0) return(dout+1)
-    if(sum(responses[(n-cohort+1):n])>=1) return(dout-1)  # toxicity in current observation/cohort: down
+    if(responses[n]==1) return(dout-1)  # toxicity in current observation: down
     if(n<k) return(dout)
     if(sum(responses[(n-k+1):n])==0 && (k==1 || var(doses[(n-k+1):n])==0)) return(dout+1)
     return(dout)
   }
 }
 
+#' @rdname krow
 #' @export
 
 ### BCD
@@ -185,20 +191,21 @@ bcd <- function(doses, responses, coin, lowTarget, fastStart=FALSE,...)
   return(dout)
 }
 
+#' @rdname krow
 #' @export
 
 ### Group UD
-groupUD=function(doses,responses,s,ll,ul,...)
+groupUD=function(doses, responses, s, lower, upper,...)
 {
-  if(ll>s || ul>s) stop('Group up-down boundaries cannot be greater than group size.\n')
-  if (ll>=ul) stop('Lower bound cannot be greater than upper bound.\n')
+  if(lower>s || upper>s) stop('Group up-down boundaries cannot be greater than group size.\n')
+  if (lower>=upper) stop('Lower bound cannot be greater than upper bound.\n')
   
   n=length(doses)
   curr=doses[n]
   if(n%%s>0) return(curr) # only evaluating when group is full
   if(n<s) return(curr)
   dlt=sum(responses[(n-s+1):n])
-  dout=ifelse(dlt<=ll, curr+1, ifelse(dlt>=ul, curr-1, curr))
+  dout=ifelse(dlt<=lower, curr+1, ifelse(dlt>=upper, curr-1, curr))
   return(dout)
 }
 

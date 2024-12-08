@@ -27,7 +27,7 @@ gudmat(cdf, cohort, lower, upper)
 
 \item{lowTarget}{logical k-in-a-row functions only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa? Default \code{FALSE}. See "Details" for more information.}
 
-\item{fluffup}{logical (\code{kmatFull} only): in the full k-in-a-row internal-state representation, should we \emph{"fluff"} the matrix up so that it has \eqn{Mk} rows and columns (\code{TRUE}, default), or exclude \eqn{k-1} "phantom" states near one of the boundaries?}
+\item{fluffup}{logical (\code{kmatFull} only): in the full k-in-a-row internal-state representation, should we \emph{"fluff"} the matrix up so that it has \eqn{Mk} rows and columns (\code{TRUE}), or exclude \eqn{k-1} "phantom" states near the less-likely-to-be-visited boundary (\code{FALSE}, default)?}
 
 \item{cohort, lower, upper}{\code{gudmat} only: the cohort (group) size, how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example \verb{cohort=3, lower=0, upper=2} evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.}
 }

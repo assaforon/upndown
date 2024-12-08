@@ -26,9 +26,9 @@ round(equivF, 3)
 # The vector below represents the values feeding into the Fig. 2B barplot.
 # "startdose = 6" means the experiment begins from the 6th out of 11 doses, i.e., a 50:50 mix.
 
-\donttest{
-  round(cumulvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 30), 3)
-}
+
+round(cumulvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 30), 3)
+
 # Compare with the *instantaneous* probability distribution to the 30th patient:
 
 round(currentvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 30), 3)

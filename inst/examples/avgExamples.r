@@ -33,10 +33,10 @@ abline(h = 21.7)
 # Our package does include the Dixon-Mood point estimate.
 #  (w/o the CIs, because we do not endorse this estimation approach)
 # Does it reproduce the article estimate?
-dixonmood(doses, responses)
+dixonmood(x = doses, y = responses)
 
 # Not at all! Let us overlay this one in red
-abline(h = dixonmood(doses, responses), col=2)
+abline(h = dixonmood(x = doses, y = responses), col=2)
 
 # We have found that many articles claiming to use Dixon-Mood (or Dixon-Massey) actually
 # Do something else. For example, in this article they report that 
@@ -54,18 +54,18 @@ abline(h = dixonmood(doses, responses), col=2)
 #    the last dose and response:
 n = length(doses)
 dosePlus1 = doses[n] + ifelse(responses[n]==0, 1, -1)
-reversmean(c(doses, dosePlus1), responses)
+reversmean(c(doses, dosePlus1), responses, conf = NULL)
 # Interestingly, in this particular case the answer is very similar to the Dixon-Mood estimate.
 
 # The `reversmean()` default averages all doses from the 3rd reversal point onwards.
 # By the way, at what point did the third reversal happen? 
 #     It'll be the 3rd number in this vector:
-reversals(responses)
+reversals(x = doses, y = responses)
 
 # Far more commonly in literature, particularly in sensory studies, 
 #   one encounters the 1960s-era approach (led by Wetherill) of taking *only doses  
 #   at reversal points, usually starting from the first one. `reversmean()` can do that too:
-wetherill = reversmean(c(doses, dosePlus1), responses, all = FALSE, rstart = 1)
+wetherill = reversmean(c(doses, dosePlus1), responses, all = FALSE, rstart = 1, conf = NULL)
 wetherill
 # This one gives an even lower result than the previous ones.
 abline(h = wetherill, col = 3)
@@ -77,7 +77,7 @@ abline(h = wetherill, col = 3)
 # This function now also provides bootstrap CIs, so we need to give it the y values. 
 # The default forces the final 2/3 of observations to be included; here in view of the long run-in
 #     we are relaxing this
-dynamean(c(doses, dosePlus1), responses, maxExclude = 0.5)
+dynamean(c(doses, dosePlus1), responses, maxExclude = 0.5, conf = NULL)
 # Again a bit curiously, this relatively recent approach gives a result similar to what
 #   the authors reported (but not similar to the original Dixon-Mood).
 # This is not too surprising, since here `dynamean()` excludes the first one-third of doses,
@@ -89,7 +89,21 @@ dynamean(c(doses, dosePlus1), responses, maxExclude = 0.5)
 #    choice of starting point (which in many studies, due to safety concerns cannot be evaded)
 #    there is really no good option of which observations to exclude.
 
-# This is one reason why we strongly recommend using Centered Isotonic Regression as default:
+# This is one reason why we strongly recommend using Centered Isotonic Regression as default. 
+# Figure soon to follow.
+# But first, have you noted how we kept writing "conf = NULL"? 
+# This is because now at default, these averages calculate
+# A bootstrap confidence-interval. 
+# These intervals are generally deficient but are the best anyone can do at present.
+
+# If you want to use a confidence interval, you must provide the experiment's target, 
+#    or more precisely its balance point, as well as the parameters to use in 
+# the bootstrap simulation (which should be the ones generating the original experiment).
+
+# Like this (not run, to avoid violating CRAN's very narrow limits on example runtime):
+# dynamean(c(doses, dosePlus1), responses, maxExclude = 0.5, target = 0.5, design = krow, desArgs = list(k=1) )
+
+
 defest = udest(doses, responses, target = 0.5)
 abline(h = defest$point, col = 'purple')
 # For this dataset, it is the highest of all the estimates.
@@ -97,5 +111,6 @@ abline(h = defest$point, col = 'purple')
 legend('bottomright', col = c(1:3, 'purple'), 
        legend = c("Article's estimate", 'Dixon-Mood', 'Reversals (Wetherill)', 'Standard (CIR)'), 
        lty = 1, bty='n', cex = 0.8)
+
 
 par(op) # Back to business as usual ;)

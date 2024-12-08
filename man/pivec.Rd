@@ -8,7 +8,7 @@
 \usage{
 pivec(cdf, matfun, ...)
 
-currentvec(cdf, matfun, n, startdose = NULL, ...)
+currentvec(cdf, matfun, n, startdose = NULL, marginalize = TRUE, ...)
 
 cumulvec(
   cdf,
@@ -17,19 +17,22 @@ cumulvec(
   startdose = NULL,
   proportions = TRUE,
   exclude = 0,
+  marginalize = TRUE,
   ...
 )
 }
 \arguments{
 \item{cdf}{monotone increasing vector with positive-response probabilities. The number of dose levels \eqn{M} is deduced from vector's length.}
 
-\item{matfun}{The function to calculate the TPM. Depends on the specific design; see \code{\link{bcdmat}}. For all functions except \code{classicmat}, user must provide auxiliary parameters via \code{...}.}
+\item{matfun}{The function to calculate the TPM. Depends on the specific design; see \code{\link{bcdmat}}. For all functions except \code{classicmat}, user must provide auxiliary parameters via \code{...}. For the k-in-a-row design, use \code{kmatMarg} for \code{pivec()} and \code{kmatFull} otherwise.}
 
 \item{...}{Arguments passed on to the design's matrix-calculating function.}
 
 \item{n}{For \verb{currentvec, cumulvec}, at what step (= after how many observations) in the experiment would you like the vector calculated?}
 
-\item{startdose}{For \verb{currentvec, cumulvec}, where does the experiment start? To be given as a dose-level index between 1 and \eqn{M}. If left as \code{NULL} (default), function will assume the equivalent of \emph{"fair die roll"} among all doses. User can also specify your own \eqn{M}-length probability vector.}
+\item{startdose}{(for \verb{currentvec, cumulvec}), where does the experiment start? To be given as a dose-level index between 1 and \eqn{M}. If left as \code{NULL} (default), function will assume the equivalent of \emph{"fair die roll"} among all doses. User can also specify your own \eqn{M}-length probability vector.}
+
+\item{marginalize}{logical (for \verb{currentvec, cumulvec} when \code{matfun = kmatFull}) should the returned vector be marginalized over dose levels (\code{TRUE}, default), or should the full set with internal states be returned?}
 
 \item{proportions}{Logical (\code{cumulvec} only) Would you like the results returned as proportions (= a probability vector; \code{TRUE}, default), or as cumulative allocation counts?}
 
@@ -54,7 +57,9 @@ Three functions are offered:
 All functions first calculate the transition probability matrix (TPM), by calling one of the functions described under \code{\link{bcdmat}}. See that help page for more details.
 }
 \note{
-When using the k-in-a-row design, set \code{matfun = kmatMarg}, not \code{kmatFull}.
+When using the k-in-a-row design, set \code{matfun = kmatMarg} if using \code{pivec}, and otherwise \code{kmatFull}.
+
+At present, these functions are unable to incorporate in the calculations the impact of the recommended "fast start" stage for k-in-a-row and biased-coin designs. Such a stage begins with a classic UD run, until the first "minority" outcome is encountered (1 for below-median targets and vice versa). Generally such a fast start would make small-sample probability vectors approach the asymptotic distribution more quickly.
 }
 \examples{
 #----- Classical UD Example -----#
@@ -85,9 +90,9 @@ round(equivF, 3)
 # The vector below represents the values feeding into the Fig. 2B barplot.
 # "startdose = 6" means the experiment begins from the 6th out of 11 doses, i.e., a 50:50 mix.
 
-\donttest{
-  round(cumulvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 30), 3)
-}
+
+round(cumulvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 30), 3)
+
 # Compare with the *instantaneous* probability distribution to the 30th patient:
 
 round(currentvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 30), 3)

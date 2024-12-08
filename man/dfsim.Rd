@@ -51,6 +51,8 @@ A list with the following elements:
 \item \code{cohort}: \code{cohort}
 \item \code{details}: \code{desArgs}
 }
+
+@seealso \code{\link{dfboot}}
 }
 \description{
 This function simulates sequential dose-finding experiments on a fixed dose grid. The response function is (implicitly) assumed monotone in \verb{(0,1)}
@@ -60,9 +62,9 @@ A vectorized dose-finding simulator, set up to run an entire ensemble simultaneo
 The simulated doses are indices \code{1:nlev} with \code{nlev} being the number of dose levels.
 Upon output they can be optionally "dressed up" with physical values using the \code{xvals} argument.
 
-The simulator's essential use within the \code{upndown} package is to estimate bootstrap confidence intervals for dose-averaging target estimates. But it can be also used stand-alone as a study-design aid.
+The simulator's essential use within the \code{upndown} package is to estimate bootstrap confidence intervals for dose-averaging target estimates, via \code{\link{dfboot}}. But it can be also used stand-alone as a study-design aid.
 
-The particular dose-finding design simulated is determined by \code{design} and its argument list \code{desArgs}. UDD design functions are provided, but other designs - CRM, CCD, etc. - are also compatible. CRM and CCD in particular are available from the author upon request.
+The particular dose-finding design simulated is determined by \code{design} and its argument list \code{desArgs}. UDD design functions are provided, but other designs - CRM, CCD, BOIN, etc. - are also compatible. Utilities to run those 3 in particular are available on GitHub, under \code{assaforon/UpndownBook/P3_Practical/OtherDesigns.r}
 The \code{design} functions need to accept \verb{doses, responses} as input, and return the next dose allocation (as an index).
 The main progression loop is run via \code{mapply}.
 }

@@ -37,6 +37,8 @@ dfboot(
 
 \item{balancePt}{In case the design's inherent balance point differs somewhat from \code{target}, specify it here to improve estimation accuracy. See Details for further explanation. Otherwise, this argument defaults to be equal to \code{target}.}
 
+\item{conf}{the CI's confidence level, as a fraction in (0,1).}
+
 \item{B}{Size of bootstrap ensemble, default 1000.}
 
 \item{seed}{Random seed; default \code{NULL} which leads to a "floating" seed, varying between calls.}
@@ -46,6 +48,8 @@ dfboot(
 \item{showdots}{Logical: should "progress dots" be printed out as the bootstrap runs progress? Default \code{TRUE}}
 
 \item{full}{Logical: controls how detailed the output is. Default (\code{FALSE}) is only the resulting interval bounds, while \code{TRUE} returns a list with the full bootstrap ensemble of doses, responses and estimates, as well as the generating dose-response curve and the bootstrap's dose set.}
+
+\item{...}{Additional parameters passed on to estimation functions.}
 }
 \description{
 Bootstrap routine for resampling a dose-finding or dose-response experiment. The bootstrap replicates are generated from a centered-isotonic-regression (CIR) estimate of the dose-response function, rather than resampled directly.

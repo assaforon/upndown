@@ -19,6 +19,9 @@
 #' @param randstart Logical: should the bootstrap runs randomize the starting dose, or use the same starting dose as the actual experiment? Default `TRUE`, which we expect to produce better properties. The randomization will be weighted by the real data's dose-specific sample sizes.
 #' @param showdots Logical: should "progress dots" be printed out as the bootstrap runs progress? Default `TRUE`
 #' @param full Logical: controls how detailed the output is. Default (`FALSE`) is only the resulting interval bounds, while `TRUE` returns a list with the full bootstrap ensemble of doses, responses and estimates, as well as the generating dose-response curve and the bootstrap's dose set.
+#' @param conf the CI's confidence level, as a fraction in (0,1).
+#' @param ... Additional parameters passed on to estimation functions.
+#' 
 #' 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}
 #' @seealso \code{\link{dfsim}}

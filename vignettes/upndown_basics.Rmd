@@ -120,7 +120,7 @@ Gorla et al. used the second-oldest UD estimator, suggested by Brownlee et al. i
 
 ```{r gorla6_3}
 # Note the manual addition of "dose n+1"
-reversmean(c(gorla751x, 41), gorla751y, rstart = 1, all = TRUE)
+reversmean(c(gorla751x, 41), gorla751y, rstart = 1, all = TRUE, conf = NULL)
 ```
 
 ### Side Note: Observation Bias and Empirical Correction

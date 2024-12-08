@@ -2,16 +2,28 @@
 % Please edit documentation in R/simulate.r
 \name{krow}
 \alias{krow}
+\alias{bcd}
+\alias{groupUD}
 \title{Up-and-Down Design Rules for use in Dose-Finding Simulator}
 \usage{
-krow(doses, responses, k, lowTarget = NULL, cohort = 1, fastStart = FALSE, ...)
+krow(doses, responses, k, lowTarget = NULL, fastStart = FALSE, ...)
+
+bcd(doses, responses, coin, lowTarget, fastStart = FALSE, ...)
+
+groupUD(doses, responses, s, lower, upper, ...)
 }
 \arguments{
 \item{doses, responses}{(mandatory arguments) vectors of the run's current sequence of doses (in ordinal/index scale) and responses}
 
+\item{k}{the number of consecutive identical responses required for dose transitions (k-in-a-row functions only).}
+
 \item{lowTarget}{(\code{krow} and \code{bcd}) logical: is the target below 0.5 (median threshold)?}
 
 \item{fastStart}{(\code{krow} and \code{bcd}) logical: should the experiment begin with a classical-UD-like stage until the first "minority" response is observed (i.e., a 1 for below-median targets and vice versa)? Even though \code{TRUE} delivers better experimental performance and is recommended when allowed, default is \code{FALSE} because toxicity/safety studies are unlikely to allow it.}
+
+\item{coin}{(\code{bcd} only) the biased-coin probability. Note that unlike \code{bcdmat}, here the function does not figure out automatically the coin probability and upper/lower target location from the provided target.}
+
+\item{s}{(\code{groupUD} only) the group/cohort size, analogous to \code{cohort} in \code{gudmat}. We use a different name here because \code{cohort} is already used in \code{dfsim} that calls these utilities.}
 }
 \description{
 Rules for k-in-a-row, Biased-Coin UD, and Group UD, coded as functions compatible with
