@@ -6,6 +6,8 @@
 #' 
 #' Like Chao and Fuh (2001) and Stylianou et al. (2003), the bootstrap samples are generated indirectly, by estimating a dose-response curve F from the data, then generating an ensemble of bootstrap experiments using the same design used in the original experiment. Unlike these two which used parametric or isotonic regression, respectively, with no bias-mitigation and no additional provisions to improve coverage, our implementation uses CIR with the Flournoy and Oron (2020) bias-mitigation. When feasible, it also allows the bootstrap runs to extend up to 2 dose-levels in each direction, beyond the doses visited in the actual experiment. 
 #' 
+#' @note This function can be run stand-alone, but it is mostly meant to be called in the backend, in case a dose-averaging estimate "wants" a confidence interval (which is default behavior for `dynamean(), reversmean()` at present). You are welcome to browse the function's code in the repository and figure out how to run it stand-alone, but I do not provide example code here since the details are too elaborate, and overall we still recommend CIR and its analytically-informed intervals over dose-averaging with bootstrap intervals. If you would like to run up-and-down simulations, see `dfsim()` and its code example.
+#' 
 #' 
 #' @param x numeric vector: sequence of administered doses, treatments, stimuli, etc.
 #' @param y numeric vector: sequence of observed responses. Must be same length as `x` or shorter by 1, and must be coded `TRUE/FALSE` or 0/1. 

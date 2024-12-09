@@ -55,9 +55,19 @@ dfboot(
 Bootstrap routine for resampling a dose-finding or dose-response experiment. The bootstrap replicates are generated from a centered-isotonic-regression (CIR) estimate of the dose-response function, rather than resampled directly.
 }
 \details{
-The function should be able to generates bootstrap resamples of any dose-finding design, as long as \verb{design, desArgs} are specified correctly.  See \code{\link{dfsim}} for the requirements from such a function.
+The function should be able to generate bootstrap resamples of any dose-finding design, as long as \verb{design, desArgs} are specified correctly.  See \code{\link{dfsim}} for the requirements from such a function.
 
-Like Chao and Fuh (2001) and Stylianou et al. (2003), the bootstrap samples are generated indirectly, by estimating a dose-response curve F from the data, then generating an ensemble of bootstrap experiments using the same design used in the original experiment. Unlike these two which used parametric or isotonic regression, respectively, with no bias-mitigation and no additional provisions to improve coverage, our implementation uses centered isotonic regression with bias-mitigation
+Like Chao and Fuh (2001) and Stylianou et al. (2003), the bootstrap samples are generated indirectly, by estimating a dose-response curve F from the data, then generating an ensemble of bootstrap experiments using the same design used in the original experiment. Unlike these two which used parametric or isotonic regression, respectively, with no bias-mitigation and no additional provisions to improve coverage, our implementation uses CIR with the Flournoy and Oron (2020) bias-mitigation. When feasible, it also allows the bootstrap runs to extend up to 2 dose-levels in each direction, beyond the doses visited in the actual experiment.
+}
+\note{
+This function can be run stand-alone, but it is mostly meant to be called in the backend, in case a dose-averaging estimate "wants" a confidence interval (which is default behavior for \verb{dynamean(), reversmean()} at present). You are welcome to browse the function's code in the repository and figure out how to run it stand-alone, but I do not provide example code here since the details are too elaborate, and overall we still recommend CIR and its analytically-informed intervals over dose-averaging with bootstrap intervals. If you would like to run up-and-down simulations, see \code{dfsim()} and its code example.
+}
+\references{
+\itemize{
+\item Chao MT, Fuh CD. Bootstrap methods for the up and down test on pyrotechnics sensitivity analysis. Statistica Sinica. 2001 Jan 1:1-21.
+\item Flournoy N, Oron AP. Bias induced by adaptive dose-finding designs. J Appl Stat. 2020;47(13-15):2431-2442.
+\item Stylianou M, Proschan M, Flournoy N. Estimating the probability of toxicity at the target dose following an up‐and‐down design. Statistics in medicine. 2003 Feb 28;22(4):535-43.
+}
 }
 \seealso{
 \code{\link{dfsim}}

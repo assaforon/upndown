@@ -152,7 +152,7 @@ dynamean(c(doses, dosePlus1), responses, maxExclude = 0.5, conf = NULL)
 
 # This is one reason why we strongly recommend using Centered Isotonic Regression as default. 
 # Figure soon to follow.
-# But first, have you noted how we kept writing "conf = NULL"? 
+# But first, have you noted how we keep specifying "conf = NULL"? 
 # This is because now at default, these averages calculate
 # A bootstrap confidence-interval. 
 # These intervals are generally deficient but are the best anyone can do at present.

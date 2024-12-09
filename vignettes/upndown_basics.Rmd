@@ -50,7 +50,7 @@ There is substantial confusion regarding the term "Up-and-Down". From a uselessl
   5. Dose-transition rules are based on the doses and responses of <u>the last patient or several patients</u>, rather than on all patient data going back to the beginning of the experiment. Furthermore, **the rules do not use any estimated quantity that changes during the study.**
   6. Lastly, UDDs have no intrinsic mandatory stopping rules. 
   
-The fifth element might be partially responsible for UDDs falling out of statistical fashion. In Phase I trial design in particular, a field enjoying the most dose-finding method development resources, current statistical orthodoxy maintains that anything short of using <u>the entire sample and an estimation process for each dosing decision</u>, is an indefensible *waste of precious information.*
+The fifth element might be partially responsible for UDDs falling out of statistical fashion. In Phase I trial design in particular, a field enjoying the most dose-finding method development resources, current statistical orthodoxy maintains that anything short of using the entire sample and an estimation process <u>for each dosing decision</u>, is an *"indefensible waste of precious information"* (to paraphrase typical rhetoric found in opinion articles on the topic).
 
 In our humble opinion, this view -
 
@@ -137,9 +137,11 @@ reversmean(c(gorla751x, 41), gorla751y, rstart = 1, all = TRUE,
 
 ```
 
-The dots report the bootstrap simulation's progress; it progresses in parallel, one dot per observation. The default has 1000 replications, which on my laptop takes 1 second for this $n=13$ dataset. Behind the scenes, $F(x)$ is estimated via some version of CIR, which is then used to generate the bootstrap samples. For usage information, see the help files for `dfboot, dfsim`, and `krow`. You will need to read them in order to specify the arguments correctly and produce the relevant CI, because `reversmean()` will throw an error message about missing arguments unless `conf = NULL`.
+The dots report the bootstrap simulation's progress; it progresses in parallel, one dot per observation *(there is no explicit parallel processing; however, it is mostly matrices so it tends to run very fast)*. The default has 1000 replications, which on my laptop takes 1 second for this $n=13$ dataset. Behind the scenes, $F(x)$ is estimated via some version of CIR, which is then used to generate the bootstrap samples. For usage information, see the help files for `dfboot, dfsim`, and `krow`. You will need to read them in order to specify the arguments correctly and produce the relevant CI, because `reversmean()` will throw an error message about missing arguments unless `conf = NULL`.
 
 Just like the CIR CI, our dose-averaging CI for this specific dataset is also left-skewed asymmetric, albeit slightly narrower. Gorla et al. did not report a CI nor a standard error for their point estimate.
+
+**We generally recommend using CIR for estimating the target dose and the confidence interval.** It is more robust than dose-averaging estimators, and likewise its CI coverage is more consistent. See, e.g., [the supplement to Oron et al. 2022.](https://links.lww.com/ALN/C867) 
 
 ### Important Note: Observation Bias and Empirical Correction
 

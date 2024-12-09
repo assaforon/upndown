@@ -118,17 +118,17 @@ udplot(x=x, y=y, cohort=gsize, connect=FALSE, shape='triangle')
 
 par(op) # Back to business as usual ;)
 }
+\references{
+\itemize{
+\item Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. \emph{J Am Stat Assoc.} 1948;43:109-126.
+\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50.
+}
+}
 \seealso{
 \itemize{
 \item \code{\link[cir]{plot.DRtrace}}, \code{cir} package.
 \item \code{\link{drplot}} for the up-and-down dose-response and estimate plotting.
 \item \code{cir} package vignette.
-}
-
-#' @references
-\itemize{
-\item Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. \emph{J Am Stat Assoc.} 1948;43:109-126.
-\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50.
 }
 }
 \author{

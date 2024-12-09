@@ -8,8 +8,10 @@
 #' 
 #' The simulator's essential use within the `upndown` package is to estimate bootstrap confidence intervals for dose-averaging target estimates, via \code{\link{dfboot}}. But it can be also used stand-alone as a study-design aid.
 #' 
-#' The particular dose-finding design simulated is determined by `design` and its argument list `desArgs`. UDD design functions are provided, but other designs - CRM, CCD, BOIN, etc. - are also compatible. Utilities to run those 3 in particular are available on GitHub, under `assaforon/UpndownBook/P3_Practical/OtherDesigns.r`
-#' The `design` functions need to accept `doses, responses` as input, and return the next dose allocation (as an index).
+#' The particular dose-finding design simulated is determined by `design` and its argument list `desArgs`. The 3 straightforward extensions of the median-finding "Classical" UDD are available, namely "k-in-a-row", biased-coin and group (cohort) UDD. To simulate the the median-finding "Classical" UDD itself, use `krow` with `desArgs = list(k=1)`. 
+#' Other non-UDD dose-finding designs - e.g., CRM, CCD, BOIN, etc. - can also be made compatible with `dfsim`. Utilities to run those 3 in particular are available on GitHub, under `assaforon/UpndownBook/P3_Practical/OtherDesigns.r`.
+#' 
+#' If you want to create a `design` function yourself, it would need to accept `doses, responses` as input, and return the next dose allocation (as an integer index).
 #' The main progression loop is run via `mapply`.
 
 #' @param n sample size
@@ -20,13 +22,18 @@
 #' @param ensemble the number of different runs/scenarios to be simulated. Will be determined automatically if `Fvals` is a matrix, as the number of columns.
 #' @param design the dose-finding design function used to determine the next dose. Default `krow`; see \code{\link{krow}} for options.
 #' @param desArgs List of arguments passed on to `design`. Need to be compatible for use in `mapply`. Default is `list(k=1)`, which together with `design = krow` will generate a Clasical (median-finding) UDD simulation.
-#' @param thresholds Matrix of size (at least) `n` by `ensemble`, the response thresholds of participants, presented as percentiles (i.e., output of `runif()`) rather than physical values. If `NULL` (default), they will be simulated on the fly
+#' @param thresholds Matrix of size (at least) `n` by `ensemble`, the response thresholds of participants, presented as percentiles (i.e., output of `runif()`) rather than physical values. If `NULL` (default), they will be simulated on the fly. When running comparative performance simulations, we recommend providing the same thresholds to everything you want to compare on equal footing.
 #' @param seed The random seed if simulating the thresholds. Can be kept *"floating"* (i.e., varying between calls) if left as `NULL` (default).
 #' @param showdots Logical: print out a dot (`.`) after each designion step in `1:n`, and the start/end time stamps? Default `TRUE`.
 #' 
 #' @author Assaf P. Oron
 #' 
-#' @note This is an adaptation of a non-package function used by the author for well over a decade before incorporating it into `upndown` in late 2023. If you encounter any funny behavior please let me know. Thank you!
+#' @note This is an adaptation of a non-package function used by the author for well over a decade before incorporating it into `upndown` in late 2023. For initial guidance, see the code example. If you encounter any funny behavior please let me know. Thank you!
+
+#' @seealso 
+#' - \code{\link{dfboot}}
+
+#' @example inst/examples/simExample.r
 
 
 #' @return A list with the following elements:
@@ -36,8 +43,7 @@
 #'  - `responses`: The matrix of simulated responses (0 or 1) for each run (`n` by `ensemble`)
 #'  - `cohort`: `cohort`
 #'  - `details`: `desArgs`
-#'  
-#'  @seealso \code{\link{dfboot}}
+
 
 #' @export
 
