@@ -49,7 +49,7 @@ The average of all remaining doses is used as a proxy to the (unobservable) bala
 This approach is far closer to capturing the dynamics described above, and indeed performs well
 in comparative simulations (Oron et al. 2022, Supplement).
 
-Starting version 0.2.0, a bootstrap confidence interval (CI) is also provided. See \code{\link{dfboot}} for additional optional parameters to pass to the bootstrap routine, beyond the confidence level \code{conf}. To skip CI estimation, set \code{conf = NULL}.
+Starting version 0.2.0, a bootstrap confidence interval (CI) is also provided. See \code{\link{dfboot}}, \code{\link{dfsim}} for additional parameters to pass to the bootstrap routine via \code{...}, beyond the confidence level \code{conf}. For the "Classical" median-finding UDD, use \verb{design = krow, desArgs = list(k=1)}. To skip CI estimation, set \code{conf = NULL}.
 The experiment's binary responses (\code{y}) are only needed as input for confidence interval calculations; otherwise, only the dose-allocation sequence (\code{x}) is required.
 
 \code{dynamean()} is recommended only for median-targeting UDDs, e.g., the "Classical" (traditional) design of Dixon and Mood. For off-median percentiles it might not work as well, and CI coverage will be lacking.

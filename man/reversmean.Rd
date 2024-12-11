@@ -59,7 +59,7 @@ During UDDs' first generation, a variety of dose-averaging estimators was develo
 
 The \code{reversals()} utility identifies reversal points, whereas \code{reversmean()} produces a dose-averaging estimate whose cutoff point (which should perhaps be called the \emph{'cut-on'} point) is determined by a reversal. User can choose whether to use all doses from that cut-point onwards, or only the reversals as in the older approaches. A few additional options make the estimate even more flexible.
 
-Starting version 0.2.0, a bootstrap confidence interval (CI) is also provided. See \code{\link{dfboot}} for additional optional parameters to pass to the bootstrap routine, beyond the confidence level \code{conf}. To skip CI estimation, set \code{conf = NULL}.
+Starting version 0.2.0, a bootstrap confidence interval (CI) is also provided. See \code{\link{dfboot}}, \code{\link{dfsim}} for additional parameters to pass to the bootstrap routine via \code{...}, beyond the confidence level \code{conf}. For the "Classical" median-finding UDD, use \verb{design = krow, desArgs = list(k=1)}. To skip CI estimation, set \code{conf = NULL}.
 \code{reversmean()} is compatible mostly with median-targeting UDDs such as the "Classical" (traditional) design of Dixon and Mood.
 For general UDD target estimation, particularly off-median targeting designs, we recommend using centered isotonic regression, available via \code{\link{udest}}, an up-and-down adapted wrapper to \code{cir::quickInverse()}. See Oron et al. 2022 (both article and supplement) for further information, as well as the \code{cir} package vignette.
 }

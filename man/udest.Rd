@@ -110,7 +110,7 @@ par(op) # Back to business as usual ;)
 }
 \references{
 \itemize{
-\item Oron AP, Flournoy N.  Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. \emph{Statistics in Biopharmaceutical Research} 2017; 9, 258-267. \href{https://arxiv.org/pdf/1701.05964.pdf}{Author's public version available on arxiv.org.}
+\item Oron AP, Flournoy N.  Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. \emph{Statistics in Biopharmaceutical Research} 2017; 9, 258-267. \href{https://arxiv.org/pdf/1701.05964}{Author's public version available on arxiv.org.}
 \item Flournoy N, Oron AP. Bias Induced by Adaptive Dose-Finding Designs. \emph{Journal of Applied Statistics} 2020; 47, 2431-2442.
 \item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50. \href{https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf}{See in particular the open-access Supplement.}
 }
