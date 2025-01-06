@@ -42,7 +42,7 @@ names(sout)
 #   you only randomize the first set in the comparison, and feed the very same thresholds to 
 #   all the rest.
 
-# Anyhoo, here are the simulated trajectories. Note that there are n+1 of them, because after 
+# Anyhoo, here are the simulated trajectories. Note that there are n+1 x values in each one, because after 
 #     seeing x_n and y_n, the n+1-th allocation can be determined.
 sout$doses
 # Compare with the F ensemble. Is it what you expected? 
