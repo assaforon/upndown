@@ -14,7 +14,7 @@
 #'  
 #'  However, since the UD dose distribution has some width, and since even the balance point itself is only a close approximation for the actual average of allocated doses, the user's target **does not have to be identical to the balance point.** It only needs to be *"close enough"*.
 #'  
-#'  The `k2targ()` and `g2targ()` utilities are intended for users who already have a specific k-in-a-row or group design in mind, and only want to verify its balance point. The complementary utilities `ktargOptions(), gtargOptions()` provide a broader survey of design-parameter options within user-specified constraints, given a desired target.
+#'  The `k2targ()` and `g2targ()` utilities are intended for users who already have a specific k-in-a-row or group design in mind, and only want to verify its balance point. The complementary utilities `ktargOptions(), gtargOptions()` provide a broader survey of design-parameter options within user-specified constraints, given a desired target. The 0.05 default tolerance level around the target, is what we recommend as *"close enough"*. Otherwise, it is probably better to use biased-coin.
 #'  
 #'  Lastly, `bcoin()` returns the biased-coin probabilities given the user's designated target. In contrast to the two other UDDs described above, the biased-coin design can target any percentile with a precisely matched balance point. That said, k-in-a-row and group UDDs offer some advantages over biased-coin in terms of properties and operational simplicity.
 #'  
@@ -32,7 +32,7 @@
 #' @param lowTarget logical, `k2targ()` only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa? Default `FALSE`.
 #' @param cohort,lower,upper `g2targ()` only: the cohort (group) size, how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example `cohort=3, lower=0, upper=2` evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.
 #' @param tolerance 
-#'  - For `ktargOptions(), gtargOptions()`: the half-width of the interval around `target` in which to search for design options. Default 0.1. 
+#'  - For `ktargOptions(), gtargOptions()`: the half-width of the interval around `target` in which to search for design options. Default 0.05. 
 #'  - For `bcoin()`: the half-width of the interval around 0.5 in which the function recommends to simply use classical UD without a coin, as well as the approximate amount of rounding to the returned coin probability (whether in decimal on rational terms). Default 0.02, and hard-coded to be no less than 0.0001.
 #' @param maxk `ktargOptions()` only: the maximum value of \eqn{k} to consider.
 #' @param minsize,maxsize `gtargOptions()` only: the minimum and maximum cohort size to consider. `minsize` has to be at least 2 (cohort size 1 is equivalent to classical UD).
@@ -68,12 +68,13 @@ k2targ<-function(k, lowTarget=FALSE)
 #' @rdname k2targ
 #' @export
 
-ktargOptions<-function(target, tolerance = 0.1, maxk = 20)
+ktargOptions<-function(target, tolerance = 0.05, maxk = 20)
 {
   if(length(target) > 1) stop("target must be a single number between 0 and 1.\n")
   checkTarget(target)
   checkTarget(target - tolerance, tname = "target minus tolerance")
-  
+
+# For simplicity, doing the above-median arithmetic
   hi = (target>=0.5) 
   if(!hi) target = 1-target
   
@@ -81,7 +82,10 @@ ktargOptions<-function(target, tolerance = 0.1, maxk = 20)
   
   klo = -1 / log2( max(0.5, target - tolerance) )
   khi = -1 / log2( min(hiend, target + tolerance) )
+  
+#  return(c(klo, khi))
   krange = ceiling(klo):floor(khi)
+  if(any(diff(krange) < 0 ) ) return("No k options within target range; please increase tolerance band or use biased-coin.")
   krange = sort( krange[krange > 0 & krange <= maxk] )
   
   message("For the following targets, k ", ifelse(hi, "positive", "negative"),
@@ -115,7 +119,7 @@ uniroot(f=function(x, k, u, l) {pbinom(q=l, size=k, prob=x) + (pbinom(q=u-1, siz
 #' @export
 
 # Vals
-gtargOptions<-function(target, minsize = 2, maxsize = 6, tolerance = 0.1)
+gtargOptions<-function(target, minsize = 2, maxsize = 6, tolerance = 0.05)
 {
 if(maxsize<minsize) stop("'maxsize' cannot be smaller than 'minsize'.\n")
 checkNatural(c(maxsize-1, minsize-1), parname = 'Cohort size less 1', toolarge = 50)  
@@ -151,6 +155,8 @@ for(k in minsize:maxsize)
     if(nrow(dtmp)>0) dout = rbind(dout, dtmp[order(dtmp$Upper), ])
   }
 }
+
+if(nrow(dout) == 0) return("No Group UDD options within target range; please increase tolerance band or use biased-coin.")
 
 message("For each design, if positive responses <= Lower, move up\n")
 message("                 if positive responses >= Upper, move down\n")

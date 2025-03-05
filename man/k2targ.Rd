@@ -10,11 +10,11 @@
 \usage{
 k2targ(k, lowTarget = FALSE)
 
-ktargOptions(target, tolerance = 0.1, maxk = 20)
+ktargOptions(target, tolerance = 0.05, maxk = 20)
 
 g2targ(cohort, lower, upper)
 
-gtargOptions(target, minsize = 2, maxsize = 6, tolerance = 0.1)
+gtargOptions(target, minsize = 2, maxsize = 6, tolerance = 0.05)
 
 bcoin(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
 }
@@ -26,7 +26,7 @@ bcoin(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
 \item{target}{the desired target response rate (as a fraction in \eqn{(0,1)}), where relevant.}
 
 \item{tolerance}{\itemize{
-\item For \verb{ktargOptions(), gtargOptions()}: the half-width of the interval around \code{target} in which to search for design options. Default 0.1.
+\item For \verb{ktargOptions(), gtargOptions()}: the half-width of the interval around \code{target} in which to search for design options. Default 0.05.
 \item For \code{bcoin()}: the half-width of the interval around 0.5 in which the function recommends to simply use classical UD without a coin, as well as the approximate amount of rounding to the returned coin probability (whether in decimal on rational terms). Default 0.02, and hard-coded to be no less than 0.0001.
 }}
 
@@ -63,7 +63,7 @@ Most k-in-a-row and group UDD parameter combinations yield balance points that a
 
 However, since the UD dose distribution has some width, and since even the balance point itself is only a close approximation for the actual average of allocated doses, the user's target \strong{does not have to be identical to the balance point.} It only needs to be \emph{"close enough"}.
 
-The \code{k2targ()} and \code{g2targ()} utilities are intended for users who already have a specific k-in-a-row or group design in mind, and only want to verify its balance point. The complementary utilities \verb{ktargOptions(), gtargOptions()} provide a broader survey of design-parameter options within user-specified constraints, given a desired target.
+The \code{k2targ()} and \code{g2targ()} utilities are intended for users who already have a specific k-in-a-row or group design in mind, and only want to verify its balance point. The complementary utilities \verb{ktargOptions(), gtargOptions()} provide a broader survey of design-parameter options within user-specified constraints, given a desired target. The 0.05 default tolerance level around the target, is what we recommend as \emph{"close enough"}. Otherwise, it is probably better to use biased-coin.
 
 Lastly, \code{bcoin()} returns the biased-coin probabilities given the user's designated target. In contrast to the two other UDDs described above, the biased-coin design can target any percentile with a precisely matched balance point. That said, k-in-a-row and group UDDs offer some advantages over biased-coin in terms of properties and operational simplicity.
 

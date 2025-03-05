@@ -53,7 +53,6 @@ dfsim <- function(n, starting=NULL, sprobs = NULL, cohort=1, Fvals, ensemble = d
 
 ### Validation  
 
- checkNatural(n)
  ## F values
   
   if (is.vector(Fvals)) {
