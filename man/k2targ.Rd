@@ -8,7 +8,7 @@
 \alias{bcoin}
 \title{Up-and-Down Target Calculation and Design Guidance}
 \usage{
-k2targ(k, lowTarget = FALSE)
+k2targ(k, lowTarget)
 
 ktargOptions(target, tolerance = 0.05, maxk = 20)
 
@@ -21,7 +21,7 @@ bcoin(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
 \arguments{
 \item{k}{the number of consecutive identical responses required for dose transitions (k-in-a-row functions only).}
 
-\item{lowTarget}{logical, \code{k2targ()} only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa? Default \code{FALSE}.}
+\item{lowTarget}{logical, \code{k2targ()} only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa?}
 
 \item{target}{the desired target response rate (as a fraction in \eqn{(0,1)}), where relevant.}
 

@@ -29,7 +29,7 @@
 #' 
 #' @param target the desired target response rate (as a fraction in \eqn{(0,1)}), where relevant.
 #' @param k the number of consecutive identical responses required for dose transitions (k-in-a-row functions only).
-#' @param lowTarget logical, `k2targ()` only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa? Default `FALSE`.
+#' @param lowTarget logical, `k2targ()` only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa? 
 #' @param cohort,lower,upper `g2targ()` only: the cohort (group) size, how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example `cohort=3, lower=0, upper=2` evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.
 #' @param tolerance 
 #'  - For `ktargOptions(), gtargOptions()`: the half-width of the interval around `target` in which to search for design options. Default 0.05. 
@@ -57,7 +57,7 @@
 
 #' @export
 
-k2targ<-function(k, lowTarget=FALSE)
+k2targ<-function(k, lowTarget)
 {
   checkNatural(k, parname = 'k', toolarge = 30)  
   tmp = 0.5 ^ (1/k)
@@ -170,15 +170,17 @@ return(dout)
 #' @rdname k2targ
 #' @export
 
-bcoin <- function(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
+bcoin <- function(target, presentation = 'both', digits = 4, tolerance = 0.05)
 {
-requireNamespace('numbers')
+requireNamespace('MASS')
   
 ## Validations
 checkTarget(target)
 checkTarget(tolerance, tname = "'tolerance'")
 if(tolerance >= min(target, 1 - target)/2) stop("'tolerance' is set too large.\n")
 if(tolerance < 1e-4) stop("'tolerance' is set unrealistically small. Change it to 1e-4 or more.\n")
+allowedprez = c('decimal', 'fraction', 'both')
+if(!(presentation %in% allowedprez) ) stop("Presentation must be one of", allowedprez)
 
 ### Targets too close to 0.5:
 
@@ -191,22 +193,15 @@ if(target >= 0.5 - tolerance && target <= 0.5 + tolerance)
 } else if(target < 0.5) { 
   
   coin = target / (1-target)
-  cout = round(coin, digits = ceiling(-log10(tolerance)))
-  if(fraction) 
-# Find rational coin fraction, erring upwards b/c at <0.5 BCD biases a bit down
-  {
-    coinFrac = numbers::ratFarey(coin, n = round(1/tolerance), upper = TRUE) 
-    if(nameplate)
+  if(presentation == 'decimal') cout = round(coin, digits) else
     {
-      frac2 = numbers::ratFarey(coin, n = round(1/tolerance), upper = FALSE) 
-      if(abs(coin - frac2[1]/frac2[2]) < abs(coin - coinFrac[1]/coinFrac[2]))
-        coinFrac = frac2
+      frac = MASS::fractions(coin, cycles = 4) 
+      
     }
-    cout = paste(coinFrac[1], '/', coinFrac[2])
   }
   message(paste("After positive response, move DOWN.
 After negative response, 'toss a COIN':
-   - with probability of approximately", cout, 'move UP
+   - with probability of", cout, 'move UP
    - Otherwise REPEAT same dose.\n') )
   
 } else if(target > 0.5) { 
@@ -227,7 +222,7 @@ After negative response, 'toss a COIN':
   }
   message(paste("After negative response, move UP.
 After positive response, 'toss a COIN':
-   - with probability of approximately", cout, 'move DOWN
+   - with probability of", cout, 'move DOWN
    - Otherwise REPEAT same dose.\n') )
 }  
   
