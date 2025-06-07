@@ -13,7 +13,7 @@
 #'  
 #' All functions first calculate the transition probability matrix (TPM), by calling one of the functions described under \code{\link{bcdmat}}. See that help page for more details.
 #' 
-#' @return A vector of allocation frequencies/probabilities for the doses, summing up to 1. Exception: `cumulvec(propotions = FALSE)` returns a vector of expected allocation counts, summing up to `n - exclude`. 
+#' @return A vector of allocation frequencies/probabilities for the doses, summing up to 1. Exception: `cumulvec(proportions = FALSE)` returns a vector of expected allocation counts, summing up to `n - exclude`. 
 #' 
 
 # For `pivec`,  an $M$-length vector with stationary/asymptotic visit frequencies.
@@ -158,7 +158,7 @@ cumulvec <- function(cdf, matfun, n, startdose = NULL, proportions = TRUE, exclu
   if(!exists('vec0')) vec0 = startdose
   # Now some validation 
   if(any(vec0<0) || sum(vec0) != 1 || length(vec0) != m) 
-    stop("'startdose' must be a single dose or a probability vector over doses.\n")
+    stop("'startdose' must be a single dose level, or a probability vector over doses.\n")
   
 # The output vector  
   ovec = rep(0, m)

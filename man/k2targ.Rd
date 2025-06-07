@@ -8,26 +8,28 @@
 \alias{bcoin}
 \title{Up-and-Down Target Calculation and Design Guidance}
 \usage{
-k2targ(k, lowTarget)
+k2targ(k, lowTarget, digits = 4)
 
-ktargOptions(target, tolerance = 0.05, maxk = 20)
+ktargOptions(target, tolerance = 0.05, maxk = 20, digits = 4)
 
-g2targ(cohort, lower, upper)
+g2targ(cohort, lower, upper, digits = 4)
 
-gtargOptions(target, minsize = 2, maxsize = 6, tolerance = 0.05)
+gtargOptions(target, minsize = 2, maxsize = 6, tolerance = 0.05, digits = 4)
 
-bcoin(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
+bcoin(target, presentation = "both", digits = 4, tolerance = 0.05)
 }
 \arguments{
 \item{k}{the number of consecutive identical responses required for dose transitions (k-in-a-row functions only).}
 
 \item{lowTarget}{logical, \code{k2targ()} only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa?}
 
+\item{digits}{\code{bcoin()} only: if the \code{presentation} includes a decimal fraction, how many digits to round to? Default 4. Since the function uses R's \code{round()} utility, trailing zeroes will be truncated.}
+
 \item{target}{the desired target response rate (as a fraction in \eqn{(0,1)}), where relevant.}
 
 \item{tolerance}{\itemize{
 \item For \verb{ktargOptions(), gtargOptions()}: the half-width of the interval around \code{target} in which to search for design options. Default 0.05.
-\item For \code{bcoin()}: the half-width of the interval around 0.5 in which the function recommends to simply use classical UD without a coin, as well as the approximate amount of rounding to the returned coin probability (whether in decimal on rational terms). Default 0.02, and hard-coded to be no less than 0.0001.
+\item For \code{bcoin()}: the half-width of the interval around 0.5 in which the function recommends to simply use classical UD without a coin. Default 0.05.
 }}
 
 \item{maxk}{\code{ktargOptions()} only: the maximum value of \eqn{k} to consider.}
@@ -36,9 +38,7 @@ bcoin(target, fraction = FALSE, nameplate = FALSE, tolerance = 0.02)
 
 \item{minsize, maxsize}{\code{gtargOptions()} only: the minimum and maximum cohort size to consider. \code{minsize} has to be at least 2 (cohort size 1 is equivalent to classical UD).}
 
-\item{fraction}{\code{bcoin()} only: whether to report the coin probability as a rational rather than decimal fraction. Default \code{FALSE}.}
-
-\item{nameplate}{\code{bcoin()} only: in case \code{fraction = TRUE}, whether to return the "exact" rational probability, or allow some nudging of the resulting balance point towards the median. Default \code{FALSE}, and moot when \code{fraction = FALSE}.}
+\item{presentation}{\code{bcoin()} only: whether to report the coin probability as a \code{'decimal'},  rational \code{'fraction'}. or \code{'both'} (default).}
 }
 \value{
 \itemize{
@@ -65,9 +65,7 @@ However, since the UD dose distribution has some width, and since even the balan
 
 The \code{k2targ()} and \code{g2targ()} utilities are intended for users who already have a specific k-in-a-row or group design in mind, and only want to verify its balance point. The complementary utilities \verb{ktargOptions(), gtargOptions()} provide a broader survey of design-parameter options within user-specified constraints, given a desired target. The 0.05 default tolerance level around the target, is what we recommend as \emph{"close enough"}. Otherwise, it is probably better to use biased-coin.
 
-Lastly, \code{bcoin()} returns the biased-coin probabilities given the user's designated target. In contrast to the two other UDDs described above, the biased-coin design can target any percentile with a precisely matched balance point. That said, k-in-a-row and group UDDs offer some advantages over biased-coin in terms of properties and operational simplicity.
-
-\code{bcoin()} can return the probability as a decimal (default) or approximate rational fraction. In the latter case, if \code{nameplate} is set to \code{TRUE}, you will get the exact \emph{"nameplate"} coin probability \eqn{\Gamma/(1 - \Gamma)}, with \eqn{\Gamma} being the target percentile between 0 and 1. However, the default \code{nameplate = FALSE} might nudge the coin to yield a balance point somewhat closer to the median. This choice is based upon the theoretical finding that the biased-coin design does tend to concentrate doses a bit further away from the median than the balance point would suggest (Oron and Hoff, 2009). See more information in \code{bcoin()}'s argument descriptions.
+Lastly, \code{bcoin()} returns the biased-coin probabilities given the user's designated target. In contrast to the two other UDDs described above, the biased-coin design can target any percentile with a precisely matched balance point. That said, k-in-a-row and group UDDs offer some advantages over biased-coin in terms of performance and operational simplicity. \code{bcoin()} can return the probability as a decimal, rational fraction, or both (default).
 }
 \references{
 \itemize{

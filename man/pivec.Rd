@@ -39,7 +39,7 @@ cumulvec(
 \item{exclude}{Integer (\code{cumulvec} only) Should the cumulative distribution exclude a certain number of initial observations? Default 0.}
 }
 \value{
-A vector of allocation frequencies/probabilities for the doses, summing up to 1. Exception: \code{cumulvec(propotions = FALSE)} returns a vector of expected allocation counts, summing up to \code{n - exclude}.
+A vector of allocation frequencies/probabilities for the doses, summing up to 1. Exception: \code{cumulvec(proportions = FALSE)} returns a vector of expected allocation counts, summing up to \code{n - exclude}.
 }
 \description{
 Dose-allocation probability vectors that quantify the instantaneous, cumulative, and asymptotic behavior of Up-and-Down designs.
