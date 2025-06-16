@@ -24,7 +24,7 @@ udest(
 
 \item{balancePt}{In case the design's inherent balance point differs somewhat from \code{target}, specify it here to improve estimation accuracy. See Details for further explanation. Otherwise, this argument defaults to be equal to \code{target}.}
 
-\item{conf}{The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations. Setting to \code{NULL} triggers special behavior; see under "Value".}
+\item{conf}{The desired confidence level for the confidence interval (CI). Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations. Setting to \code{NULL} if you don't want a CI. See more under "Value".}
 
 \item{allow1extra}{logical: allow \code{length(x)} to be either equal or 1 greater than \code{length(y)}? (default \code{FALSE}) The \emph{"n+1"} dose-allocation, determined from the last allocations and responses, might be tagged onto \code{x}. If this point is provided and \code{allow1extra=TRUE}, \code{udplot()} will show it as a grey diamond; the other functions will ignore it.}
 
@@ -35,7 +35,7 @@ udest(
 \value{
 Geneally, a one-row data frame with 4 variables: \code{target}, \code{point} (the point estimate), \verb{lowerXYconf, upperXYconf} (the confidence bounds, with \code{XY} standing for the percents, default \code{90}).
 
-However, if \code{conf = NULL} only the point estimate will be returned. This is for compatibility with bootstrap confidence intervals (which is not implemented as default for CIR), and with UD ensemble simulation in general.
+However, if \code{conf = NULL} only the point estimate will be returned. This is for compatibility with bootstrap confidence intervals (which we use for dose-averaging estimators but not for CIR), and with UD ensemble simulation in general.
 }
 \description{
 Centered Isotonic Regression (CIR) is an extension of isotonic regression (IR), substantially improving upon IR's estimation performance in the dose-response and dose-finding contexts (Oron and Flournoy 2017, Flournoy and Oron 2020). CIR is the recommended method for estimating up-and-down targets.
@@ -113,6 +113,7 @@ par(op) # Back to business as usual ;)
 \item Oron AP, Flournoy N.  Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. \emph{Statistics in Biopharmaceutical Research} 2017; 9, 258-267. \href{https://arxiv.org/pdf/1701.05964}{Author's public version available on arxiv.org.}
 \item Flournoy N, Oron AP. Bias Induced by Adaptive Dose-Finding Designs. \emph{Journal of Applied Statistics} 2020; 47, 2431-2442.
 \item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50. \href{https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf}{See in particular the open-access Supplement.}
+\item Oron AP, Souter MJ, Flournoy N. \href{https://journals.lww.com/anesthesiology/fulltext/2022/08000/understanding_research_methods__up_and_down.9.aspx}{Understanding Research Methods: Up-and-down Designs for Dose-finding.} \emph{Anesthesiology} 2022; 137:137–50.
 }
 }
 \seealso{

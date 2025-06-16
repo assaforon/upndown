@@ -32,7 +32,7 @@ cumulvec(
 
 \item{startdose}{(for \verb{currentvec, cumulvec}), where does the experiment start? To be given as a dose-level index between 1 and \eqn{M}. If left as \code{NULL} (default), function will assume the equivalent of \emph{"fair die roll"} among all doses. User can also specify your own \eqn{M}-length probability vector.}
 
-\item{marginalize}{logical (for \verb{currentvec, cumulvec} when \code{matfun = kmatFull}) should the returned vector be marginalized over dose levels (\code{TRUE}, default), or should the full set with internal states be returned?}
+\item{marginalize}{logical (for \verb{currentvec, cumulvec} when \code{matfun = kmatFull}) should the returned vector be marginalized over dose levels (\code{TRUE}, default), or should the full set with internal states be returned? If desired, see the note to \code{kmatFull}'s help page for more details.}
 
 \item{proportions}{Logical (\code{cumulvec} only) Would you like the results returned as proportions (= a probability vector; \code{TRUE}, default), or as cumulative allocation counts?}
 
@@ -57,9 +57,9 @@ Three functions are offered:
 All functions first calculate the transition probability matrix (TPM), by calling one of the functions described under \code{\link{bcdmat}}. See that help page for more details.
 }
 \note{
-When using the k-in-a-row design, set \code{matfun = kmatMarg} if using \code{pivec}, and otherwise \code{kmatFull}.
+When using the k-in-a-row design, set \code{matfun = kmatMarg} for \code{pivec}, and otherwise \code{kmatFull}.
 
-At present, these functions are unable to incorporate in the calculations the impact of the recommended "fast start" stage for k-in-a-row and biased-coin designs. Such a stage begins with a classic UD run, until the first "minority" outcome is encountered (1 for below-median targets and vice versa). Generally such a fast start would make small-sample probability vectors approach the asymptotic distribution more quickly.
+At present, these functions are unable to incorporate in the calculations the impact of the recommended "fast start" stage for k-in-a-row and biased-coin designs. Such a stage begins with a classic UD run, until the first "minority" outcome is encountered (y=1 for below-median targets and vice versa). Generally such a fast start would make small-sample probability vectors approach the asymptotic distribution more quickly.
 }
 \examples{
 #----- Classical UD Example -----#
@@ -119,7 +119,9 @@ round(cumulvec(cdf = equivF, matfun = classicmat, startdose = 6, n = 30, exclude
 \itemize{
 \item Diaconis P, Stroock D. Geometric Bounds for Eigenvalues of Markov Chains. \emph{Ann. Appl. Probab.} 1991;1(1):36-61.
 \item Hughes BD. \emph{Random Walks and Random Environments, Vol. 1.} Oxford University Press, 1995.
-\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50.
+\item Oron AP, Flournoy N. \href{https://nejsds.nestat.org/journal/NEJSDS/article/86/text}{Up-and-Down: The Most Popular, Most Reliable, and Most Overlooked Dose-Finding Design.} \emph{New Eng J Stat Data Science} 2024; 1-12.
+\item Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. \emph{Stat Med.} 2009;28:1805-1820.
+\item Oron AP, Souter MJ, Flournoy N. \href{https://journals.lww.com/anesthesiology/fulltext/2022/08000/understanding_research_methods__up_and_down.9.aspx}{Understanding Research Methods: Up-and-down Designs for Dose-finding.} \emph{Anesthesiology} 2022; 137:137–50.
 }
 }
 \seealso{

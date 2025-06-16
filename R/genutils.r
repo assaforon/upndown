@@ -35,12 +35,12 @@
 #' @param maxk `ktargOptions()` only: the maximum value of \eqn{k} to consider.
 #' @param minsize,maxsize `gtargOptions()` only: the minimum and maximum cohort size to consider. `minsize` has to be at least 2 (cohort size 1 is equivalent to classical UD).
 #' @param presentation `bcoin()` only: whether to report the coin probability as a `'decimal'`,  rational `'fraction'`. or `'both'` (default). 
-#' @param digits `bcoin()` only: if the `presentation` includes a decimal fraction, how many digits to round to? Default 4. Since the function uses R's `round()` utility, trailing zeroes will be truncated.
+#' @param digits how many digits to round to? Default 4. Since the functions use R's `round()` utility, trailing zeroes will be truncated.
 #' 
 #' 
 #' @return 
 #'  - `k2targ(), g2targ()`: the official balance point given the user-provided design parameters.
-#'  - `ktargOptions(), gtargOptions()`: a `data.frame` with design parameters and official balance point, for all options that meet user-provided constraints. A printed string provides dose transition rule guidance.
+#'  - `ktargOptions(), gtargOptions()`: a `data.frame` with design parameters and balance points, for all options that meet user-provided constraints. A printed string provides dose transition rule guidance.
 #'  - `bcoin():` a printed string that informs user of the biased-coin design rules, including the 'coin' probability in its user-chosen format (decimal or fraction). In case the user-desired target is 0.5 or very close to it, the string will inform user that they are better off just using classical UDD without a coin.
 #'  
 #'  
@@ -86,8 +86,8 @@ ktargOptions<-function(target, tolerance = 0.05, maxk = 20, digits = 4)
   if(any(diff(krange) < 0 ) ) return("No k options within target range; please increase tolerance band or use biased-coin.")
   krange = sort( krange[krange > 0 & krange <= maxk] )
   
-  message("For the following targets, k ", ifelse(hi, "positive", "negative"),
-      " responses are needed for a move ", ifelse(hi, "down.\n", "up.\n"),
+  message("For the following targets, k consecutive ", ifelse(hi, "positive", "negative"),
+      " responses are needed for a move ", ifelse(hi, "DOWN.\n", "UP.\n"),
       "Only one ", ifelse(hi, "negative", "positive"), " response is needed for the opposite move.\n")
   
   data.frame(k = krange, BalancePoint = k2targ(krange, lowTarget = !hi, digits = digits) )
@@ -156,9 +156,9 @@ for(k in minsize:maxsize)
 
 if(nrow(dout) == 0) return("No Group UDD options within target range; please increase tolerance band or use biased-coin.")
 
-message("For each design, if positive responses <= Lower, move up\n")
-message("                 if positive responses >= Upper, move down\n")
-message("  otherwise repeat same dose (relevant only when Upper - Lower > 1).\n")
+message("For each design, if positive responses <= Lower, move UP.\n")
+message("                 if positive responses >= Upper, move DOWN.\n")
+message("  otherwise, REPEAT same dose (relevant only when Upper - Lower > 1).\n")
 
 return(dout)
 }
@@ -200,7 +200,7 @@ if(target >= 0.5 - tolerance && target <= 0.5 + tolerance)
     }
   
   message(paste("After a positive response, move DOWN.
-After a negative response, 'toss a COIN':
+After a negative response, 'toss a Coin':
    - with probability of", cout, 'move UP
    - Otherwise REPEAT same dose.\n') )
   
@@ -215,7 +215,7 @@ After a negative response, 'toss a COIN':
   }
   
   message(paste("After a negative response, move UP.
-After a positive response, 'toss a COIN':
+After a positive response, 'toss a Coin':
    - with probability of", cout, 'move DOWN
    - Otherwise REPEAT same dose.\n') )
 }  
@@ -237,7 +237,7 @@ After a positive response, 'toss a COIN':
 #' @param k (`checkNatural()` only) input number to check whether it's a natural number 
 #' @param toolarge (`checkNatural()` only) what number would be considered too large to be realistic?
 #' @param x (`checkDose()` only) input object to be verified as valid dose values
-#' @param maxfrac (`checkDose()` only) maximum number of unique values (as fraction of sample size) considered realistic for up-and-down data. Default $0.9n.$ Function also gives a warning if number exceeds $n/2$, since typically this suggests the effective sample size around target is too small.
+#' @param maxfrac (`checkDose()` only) maximum number of unique values (as fraction of sample size) considered realistic for up-and-down data. Default \eqn{0.9n}. Function also gives a warning if number exceeds \eqn{n/2}, since typically this suggests the effective sample size around target is too small.
 #' @param y (`checkResponse()` only) input object to be verified as valid response values (`TRUE/FALSE or 0/1)
 #' @param flatOK logical (`checkCDF()` only) if the CDF is completely flat, should function issue a warning (`TRUE`, default) - or stop with an error (`FALSE`)?
 #' 

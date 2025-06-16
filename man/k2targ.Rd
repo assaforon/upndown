@@ -23,7 +23,7 @@ bcoin(target, presentation = "both", digits = 4, tolerance = 0.05)
 
 \item{lowTarget}{logical, \code{k2targ()} only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa?}
 
-\item{digits}{\code{bcoin()} only: if the \code{presentation} includes a decimal fraction, how many digits to round to? Default 4. Since the function uses R's \code{round()} utility, trailing zeroes will be truncated.}
+\item{digits}{how many digits to round to? Default 4. Since the functions use R's \code{round()} utility, trailing zeroes will be truncated.}
 
 \item{target}{the desired target response rate (as a fraction in \eqn{(0,1)}), where relevant.}
 
@@ -43,7 +43,7 @@ bcoin(target, presentation = "both", digits = 4, tolerance = 0.05)
 \value{
 \itemize{
 \item \verb{k2targ(), g2targ()}: the official balance point given the user-provided design parameters.
-\item \verb{ktargOptions(), gtargOptions()}: a \code{data.frame} with design parameters and official balance point, for all options that meet user-provided constraints. A printed string provides dose transition rule guidance.
+\item \verb{ktargOptions(), gtargOptions()}: a \code{data.frame} with design parameters and balance points, for all options that meet user-provided constraints. A printed string provides dose transition rule guidance.
 \item \verb{bcoin():} a printed string that informs user of the biased-coin design rules, including the 'coin' probability in its user-chosen format (decimal or fraction). In case the user-desired target is 0.5 or very close to it, the string will inform user that they are better off just using classical UDD without a coin.
 }
 }

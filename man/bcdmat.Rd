@@ -25,16 +25,16 @@ gudmat(cdf, cohort, lower, upper)
 
 \item{k}{the number of consecutive identical responses required for dose transitions (k-in-a-row functions only).}
 
-\item{lowTarget}{logical k-in-a-row functions only: is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa? Default \code{FALSE}. See "Details" for more information.}
+\item{lowTarget}{logical (k-in-a-row functions only): is the design targeting below-median percentiles, with \eqn{k} repeated negative responses needed to level up and only one to level down - or vice versa? Default \code{FALSE}. See "Details" for more information.}
 
 \item{fluffup}{logical (\code{kmatFull} only): in the full k-in-a-row internal-state representation, should we \emph{"fluff"} the matrix up so that it has \eqn{Mk} rows and columns (\code{TRUE}), or exclude \eqn{k-1} "phantom" states near the less-likely-to-be-visited boundary (\code{FALSE}, default)?}
 
 \item{cohort}{\code{gudmat} only: the cohort (group) size}
 
-\item{lower, upper}{(\code{gudmat} only) how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example \verb{cohort=3, lower=0, upper=2} evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.}
+\item{lower, upper}{(\code{gudmat} only) how many positive responses are allowed for a move upward, and how many are required for a move downward, respectively. For example, \verb{cohort=3, lower=0, upper=2} evaluates groups of 3 observations at a time, moves up if none are positive, down if \eqn{>=2} are positive, and repeats the same dose with 1 positive.}
 }
 \value{
-An \eqn{M\times M} transition probability matrix, except for \code{kmatFull()} with \eqn{k>1} which returns a larger square matrix.
+An \eqn{M\times M} transition probability matrix, except for \code{kmatFull()} with \eqn{k>1} which returns a larger square matrix; see Note below for details on the latter.
 }
 \description{
 Transition Probability Matrices for Common Up-and-Down Designs
@@ -44,16 +44,16 @@ Up-and-Down designs (UDDs) generate random walk behavior, whose theoretical prop
 
 The utilities described here calculate the TPMs of the most common and simplest UDDs:
 \itemize{
-\item The k-in-a-row or \strong{fixed staircase} design common in sensory studies: \verb{kmatMarg(), kmatFull()} (Gezmu, 1996; Oron and Hoff, 2009; see Note). Design parameters are k, a natural number, and whether k negative responses are required for dose transition, or k positive responses. The former is for targets below the median and vice versa.
+\item The k-in-a-row or \strong{fixed staircase} design common in sensory studies: \verb{kmatMarg(), kmatFull()} (Gezmu, 1996; Oron and Hoff, 2009; see Note). Design parameters are \code{k}, a natural number, and \code{lowTarget} which determines whether \code{k} positive responses are required for dose transition, or \code{k} negative responses. The former is for targets below the median and vice versa.
 \item The Durham-Flournoy Biased Coin Design: \code{bcdmat()}. This design can target any percentile via the \code{target} argument (Durham and Flournoy, 1994).
-\item The original \emph{"classical"} median-targeting UDD: \code{classicmat()} (Dixon and Mood, 1948). This is simply a wrapper for \code{bcdmat()} with \code{target} set to 0.5.
-\item Cohort or group UDD: \code{gudmat()}, with three design parameters for the group size and the up/down rule thresholds  (Gezmu and Flournoy, 2006).
+\item Cohort or group UDD: \code{gudmat()}, with three design parameters \verb{cohort, lower, upper}, for the group size and the up/down rule thresholds  (Gezmu and Flournoy, 2006).
+\item The original \emph{"classical"} median-targeting UDD: \code{classicmat()} (Dixon and Mood, 1948). The classical UDD can be framed as a special case of each of the other 3 UDDs. Functionally, this utility is simply a wrapper for \code{bcdmat()} with \code{target} set to 0.5.
 }
 }
 \note{
-As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, k-in-a-row UDDs with \eqn{k>1} generate a random walk \emph{with internal states}. Their full TPM is therefore larger than \eqn{M\times M.} However, in terms of random-walk behavior, most salient properties are better represented via an \eqn{M\times M} matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This matrix is provided by \code{kmatMarg()}, while \code{kmatFull()} returns the full matrix including internal states.
+As Gezmu (1996) discovered and Oron and Hoff (2009) further extended, k-in-a-row UDDs with \eqn{k>1} generate what can be described as a random walk **with \verb{k' internal states**. Their full TPM is therefore larger than \eqn{M\times M.} However, in terms of random-walk behavior, most salient properties are better represented via an \eqn{M\times M} matrix analogous to those of the other designs, with transition probabilities marginalized over internal states using their asymptotic frequencies. This matrix is provided by }kmatMarg()\verb{, while }kmatFull()` returns the full matrix including internal states. Another perspective on this intriguing design, viewing it as generaating a \emph{semi-Markov process}, with equivalent results (Sada Allo et al., in review).
 
-Also, in \code{kmatFull()} there are two matrix-size options. Near one of the boundaries (upper boundary with \code{lowTarget = TRUE}, and vice versa), the most extreme \eqn{k} internal states are practically indistinguishable, so in some sense only one of them really exists. Using the \code{fluffup} argument, users can choose between having a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix, or reducing it to its effectivelly true size by removing \eqn{k-1} rows and columns.
+In \code{kmatFull()}, there are two matrix-size options. At one of the boundary dose-levels (upper boundary with \code{lowTarget = TRUE}, and vice versa), the \eqn{k} internal states are practically indistinguishable, so arguably only one of them exists. Hence, the most compact TPM representation, and the function default, is \eqn{\left[(M-1)k + 1\right]\times \left[(M-1)k + 1\right]}. Using \code{fluffup = TRUE}, users can choose a more aesthetically symmetric (but a bit misleading) full \eqn{Mk\times Mk} matrix.
 }
 \examples{
 #  Let's use an 8-dose design, and  a somewhat asymmetric CDF
@@ -109,8 +109,10 @@ round(kmatMarg(exampleF, k = 6, lowTarget = FALSE), 2)
 \item Durham SD, Flournoy N. Random walks for quantile estimation. In: \emph{Statistical Decision Theory and Related Topics V} (West Lafayette, IN, 1992). Springer; 1994:467-476.
 \item Gezmu M. The Geometric Up-and-Down Design for Allocating Dosage Levels. PhD Thesis. American University; 1996.
 \item Gezmu M, Flournoy N. Group up-and-down designs for dose-finding. \emph{J Stat Plan Inference.} 2006;136(6):1749-1764.
+\item Oron AP, Flournoy N. \href{https://nejsds.nestat.org/journal/NEJSDS/article/86/text}{Up-and-Down: The Most Popular, Most Reliable, and Most Overlooked Dose-Finding Design.} \emph{New Eng J Stat Data Science} 2024; 1-12.
 \item Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. \emph{Stat Med.} 2009;28:1805-1820.
-\item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50.
+\item Oron AP, Souter MJ, Flournoy N. \href{https://journals.lww.com/anesthesiology/fulltext/2022/08000/understanding_research_methods__up_and_down.9.aspx}{Understanding Research Methods: Up-and-down Designs for Dose-finding.} \emph{Anesthesiology} 2022; 137:137–50.
+\item Sada M, Flournoy N, Oron AP, Moler J. The K-in-a-row design as a semi-Markov process. \href{https://academica-e.unavarra.es/entities/publication/e6741a5b-3851-47e0-bb10-927ac48b8dca}{Preprint, University of Navarra.}
 }
 }
 \seealso{

@@ -19,9 +19,9 @@
 # For `pivec`,  an $M$-length vector with stationary/asymptotic visit frequencies.
 #' 
 #' 
-#' @note When using the k-in-a-row design, set `matfun = kmatMarg` if using `pivec`, and otherwise `kmatFull`.
+#' @note When using the k-in-a-row design, set `matfun = kmatMarg` for `pivec`, and otherwise `kmatFull`.
 #'
-#' @note At present, these functions are unable to incorporate in the calculations the impact of the recommended "fast start" stage for k-in-a-row and biased-coin designs. Such a stage begins with a classic UD run, until the first "minority" outcome is encountered (1 for below-median targets and vice versa). Generally such a fast start would make small-sample probability vectors approach the asymptotic distribution more quickly.
+#' @note At present, these functions are unable to incorporate in the calculations the impact of the recommended "fast start" stage for k-in-a-row and biased-coin designs. Such a stage begins with a classic UD run, until the first "minority" outcome is encountered (y=1 for below-median targets and vice versa). Generally such a fast start would make small-sample probability vectors approach the asymptotic distribution more quickly.
 #' 
 #' @inheritParams bcdmat
 #' 
@@ -30,7 +30,7 @@
 #' @param startdose (for `currentvec, cumulvec`), where does the experiment start? To be given as a dose-level index between 1 and \eqn{M}. If left as `NULL` (default), function will assume the equivalent of *"fair die roll"* among all doses. User can also specify your own \eqn{M}-length probability vector.
 #' @param proportions Logical (`cumulvec` only) Would you like the results returned as proportions (= a probability vector; `TRUE`, default), or as cumulative allocation counts? 
 #' @param exclude Integer (`cumulvec` only) Should the cumulative distribution exclude a certain number of initial observations? Default 0. 
-#' @param marginalize logical (for `currentvec, cumulvec` when `matfun = kmatFull`) should the returned vector be marginalized over dose levels (`TRUE`, default), or should the full set with internal states be returned?
+#' @param marginalize logical (for `currentvec, cumulvec` when `matfun = kmatFull`) should the returned vector be marginalized over dose levels (`TRUE`, default), or should the full set with internal states be returned? If desired, see the note to `kmatFull`'s help page for more details.
 #' @param ... Arguments passed on to the design's matrix-calculating function.
 #' 
 #' @author Assaf P. Oron \code{<assaf.oron.at.gmail.com>}	  
@@ -44,11 +44,12 @@
 #' @example inst/examples/vecExamples.r
 
 
-
 #' @references 
 #'  - Diaconis P, Stroock D. Geometric Bounds for Eigenvalues of Markov Chains. *Ann. Appl. Probab.* 1991;1(1):36-61. 
 #'  - Hughes BD. *Random Walks and Random Environments, Vol. 1.* Oxford University Press, 1995.
-#'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50.
+#'  - Oron AP, Flournoy N. [Up-and-Down: The Most Popular, Most Reliable, and Most Overlooked Dose-Finding Design.](https://nejsds.nestat.org/journal/NEJSDS/article/86/text) *New Eng J Stat Data Science* 2024; 1-12.
+#'  - Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. *Stat Med.* 2009;28:1805-1820.
+#'  - Oron AP, Souter MJ, Flournoy N. [Understanding Research Methods: Up-and-down Designs for Dose-finding.](https://journals.lww.com/anesthesiology/fulltext/2022/08000/understanding_research_methods__up_and_down.9.aspx) *Anesthesiology* 2022; 137:137–50. 
 
 ########################## Whew! Now the actual functions.
 

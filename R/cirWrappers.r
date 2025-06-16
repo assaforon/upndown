@@ -15,13 +15,13 @@
 #'
 #' @return Geneally, a one-row data frame with 4 variables: `target`, `point` (the point estimate), `lowerXYconf, upperXYconf` (the confidence bounds, with `XY` standing for the percents, default `90`).
 #' 
-#' However, if `conf = NULL` only the point estimate will be returned. This is for compatibility with bootstrap confidence intervals (which is not implemented as default for CIR), and with UD ensemble simulation in general.
+#' However, if `conf = NULL` only the point estimate will be returned. This is for compatibility with bootstrap confidence intervals (which we use for dose-averaging estimators but not for CIR), and with UD ensemble simulation in general.
 #'  
 #' @param x numeric vector: sequence of administered doses, treatments, stimuli, etc.
 #' @param y numeric vector: sequence of observed responses. Must be same length as `x`, and must be coded `TRUE/FALSE` or 0/1.
 #' @param target The target response rate for which target dose estimate is requested. Must be a single number in \eqn{(0,1).}
 #' @param balancePt In case the design's inherent balance point differs somewhat from `target`, specify it here to improve estimation accuracy. See Details for further explanation. Otherwise, this argument defaults to be equal to `target`.
-#' @param conf The desired confidence level for the confidence interval. Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations. Setting to `NULL` triggers special behavior; see under "Value".
+#' @param conf The desired confidence level for the confidence interval (CI). Default \eqn{90\%.} We do not recommend increasing to \eqn{95\%} unless you have \eqn{\sim 100} or more observations. Setting to `NULL` if you don't want a CI. See more under "Value".
 #' @param curvedCI logical: should confidence-interval boundaries rely upon an outwardly-curving interpolation (`TRUE`) or linear? If `NULL` (default), it will be `TRUE` for targets outside the 40th-60th percentile range.
 #' @param allow1extra logical: allow `length(x)` to be either equal or 1 greater than `length(y)`? (default `FALSE`) The *"n+1"* dose-allocation, determined from the last allocations and responses, might be tagged onto `x`. If this point is provided and `allow1extra=TRUE`, `udplot()` will show it as a grey diamond; the other functions will ignore it.
 #' @param ... Pass-through argument added for flexible calling context.
@@ -30,6 +30,8 @@
 #'  - Oron AP, Flournoy N.  Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. *Statistics in Biopharmaceutical Research* 2017; 9, 258-267. [Author's public version available on arxiv.org.](https://arxiv.org/pdf/1701.05964)
 #'  - Flournoy N, Oron AP. Bias Induced by Adaptive Dose-Finding Designs. *Journal of Applied Statistics* 2020; 47, 2431-2442.  
 #'  - Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. [See in particular the open-access Supplement.](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf)
+#'  - Oron AP, Souter MJ, Flournoy N. [Understanding Research Methods: Up-and-down Designs for Dose-finding.](https://journals.lww.com/anesthesiology/fulltext/2022/08000/understanding_research_methods__up_and_down.9.aspx) *Anesthesiology* 2022; 137:137–50. 
+
 #'  
 #' @seealso 
 #'  - \code{\link[cir]{quickInverse}}, `cir` package.

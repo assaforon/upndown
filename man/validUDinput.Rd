@@ -36,7 +36,7 @@ checkResponse(y)
 
 \item{x}{(\code{checkDose()} only) input object to be verified as valid dose values}
 
-\item{maxfrac}{(\code{checkDose()} only) maximum number of unique values (as fraction of sample size) considered realistic for up-and-down data. Default $0.9n.$ Function also gives a warning if number exceeds $n/2$, since typically this suggests the effective sample size around target is too small.}
+\item{maxfrac}{(\code{checkDose()} only) maximum number of unique values (as fraction of sample size) considered realistic for up-and-down data. Default \eqn{0.9n}. Function also gives a warning if number exceeds \eqn{n/2}, since typically this suggests the effective sample size around target is too small.}
 
 \item{y}{(\code{checkResponse()} only) input object to be verified as valid response values (`TRUE/FALSE or 0/1)}
 }

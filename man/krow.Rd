@@ -19,7 +19,7 @@ groupUD(doses, responses, s, ll, ul, ...)
 
 \item{lowTarget}{(\code{krow} and \code{bcd}) logical: is the target below 0.5 (median threshold)?}
 
-\item{fastStart}{(\code{krow} and \code{bcd}) logical: should the experiment begin with a classical-UD-like stage until the first "minority" response is observed (i.e., a 1 for below-median targets and vice versa)? Even though \code{TRUE} delivers better experimental performance and is recommended when allowed, default is \code{FALSE} because toxicity/safety studies are unlikely to allow it.}
+\item{fastStart}{(\code{krow} and \code{bcd}) logical: should the experiment begin with a classical-UD-like stage until the first "minority" response is observed (i.e., a 1 for below-median targets and vice versa)? Even though \code{TRUE} delivers better experimental performance and is recommended when allowed, default is \code{FALSE} in order to ensure the user makes a conscious decision to allow it.}
 
 \item{...}{Technical pass-through argument, to allow for flexibility when constructing design-comparison simulation ensembles.}
 
