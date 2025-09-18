@@ -201,12 +201,6 @@ requireNamespace('cir')
   }
   checkDose(x)
   checkResponse(y)
-  if(balancePt[1]!=target)
-  {
-    if(length(balancePt) > 1) stop("Experiment can only have a single balance point.\n")
-    checkTarget(balancePt, tname='balancePt')
-    if(abs(balancePt - target) > 0.1) warning("We strongly advise against estimating targets this far from the design's balance point.\n")
-  }
   
 tmp = cir::doseResponse(x=x, y=y)
 if(percents) tmp$y = 100 * tmp$y

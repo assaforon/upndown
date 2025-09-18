@@ -38,12 +38,12 @@ Geneally, a one-row data frame with 4 variables: \code{target}, \code{point} (th
 However, if \code{conf = NULL} only the point estimate will be returned. This is for compatibility with bootstrap confidence intervals (which we use for dose-averaging estimators but not for CIR), and with UD ensemble simulation in general.
 }
 \description{
-Centered Isotonic Regression (CIR) is an extension of isotonic regression (IR), substantially improving upon IR's estimation performance in the dose-response and dose-finding contexts (Oron and Flournoy 2017, Flournoy and Oron 2020). CIR is the recommended method for estimating up-and-down targets.
+Centered Isotonic Regression (CIR) is an extension of isotonic regression (IR), substantially improving upon IR's estimation performance in the dose-response and dose-finding contexts (Oron and Flournoy 2017, Flournoy and Oron 2019). CIR is the recommended method for estimating up-and-down targets.
 }
 \details{
 CIR and related methods are available in the \code{cir} package. The \code{udest()} function in the present package provides a convenient wrapper for \code{cir::quickInverse()}, with arguments already set to the appropriate values for estimating the target dose after an up-and-down experiment. The function also returns a confidence interval as default.
 
-\strong{WARNING!} You should not estimate target doses too far removed from the design's actual balance point (definitely no further than 0.1, e.g., estimating the 33rd percentile for a design whose balance point is the median). As Flournoy and Oron (2020) explain, observed response rates are biased away from the balance point. Even though \code{udest()} performs the rudimentary bias correction described in that article, practically speaking this correction's role is mostly to expand the confidence intervals in response to the bias. It cannot guarantee to provide reliable off-balance-point estimates.
+\strong{WARNING!} You should not estimate target doses too far removed from the design's actual balance point (definitely no further than 0.1, e.g., estimating the 33rd percentile for a design whose balance point is the median). As Flournoy and Oron (2019) explain, observed response rates are biased away from the balance point. Even though \code{udest()} performs the rudimentary bias correction described in that article, practically speaking this correction's role is mostly to expand the confidence intervals in response to the bias. It cannot guarantee to provide reliable off-balance-point estimates.
 }
 \examples{
 
@@ -111,9 +111,8 @@ par(op) # Back to business as usual ;)
 \references{
 \itemize{
 \item Oron AP, Flournoy N.  Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. \emph{Statistics in Biopharmaceutical Research} 2017; 9, 258-267. \href{https://arxiv.org/pdf/1701.05964}{Author's public version available on arxiv.org.}
-\item Flournoy N, Oron AP. Bias Induced by Adaptive Dose-Finding Designs. \emph{Journal of Applied Statistics} 2020; 47, 2431-2442.
+\item Flournoy N, Oron AP. Bias Induced by Adaptive Dose-Finding Designs. \emph{Journal of Applied Statistics} 2019; 47, 2431-2442.
 \item Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. \emph{Anesthesiology} 2022; 137:137–50. \href{https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf}{See in particular the open-access Supplement.}
-\item Oron AP, Souter MJ, Flournoy N. \href{https://journals.lww.com/anesthesiology/fulltext/2022/08000/understanding_research_methods__up_and_down.9.aspx}{Understanding Research Methods: Up-and-down Designs for Dose-finding.} \emph{Anesthesiology} 2022; 137:137–50.
 }
 }
 \seealso{
