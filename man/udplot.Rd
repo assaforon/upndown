@@ -31,7 +31,7 @@ udplot(
 
 \item{symbcol}{The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there might be an error message.}
 
-\item{doselabels}{(\code{DRtrace} only) Dose values to be plotted along the y-axis. If \code{NULL} (default), those will be the doses in the dataset (i.e., \code{sort(unique(x))}).}
+\item{doselabels}{Dose values to be plotted along the y-axis (\code{udplot()}) or x-axis (\code{drplot()}). Must be on same scale as \code{x}. If \code{NULL} (default), those will be the doses in the dataset (i.e., \code{sort(unique(x))}).}
 
 \item{allow1extra}{logical: allow \code{length(x)} to be either equal or 1 greater than \code{length(y)}? (default \code{FALSE}) The \emph{"n+1"} dose-allocation, determined from the last allocations and responses, might be tagged onto \code{x}. If this point is provided and \code{allow1extra=TRUE}, \code{udplot()} will show it as a grey diamond; the other functions will ignore it.}
 

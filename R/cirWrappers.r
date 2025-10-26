@@ -116,11 +116,12 @@ tmp
 #' @param connect logical: whether to connect the symbols (generic plotting type `'b'`). Default \code{TRUE} for `udplot()` and \code{FALSE} for `drplot()`.
 #' @param symbcol The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there might be an error message.
 #' @param xtitle,ytitle	x-axis and y-axis titles. Some reasonable defaults are provided, to avoid an annoying error message.
-#' @param doselabels (\code{DRtrace} only) Dose values to be plotted along the y-axis. If \code{NULL} (default), those will be the doses in the dataset (i.e., `sort(unique(x))`).
+#' @param doselabels Dose values to be plotted along the y-axis (`udplot()`) or x-axis (`drplot()`). Must be on same scale as `x`. If \code{NULL} (default), those will be the doses in the dataset (i.e., `sort(unique(x))`).
 #' @param ...	Other arguments passed on to \code{\link[graphics]{plot}} (e.g., `main` for the main title). 
 
 
-udplot <- function(x, y, cohort=NULL, shape='circle', connect=TRUE, symbcol=1, doselabels=NULL, allow1extra = FALSE, 
+udplot <- function(x, y, cohort=NULL, shape='circle', connect=TRUE, symbcol=1, 
+                   doselabels=NULL, allow1extra = FALSE, 
                    xtitle = "Observation Order", ytitle = "Dose / Stimulus",...)
 {
 
@@ -179,12 +180,14 @@ if(length(x)==n+1) points(n+1, x[n+1], pch = 23, bg = 'grey', col = 'grey')
 #' 
 #' @param addest logical: should we add the CIR target-dose estimate and its confidence interval? If `FALSE` (default), then arguments `addcurve, target, balancePt, conf, estcol, estsize, estsymb, esthick, curvecol` - are all ignored.
 #' @param addcurve logical: should we add the complete estimated CIR dose-response curve? Default `FALSE`, and only relevant when `addest = TRUE`.
-#' @param estcol,estsize,estsymb,esthick,curvecol graphical parameters controlling the colors, symbol choice, size, thickness, of the target-dose and CIR-curve visuals.
+#' @param estcol,estsize,estsymb,esthick,curvethick,curvetype,curvecol graphical parameters controlling the colors, symbol choice, size, thickness, of the target-dose and CIR-curve visuals.
 #' @param percents logical, whether to represent the y-axis as percents rather than a fraction.
 
-drplot <- function(x, y, shape='X', connect=FALSE, symbcol=1, percents = FALSE,
+drplot <- function(x, y, shape='X', connect=FALSE, symbcol=1, percents = FALSE, 
+                   doselabels=NULL, obsize = NULL,
                    addest=FALSE, addcurve=FALSE, target=NULL, balancePt=target, conf=0.9,
-                   estcol = 'purple', estsize=2, estsymb=19, esthick=2, curvecol = 'blue', allow1extra = FALSE,
+                   estcol = 'purple', estsize=2.5, estsymb=19, esthick=2.5, 
+                   curvethick=1.5, curvetype=1, curvecol = 'blue', allow1extra = FALSE,
                    ytitle = "Frequency of Positive Response", xtitle = "Dose / Stimulus",...)
 {
 requireNamespace('cir')
@@ -205,8 +208,8 @@ requireNamespace('cir')
 tmp = cir::doseResponse(x=x, y=y)
 if(percents) tmp$y = 100 * tmp$y
   
-plot(tmp, pch=shape, connect=connect, mcol=symbcol, 
-       xlab=xtitle, ylab=ytitle, ...)
+plot(tmp, pch=shape, connect=connect, mcol=symbcol, refsize = obsize,
+       xlab=xtitle, ylab=ytitle, dosevals = doselabels, ...)
 
 if(addest)
 {
@@ -221,7 +224,7 @@ if(addest)
   {
     fest = cir::cirPAVA(x=x, y=y, target=balancePt, adaptiveShrink=TRUE, full=TRUE)
     if(percents) fest$shrinkage$y = 100 * fest$shrinkage$y
-    lines(y ~ x, data = fest$shrinkage, col=curvecol, lwd = esthick)
+    lines(y ~ x, data = fest$shrinkage, col=curvecol, lwd = curvethick, lty = curvetype)
     
   }
  
