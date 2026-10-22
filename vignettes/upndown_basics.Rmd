@@ -16,7 +16,7 @@ vignette: >
 # (from https://community.rstudio.com/t/browsevignettes-mypackage-saying-no-vignettes-found/68656/6)
 
 knitr::opts_chunk$set(
-  collapse = TRUE, fig.width = 9, fig.height = 7, out.width = 900, out.height = 700, 
+  collapse = TRUE, fig.width = 7, fig.height = 6, out.width = 630, out.height = 540, 
   comment = "#"
 )
 ```
@@ -29,11 +29,11 @@ Nevertheless, UDDs have persisted. Studies using UDDs are routinely published in
 
 The `upndown` package attempts to close some of this service gap. It presents basic computational tools and shortcuts to help modernize and standardize UDD usage, and to render insights about the design more accessible to practitioners and statisticians. It incorporates the most up-to-date methodological improvements. We also provide methodological references for statisticians and analysts wishing to learn more about UDDs. 
 
-For UDD estimation and data visualization we rely heavily upon the [`cir`](https://CRAN.R-project.org/package=cir) package. That package codifies Centered Isotonic Regression (CIR),^[Oron AP, Flournoy N. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. *Stat Biopharm Res* 2017;9(3):258-267. Open-access author version: http://arxiv.org/pdf/1701.05964] an improvement of isotonic regression motivated by the needs of UDDs and of dose-response studies in general. The `upndown` utilities using `cir` functions emphasize ease of use, and do not necessitate in-depth familiarity with `cir`.
+For UDD estimation and data visualization we rely heavily upon the [`cir`](https://CRAN.R-project.org/package=cir) package. That package implements Centered Isotonic Regression (CIR),^[Oron AP, Flournoy N. Centered Isotonic Regression: Point and Interval Estimation for Dose-Response Studies. *Stat Biopharm Res* 2017;9(3):258-267. Open-access author version: http://arxiv.org/pdf/1701.05964] an improvement of isotonic regression motivated by the needs of UDDs and of dose-response studies in general. The `upndown` utilities using `cir` functions emphasize ease of use, and do not necessitate in-depth familiarity with `cir`.
 
 This vignette presents a general overview of UDDs, as well as re-analysis of published experimental examples which demonstrate `upndown`'s data analysis and visualization utilities. For a broader overview, see Oron et al. (2022) published in Anesthesiology^[Oron AP, Souter MJ, Flournoy N. Understanding Research Methods: Up-and-down Designs for Dose-finding. *Anesthesiology* 2022; 137:137–50. (https://doi.org/10.1097/aln.0000000000004282)], and a somewhat more technical overview by Oron and Flournoy (2024)^[Oron AP, Flournoy N. Up-and-Down: The Most Popular, Most Reliable, and Most Overlooked Dose-Finding Design. *New Eng J Stat Data Science* 2024; 1-12. (https://doi.org/10.51387/24-NEJSDS74)]
 
-A second package vignette (still in planning) will go deeper into UDD design rules and statistical properties, demonstrating the package's design-aid utilities. 
+We are now completing the first-ever book about UDDs. You can browse the code used to produce the book's data and figures, on GitHub at `assaforon/UpndownBook`. 
 
 ## What Makes a Design "Up-and-Down"?
 
@@ -41,7 +41,7 @@ UDDs belong to the methodological field of **dose-finding.** This field aims to 
 
 There is substantial confusion regarding the term "Up-and-Down". From a uselessly broad perspective, any dose-finding designs in which consecutive dose assignments might go *"up"* or *"down"* can be called a UDD, and some articles come pretty close to claiming that. We prefer a narrower and far more useful definition: the hallmark of a genuine UDD is the **target-centered random walk** it generates over the dose levels. To do that, it requires the following:
 
-  1. A binary response *(an ordered ternary response should be easily UDD-compatiable, but to our knowledge it has been neither studied nor attempted in practice)*.
+  1. A binary response *(an ordered ternary response should be easily UDD-compatible, but to our knowledge it has been neither studied nor attempted in practice)*.
   2. Allowable treatments are a **discrete set of increasing dose levels** of the same "dose variable" $x.$ 
   3. **Monotone dose-response relationship.** For simplicity we assume monotone increasing, and denote the relationship via the function $F(x)$, which as hinted above can often be interpreted as the CDF of the underlying positive-response thresholds.
   4. Doses are allocated **sequentially**, and only allow for increasing the dose by one level, decreasing by one level, or repeating the same dose. Hence the design’s name *“up-and-down”*, or (in sensory studies and materials testing) *“the Staircase Method.”*^[Garcìa-Perez MA. Forced-Choice staircases with fixed step sizes: asymptotic and small-sample properties. *Vision Res* 1998;38:1861-1881.]
@@ -74,12 +74,12 @@ Bending Fatigue Strength of Case Carburized and Nitrided Gear Steels for Aeronau
 
 Classical UDD was first developed during World War II, to estimate the median effective dropping height of explosives.^[Dixon WJ, Mood AM. A method for obtaining and analyzing sensitivity data. *J Am Stat Assoc.* 1948;43:109-126.] Independently, Nobel-Prize winning audiologist von Bekesy developed a near-identical design to estimate the hearing threshold.^[von Békésy G. A new audiometer. *Acta Otolaryngol.* 1947; 35:411–22.]
 
-Gorla et al. visualize the raw data of their 9 experiments (Tables 4-12) in the very same manner that Dixon and Mood visualized an explosive-testing dataset in their 1948 article: as a text graph with **"x"** and **"o"** symbols. We re-plot the data in the somewhat more modern fashion encountered in other fields. We share two of the experiments, here's the first one:
+Gorla *et al.* visualize the raw data of their 9 experiments (Tables 4-12) in the very same manner that Dixon and Mood visualized an explosive-testing dataset in their 1948 article: as a text graph with **"x"** and **"o"** symbols. We re-plot the data in the somewhat more modern fashion encountered in other fields. We share two of these experiments, here's the first one:
 
 ```{r gorla6_1}
 library(upndown)
 
-# From Gorla et al. (2017) Table 6
+# From Gorla *et al.* (2017) Table 6
 gorla751x = 39 + c(3:0, 1, 2, 1:3, 2, 3, 2, 3)
 # With UD data, one can usually discern the y's (except the last one) from the x's:
 gorla751y =  c( (1 - diff(gorla751x) ) / 2, 1)
@@ -92,12 +92,10 @@ legend('bottomright', legend = c(expression('Survived 10'^7*' cycles'),
 
 ```
 
- - This run had $n=13,$ which for live-subject experiments would be on the low side. Given that these gears are industrial products which likely undergo tight process control, such a small $n$ might suffice - as long as the experiment doesn't start too far from the true target.
- - That said, the random walk nature can be seen in how the first half of the run is a bit different from the second. After 6-7 observations, one might jump to conclude that the target ( = median failure threshold) is surely below 41 kN, probably around 40 kN. But the last 6 tell a rather different story, of the target tightly locked between 41 and 42 kN. 
+ - This run had $n=13$, which for live-subject experiments would be surely insufficient. Given that these gears are industrial products which likely undergo tight process control, such a small $n$ might suffice, in the optimistic case when the experiment starts fairly close to the true target.
+ - The random-walk nature can be seen in how the first half of the run is a bit different from the second. 
  
-Which half is correct? We don't know. Each half provides a ridiculously small amount of information, and even combined they leave a lot of uncertainty (if the uncertainty is properly accounted for).
-
-Here's the dose-response plot, and below it the CIR target estimate which is our recommended standard:
+Here's the dose-response plot, and below it the CIR target estimate, our recommended standard estimation method:
 
 ```{r gorla6_2}
 
@@ -111,34 +109,33 @@ legend('bottomright', legend = c('CIR target estimate and 90% CI',
 udest(gorla751x, gorla751y, target = 0.5)
 ```
 
-The `'X'` marks denote raw response frequencies, with symbol area proportional to sample size.
+The `'X'` marks denote raw response rates, with symbol area proportional to sample size.
 
-**Note that indeed the confidence interval (CI) is fairly wide. ** It is also asymmetric, mostly because `cir` dose-finding functions (starting version 2.3.0) separately estimate the local slope of $F(x)$ to the right and left of target. Note also that `upndown` default (and `cir` default too) is a $90\%$ CI rather than $95\%$. You hopefully agree that with 13 dependent binary observations, pretending to know $95\%$ of *anything* is a bit overly ambitious. 
+**Note that the confidence interval (CI) is fairly wide. ** It is also asymmetric. `cir` dose-finding functions (starting `cir` version 2.3.0) separately estimate the local slope of $F(x)$ to the right and left of target. Note also that `upndown` default (and `cir` default too) is a $90\%$ CI rather than $95\%$. You hopefully agree that with 13 dependent binary observations, pretending to know $95\%$ of *anything* is a overly ambitious. 
 
-CIR implicitly assumes that the dose-response (in this particular case, load-failure) curve is **smooth and strictly monotone**. Hence, CIR shrinks the characteristic flat stretches produced by isotonic regression onto single points, then interpolates between those points. The CI reported above and shown in the figure, is the `cir` package's other flagship product: the first-ever realistic small-sample CI for practical isotonic-regression applications.
+CIR implicitly assumes that the dose-response (in this particular case, load-failure) curve is **smooth and strictly monotone**. Hence, CIR shrinks the characteristic flat stretches produced by isotonic regression onto single points, then interpolates between those points. The CI reported above and shown in the figure, is the `cir` package's other flagship product: the first-ever realistic small-sample CI for isotonic-regression applications.
 
-In their own article, Gorla et al. used a much older UD estimator suggested by Brownlee et al. in 1953.^[Brownlee KA, Hodges JL, Rosenblatt M. The Up-and-Down Method with Small Samples. *J Am Stat Assoc.* 1953, 48:262, 262-277.] Like most early UD estimators, it is some average of the sequence of doses, and the first one to deploy the trick of adding the $n+1$st dose, which is pre-determined by the $n$th dose and response. In addition, the estimator excludes the first sequence of doses with identical responses - in UD parlance, the doses before **the first reversal.** This yields 40.91 kN. `upndown` includes a generic implementation of reversal-driven, dose-averaging estimates, so this number can be replicated by choosing the right arguments:
+In their own article, Gorla *et al.* used a much older UD estimator suggested by Brownlee *et al.* in 1953.^[Brownlee KA, Hodges JL, Rosenblatt M. The Up-and-Down Method with Small Samples. *J Am Stat Assoc.* 1953, 48:262, 262-277.] Like most early UD estimators, it is some average of the sequence of doses, which in this case yields 40.91 kN. `upndown` includes a generic implementation of reversal-driven, dose-averaging estimates. With the right arguments, our `reversmean()` function can produce the Brownlee *et al.* estimate:
 
 
 ```{r gorla6_3a}
-# Note the manual addition of "dose n+1"
+# Note the manual addition of "dose n+1", which is determined by the n-th observation:
 reversmean(c(gorla751x, 41), gorla751y, rstart = 1, all = TRUE, conf = NULL)
 ```
 
-The `conf = NULL` argument suppresses the default behavior which also calculates a bootstrap-based CI. Our CI for dose-averaging estimates is even newer than the CIR CI, and remains unpublished with no near-term plans to publish it - because its coverage generally falls somewhat short. Yet, we believe that point estimates should come with a CI, and our dose-averaging CI is better than any of the ones you might encounter in UDD studies with dose-averaging estimates. Just like CIR is a modification of isotonic regression, our UD bootstrap algorithm improves upon one published by Stylianou *et al.*, which tends to produce CIs that are far too narrow.^[Stylianou M, Proschan M, Flournoy N. Estimating the probability of toxicity at the target dose following an up‐and‐down design. Statistics in medicine. 2003 Feb 28;22(4):535-43.] 
+The `conf = NULL` argument suppresses the default behavior which also calculates a bootstrap-based CI. Our CI for dose-averaging estimates is even newer than the CIR CI, and remains unpublished with no near-term plans to publish it - because its coverage generally falls somewhat short. Yet, we believe that point estimates should come with a CI, and our dose-averaging CI is better than ones you might encounter in UDD studies with dose-averaging estimates. Those published CIs tend to be woefully lacking. 
 
-Without further ado, here's the estimate with the bootstrap CI:
+Without further ado, here's the same estimate, now with the bootstrap CI:
 
 ```{r gorla6_3b}
-# Note the manual addition of "dose n+1"
-reversmean(c(gorla751x, 41), gorla751y, rstart = 1, all = TRUE, 
-                                   target = 0.5, design = krow, desArgs = list(k=1) )
+suppressMessages(reversmean(c(gorla751x, 41), gorla751y, rstart = 1, all = TRUE, 
+                        target = 0.5, design = krow, desArgs = list(k=1) ) )
 
 ```
 
-The dots report the bootstrap simulation's progress; it progresses in parallel, one dot per observation *(there is no explicit parallel processing; however, it is mostly matrices so it tends to run very fast)*. The default has 1000 replications, which on my laptop takes 1 second for this $n=13$ dataset. Behind the scenes, $F(x)$ is estimated via some version of CIR, which is then used to generate the bootstrap samples. For usage information, see the help files for `dfboot, dfsim`, and `krow`. You will need to read them in order to specify the arguments correctly and produce the relevant CI, because `reversmean()` will throw an error message about missing arguments unless `conf = NULL`.
+The dots report the bootstrap simulation's progress; it progresses in parallel, one dot per observation *(there is no explicit parallel processing; however, it is mostly matrices so it tends to run very fast)*. The default has 1000 replications, which on my laptop takes 1 second for this $n=13$ dataset. Behind the scenes, $F(x)$ is estimated via some version of CIR, which is then used to generate bootstrap samples. For usage information, see the help files for `dfboot, dfsim`, and `krow`. You will need to read them in order to specify the arguments correctly and produce the relevant CI.
 
-Just like the CIR CI, our dose-averaging CI for this specific dataset is also left-skewed asymmetric, albeit slightly narrower. Gorla et al. did not report a CI nor a standard error for their point estimate.
+Just like the CIR CI, our dose-averaging CI for this specific dataset is also left-skewed asymmetric, albeit slightly narrower. Gorla *et al.* did not report a CI nor a standard error for their point estimate.
 
 **We generally recommend using CIR for estimating the target dose and the confidence interval.** It is more robust than dose-averaging estimators, and likewise its CI coverage is more consistent. See, e.g., [the supplement to Oron et al. 2022.](https://cdn-links.lww.com/permalink/aln/c/aln_2022_05_25_oron_aln-d-21-01101_sdc1.pdf) 
 
@@ -146,32 +143,23 @@ Just like the CIR CI, our dose-averaging CI for this specific dataset is also le
 
 Estimating the target with CIR is as simple as reading off the dose-response plot, and seeing where the CIR curve crosses $y=target.$
 
-There is one catch though: the up-and-down process induces dependence between consecutive doses and responses. Therefore, even though each response in the Gorla *et al.* experiments is independent conditional upon the dose it received, responses are not *marginally* independent and they do not behave according to Binomial assumptions - contrary to common misconceptions in the dose-finding field *(of which yours truly had also been guilty in the past)*. 
+There is one catch though: the up-and-down process induces dependence between consecutive doses and responses. Therefore, even though each response in the Gorla *et al.* experiments is independent conditional upon the dose it received, responses are not *marginally* independent and they do not behave according to Binomial assumptions - contrary to common misconceptions in the dose-finding field. 
 
-In particular: **the dependence induces a bias upon observed response rates**, a bias that tends to "flare out" away from target.^[Flournoy N, Oron AP. Bias induced by adaptive dose-finding designs. J Appl Stat. 2020;47(13-15):2431-2442.] Near target the bias is minimal, and this is why up-and-down and other dose-finding designs still work - but using observed frequencies away from target at face value is not recommended.
+In particular: **the dependence induces a bias upon observed response rates**, a bias that tends to "flare out" away from target.^[Flournoy N, Oron AP. Bias induced by adaptive dose-finding designs. J Appl Stat. 2019;47:2431-2442.] Near target the bias is minimal, and this is why up-and-down and other dose-finding designs still work - but using observed rates away from target at face value is not recommended.
 
-The blue curve in the dose-response plot does include an empirical bias fix, based on that "flaring out" property, which is why it doesn't cross the middle of the 'X' marks denoting observed frequencies. The main motivation for putting that fix in as default, is not to get the curve right - that would be a bit of a fool's errand, because dose-finding designs are really about **estimating a point, not an entire curve** - but to get the confidence intervals more realistic. The "flaring-out" bias makes $F(x)$'s apparent slope too steep. The bias correction mitigates that steepness and hence widens the CI.
+The blue curve in the dose-response plot does include an empirical bias fix, based on that "flaring out" property, which is why it doesn't cross the middle of the 'X' marks denoting observed rates. The main motivation for putting that fix in as default, is not to get the curve right - that would be a bit of a fool's errand, because dose-finding designs are really about **estimating a point, not an entire curve** - but to get the confidence intervals more realistic. The "flaring-out" bias makes $F(x)$'s apparent slope too steep. The bias correction mitigates that steepness and hence widens the CI.
 
-
-What if we do try to estimate away from target? Here is the (relatively) proper way to do it. Assume we're interested in knowing a "safe" load, under which only $5\%$ of gears are expected to fail:
-
-```{r gorla6_4, width = 100}
-udest(x = gorla751x, y = gorla751y, target = 0.05, balancePt = .5)
-```
-
-We change the `target` argument to the desired percentile. But we must also inform `udest()` that the experiment was actually designed to revolve around another percentile, which we call **the balance point.**^[Oron AP, Hoff PD. The k-in-a-row up-and-down design, revisited. *Stat Med.* 2009;28:1805-1820.] The bias would flare out from there, not from where we want to estimate now. As you might note, `udest()` kindly reminds us that this is not recommended. *(If `balancePt` is left empty, `udest()` assumes it is equal to `target`.)*
-
-Suppose you're an engineer and you want to find out that safe load? Design an experiment that targets a lower percentile (we'll discuss that soon). Or an experiment that estimates an entire stretch of the load-failure curve. The latter option would not be an UDD though.
+Suppose you're an engineer and you want to find a safe load whose probability of breaking the gear is $\ll 50\%$? Design a UDD experiment that targets a lower percentile (we'll discuss that soon). Or, an experiment that estimates an entire stretch of the load-failure curve. The latter option would not be a UDD though.
 
 On to the second experiment, presented below in one fell swoop.
 
 
-```{r gorla9_1, fig.width=13, fig.height=7, out.width=1300, out.height=700, echo = -1}
+```{r gorla9_1, fig.width=9, fig.height=5, out.width=810, out.height=450, echo = -1}
 # Saving current settings as now required by the CRAN powers-that-be :0
 op <- par(no.readonly = TRUE)
 
 par(mfrow=1:2, mar=c(4,4,4,1))
-# From Gorla et al. (2017) Table 9
+# From Gorla *et al.* (2017) Table 9
 gorla951x = 35 + c(1:0, 1:4, 3:2, 3:0, 1, 2, 1)
 gorla951y =  c( (1 - diff(gorla951x) ) / 2, 1)
 
@@ -183,21 +171,23 @@ drplot(x=gorla951x, y=gorla951y, addest = TRUE, target = 0.5, addcurve = TRUE,
        xtitle = "Load (kN)", ytitle = "Percent Failure", las = 1)
 
 udest(gorla951x, gorla951y, target = 0.5)
-
-par(op) # Back to business as usual ;)
 ```
 
-This run was a bit less well-behaved than 751, and produced a monotonicity violation in observed response frequencies. CIR (and isotonic regression in general) was developed to deal with that, but as a result the confidence interval is even wider than the 751 estimate's CI, despite having 2 *(wow!)* additional data points.
+This run was less well-behaved than 751, and produced a monotonicity violation in observed response rates. CIR (and isotonic regression in general) was developed to deal with that. With the violation, the confidence interval is even wider than the 751 estimate's CI, despite having a slightly larger $n$.
 
-Curiously, Gorla et al. mixed and matched two estimators in their study. For this run, they used the original Dixon-Mood estimator (sometimes called "Dixon-Massey"), which is also a weighted average of doses but in fact a more sophisticated one than Brownlee et al.'s. Using that, they got 36.63 kN with a standard error of 0.62 kN, which translates to a $90\%$ CI width of 2.0 kN (since Dixon and Mood recommend using Normal tables rather than, e.g., $t$). Our CI is $\sim 1.6x$ wider. 
+Curiously, Gorla *et al.* mixed and matched two different estimators in their study. For this run, they used the original UDD estimator. It, too, is an average of doses, but a more sophisticated one than Brownlee et al.'s. The estimator is usually attributed to a 1948 article by Dixon and Mood, but during our book-writing work we have found the true original: a classified 1944 military report by the world-famous wartime Statistical Research Group - Princeton (SRG-P). It has a limited number of hardcopies, but at least for now an online copy is available universally. It is extremely well-written; a fascinating and recommended read.^[Statistical Research Group, Princeton
+University (SRG-P). *Statistical analysis for a new procedure in sensitivity experiments.* Applied Mathematics Panel, National Defense Research Committee
+Report No. 101.1R, OSRD No. 4040, 1944. https://digitalcollections.crl.edu/record/2518.] 
 
-We do have a version of the Dixon-Mood in our package as well.
+Using the SRG-P / "Dixon-Mood" estimator, obtained 36.63 kN with a standard error of 0.62 kN, which translates to a $90\%$ CI width of $\pm$1.0 kN (SRG-P recommended using Normal tables rather than, say, $t$). Our CI is $\sim 1.6x$ wider. 
+
+We do have a version of this estimator in our package as well, named after its most commonly known reference.
 
 ```{r gorla9_2, width = 100}
 dixonmood(x=gorla951x, y=gorla951y)
 ```
 
-The value is a bit different from Gorla et al.'s, because there are a myriad variations in how that 1948-vintage estimator is implemented. Our package uses the formula as provided in the original article. However, we consider that estimator rather obsolete, and provide it only for comparisons like this. We also do not provide a CI or standard-error estimate for it, so as not to encourage usage of this obsolete estimator.
+The value is a bit different from Gorla *et al.*'s, presumably because there are some variations in how that 1940s-vintage estimator is implemented. Our package uses the formula as provided in the original article. In any case, we consider that estimator rather obsolete, and provide it only for comparisons like this. We also do not provide a CI or standard-error estimate for it, so as not to encourage its usage.
 
 ### $ED_{90}$ of Vasopressor during Caesarean Section
 
@@ -222,7 +212,8 @@ Unlike machined helicopter gears, people do not undergo industrial process contr
 The context was Cesarean delivery, during which many mothers experience hypotension. Phenylephrine is one of the recommended treatments, and the team wanted to estimate the $ED_{90}.$ Inspired by Pace and Stylianou's article, they chose BCD, albeit to simplify the "toss" probability they rounded it down from $1/9$ to $1/10.$ Since the treatment would be administered only to mothers experiencing hypotension, they initially enrolled 65 mothers, 45 of whom were treated for hypotension. The starting dose was the one most commonly used in practice: $100\ \mu g.$
 
 
-```{r george1, echo = -1, fig.width = 10, fig.height = 6, out.width=1000, out.height=600}
+```{r george1, echo = -(1:2), fig.width = 9, out.width=810}
+par(op) 
 dlabel = 'Phenylephrine dose (micrograms)'
 george10x = 80 + 20 * c(1, rep(2, 5), 1, 1, 0, 0, rep(1, 7), 0:2, 2, 2, rep(1, 4), 2, 1, 1, 2, 2, 
                         rep(3, 5), 4, 5, 5, rep(4, 6))
@@ -237,8 +228,9 @@ The study's UDD balance point was $p=10/11,$ even as the experimental target - t
 
 On to the dose-response curve and the estimates!
 
-```{r george2, echo = -1, fig.width = 12, fig.height = 7, out.width=1300, out.height=700}
-drplot(x=george10x, y=george10y, addest = TRUE, target = 0.9, addcurve = TRUE, balancePt = 10/11, xtitle = dlabel)
+```{r george2, echo = TRUE}
+drplot(x=george10x, y=george10y, addest = TRUE, target = 0.9, addcurve = TRUE, 
+        balancePt = 10/11, xtitle = dlabel)
 ```
 
 The CI veering off further to the right rather than to the left (which could seem plausible looking at the 'X' marks) might raise questions. Here are some insights:

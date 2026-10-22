@@ -182,13 +182,14 @@ if(length(x)==n+1) points(n+1, x[n+1], pch = 23, bg = 'grey', col = 'grey')
 #' @param addcurve logical: should we add the complete estimated CIR dose-response curve? Default `FALSE`, and only relevant when `addest = TRUE`.
 #' @param estcol,estsize,estsymb,esthick,curvethick,curvetype,curvecol graphical parameters controlling the colors, symbol choice, size, thickness, of the target-dose and CIR-curve visuals.
 #' @param percents logical, whether to represent the y-axis as percents rather than a fraction.
-
+#' @param obsize The relative size of the observation symbols. 
+#' 
 drplot <- function(x, y, shape='X', connect=FALSE, symbcol=1, percents = FALSE, 
                    doselabels=NULL, obsize = NULL,
                    addest=FALSE, addcurve=FALSE, target=NULL, balancePt=target, conf=0.9,
                    estcol = 'purple', estsize=2.5, estsymb=19, esthick=2.5, 
                    curvethick=1.5, curvetype=1, curvecol = 'blue', allow1extra = FALSE,
-                   ytitle = "Frequency of Positive Response", xtitle = "Dose / Stimulus",...)
+                   ytitle = "Positive Response Rate", xtitle = "Dose / Stimulus",...)
 {
 requireNamespace('cir')
   
@@ -213,7 +214,8 @@ plot(tmp, pch=shape, connect=connect, mcol=symbcol, refsize = obsize,
 
 if(addest)
 {
-  if(is.null(target)) stop("To plot an estimate, please specify the target response rate.\n")
+  if(is.null(target)) stop("To plot an estimate, please specify the target response rate,\n
+                           and the balance point (if different).\n")
   checkTarget(target)
   est = udest(x=x, y=y, target=target, balancePt=balancePt, conf=conf, ...)
   if(percents) est$target = 100 * est$target
@@ -222,6 +224,9 @@ if(addest)
   
   if(addcurve)
   {
+    if(!addest) 
+      stop("To plot a curve you must estimate it first, by setting addest = TRUE \n 
+           and providing additional parameters. See function help.\n")
     fest = cir::cirPAVA(x=x, y=y, target=balancePt, adaptiveShrink=TRUE, full=TRUE)
     if(percents) fest$shrinkage$y = 100 * fest$shrinkage$y
     lines(y ~ x, data = fest$shrinkage, col=curvecol, lwd = curvethick, lty = curvetype)

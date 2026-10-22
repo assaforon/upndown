@@ -46,6 +46,8 @@ drplot(
 
 \item{doselabels}{Dose values to be plotted along the y-axis (\code{udplot()}) or x-axis (\code{drplot()}). Must be on same scale as \code{x}. If \code{NULL} (default), those will be the doses in the dataset (i.e., \code{sort(unique(x))}).}
 
+\item{obsize}{The relative size of the observation symbols.}
+
 \item{addest}{logical: should we add the CIR target-dose estimate and its confidence interval? If \code{FALSE} (default), then arguments \verb{addcurve, target, balancePt, conf, estcol, estsize, estsymb, esthick, curvecol} - are all ignored.}
 
 \item{addcurve}{logical: should we add the complete estimated CIR dose-response curve? Default \code{FALSE}, and only relevant when \code{addest = TRUE}.}

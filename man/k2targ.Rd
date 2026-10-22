@@ -67,6 +67,9 @@ The \code{k2targ()} and \code{g2targ()} utilities are intended for users who alr
 
 Lastly, \code{bcoin()} returns the biased-coin probabilities given the user's designated target. In contrast to the two other UDDs described above, the biased-coin design can target any percentile with a precisely matched balance point. That said, k-in-a-row and group UDDs offer some advantages over biased-coin in terms of performance and operational simplicity. \code{bcoin()} can return the probability as a decimal, rational fraction, or both (default).
 }
+\note{
+Theoretically one can add a biased coin to Group UDD, to attain any target. A simple utility calculating the required coin probability is now available on GitHub under \code{assaforon/UpnDownBook/P4_Theory/randomizedGUD.r}.
+}
 \references{
 \itemize{
 \item Durham SD, Flournoy N. Random walks for quantile estimation. In: \emph{Statistical Decision Theory and Related Topics V} (West Lafayette, IN, 1992). Springer; 1994:467-476.

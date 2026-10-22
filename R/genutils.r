@@ -43,6 +43,7 @@
 #'  - `ktargOptions(), gtargOptions()`: a `data.frame` with design parameters and balance points, for all options that meet user-provided constraints. A printed string provides dose transition rule guidance.
 #'  - `bcoin():` a printed string that informs user of the biased-coin design rules, including the 'coin' probability in its user-chosen format (decimal or fraction). In case the user-desired target is 0.5 or very close to it, the string will inform user that they are better off just using classical UDD without a coin.
 #'  
+#' @note Theoretically one can add a biased coin to Group UDD, to attain any target. A simple utility calculating the required coin probability is now available on GitHub under `assaforon/UpnDownBook/P4_Theory/randomizedGUD.r`.
 #'  
 #' @references 
 #'  - Durham SD, Flournoy N. Random walks for quantile estimation. In: *Statistical Decision Theory and Related Topics V* (West Lafayette, IN, 1992). Springer; 1994:467-476.
