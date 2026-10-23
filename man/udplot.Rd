@@ -11,6 +11,9 @@ udplot(
   shape = "circle",
   connect = TRUE,
   symbcol = 1,
+  linecol = symbcol,
+  symbsize = 1,
+  obslabels = NULL,
   doselabels = NULL,
   allow1extra = FALSE,
   xtitle = "Observation Order",
@@ -30,6 +33,8 @@ udplot(
 \item{connect}{logical: whether to connect the symbols (generic plotting type \code{'b'}). Default \code{TRUE} for \code{udplot()} and \code{FALSE} for \code{drplot()}.}
 
 \item{symbcol}{The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there might be an error message.}
+
+\item{linecol}{The color of the connecting lines (if \code{connect = TRUE}). Default is to be the same as \code{symbcol}.}
 
 \item{doselabels}{Dose values to be plotted along the y-axis (\code{udplot()}) or x-axis (\code{drplot()}). Must be on same scale as \code{x}. If \code{NULL} (default), those will be the doses in the dataset (i.e., \code{sort(unique(x))}).}
 
@@ -114,7 +119,7 @@ gsize = 3
 x = rep(c(1:3, 2:4), each = gsize)
 y = c(rep(0, 8), 1, rep(0,7), 1, 1)
 
-udplot(x=x, y=y, cohort=gsize, connect=FALSE, shape='triangle')
+udplot(x=x, y=y, cohort=gsize, connect=TRUE, shape='triangle')
 
 par(op) # Back to business as usual ;)
 }

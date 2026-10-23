@@ -104,7 +104,7 @@ gsize = 3
 x = rep(c(1:3, 2:4), each = gsize)
 y = c(rep(0, 8), 1, rep(0,7), 1, 1)
 
-udplot(x=x, y=y, cohort=gsize, connect=FALSE, shape='triangle')
+udplot(x=x, y=y, cohort=gsize, connect=TRUE, shape='triangle')
 
 par(op) # Back to business as usual ;)
 }

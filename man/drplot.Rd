@@ -26,7 +26,7 @@ drplot(
   curvetype = 1,
   curvecol = "blue",
   allow1extra = FALSE,
-  ytitle = "Frequency of Positive Response",
+  ytitle = "Positive Response Rate",
   xtitle = "Dose / Stimulus",
   ...
 )

@@ -115,13 +115,14 @@ tmp
 #' @param shape the plotting shape (DRtrace only): `'circle'` (default), `'square'`, or `'triangle'`.
 #' @param connect logical: whether to connect the symbols (generic plotting type `'b'`). Default \code{TRUE} for `udplot()` and \code{FALSE} for `drplot()`.
 #' @param symbcol The color of the main plotting symbols and connecting lines. Default 1 (the current palette's first color). Note: if you change the color and inadvertently use \code{col} instead, there might be an error message.
+#' @param linecol The color of the connecting lines (if `connect = TRUE`). Default is to be the same as `symbcol`.
 #' @param xtitle,ytitle	x-axis and y-axis titles. Some reasonable defaults are provided, to avoid an annoying error message.
 #' @param doselabels Dose values to be plotted along the y-axis (`udplot()`) or x-axis (`drplot()`). Must be on same scale as `x`. If \code{NULL} (default), those will be the doses in the dataset (i.e., `sort(unique(x))`).
 #' @param ...	Other arguments passed on to \code{\link[graphics]{plot}} (e.g., `main` for the main title). 
 
 
-udplot <- function(x, y, cohort=NULL, shape='circle', connect=TRUE, symbcol=1, 
-                   doselabels=NULL, allow1extra = FALSE, 
+udplot <- function(x, y, cohort=NULL, shape='circle', connect=TRUE, symbcol = 1, linecol = symbcol, 
+                   symbsize = 1, obslabels = NULL, doselabels=NULL, allow1extra = FALSE, 
                    xtitle = "Observation Order", ytitle = "Dose / Stimulus",...)
 {
 
@@ -137,7 +138,8 @@ if(length(x) != n)
 
 if(!is.null(cohort)) checkNatural(cohort, parname = 'cohort')
 xbounds = c(1, ifelse(allow1extra, length(x), n) )
-plot(cir::DRtrace(x=x[1:n], y=y, cohort=cohort), shape=shape, connect=connect, mcol=symbcol, dosevals=doselabels,
+plot(cir::DRtrace(x=x[1:n], y=y, cohort=cohort), shape=shape, connect=connect, scol=symbcol, lcol = linecol, 
+     size = symbsize, dosevals=doselabels, obsvals=obslabels,
              xlab=xtitle, ylab=ytitle, xlim = xbounds, ...)
 if(length(x)==n+1) points(n+1, x[n+1], pch = 23, bg = 'grey', col = 'grey')
   
@@ -209,8 +211,19 @@ requireNamespace('cir')
 tmp = cir::doseResponse(x=x, y=y)
 if(percents) tmp$y = 100 * tmp$y
   
-plot(tmp, pch=shape, connect=connect, mcol=symbcol, refsize = obsize,
+plot(tmp, pch=shape, connect=connect, scol = symbcol, refsize = obsize,
        xlab=xtitle, ylab=ytitle, dosevals = doselabels, ...)
+
+if(addcurve)
+{
+  if(!addest) 
+    stop("To plot a curve you must estimate it first, by setting addest = TRUE \n 
+           and providing additional parameters. See function help.\n")
+  fest = cir::cirPAVA(x=x, y=y, target=balancePt, adaptiveShrink=TRUE, full=TRUE)
+  if(percents) fest$shrinkage$y = 100 * fest$shrinkage$y
+  lines(y ~ x, data = fest$shrinkage, col=curvecol, lwd = curvethick, lty = curvetype)
+  
+}
 
 if(addest)
 {
@@ -222,16 +235,6 @@ if(addest)
   points(target ~ point, data=est, pch=estsymb, col=estcol, cex=estsize)
   lines(x = c(est[1,3], est[1,4]), y = rep(est$target, 2), col=estcol, lwd = esthick)
   
-  if(addcurve)
-  {
-    if(!addest) 
-      stop("To plot a curve you must estimate it first, by setting addest = TRUE \n 
-           and providing additional parameters. See function help.\n")
-    fest = cir::cirPAVA(x=x, y=y, target=balancePt, adaptiveShrink=TRUE, full=TRUE)
-    if(percents) fest$shrinkage$y = 100 * fest$shrinkage$y
-    lines(y ~ x, data = fest$shrinkage, col=curvecol, lwd = curvethick, lty = curvetype)
-    
-  }
  
 }
   
